@@ -1,0 +1,67 @@
+/* Reset some default styles for consistency */
+body, h1, h2, h3, p, input {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* Container for the whole page */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Navbar */
+.navbar {
+    background-color: #2E8B57;
+    padding: 10px;
+}
+
+.navbar-menu {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar-item {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.navbar-link {
+    display: block;
+    color: #FFF;
+    text-decoration: none;
+    padding: 5px 10px;
+}
+
+/* Calendar */
+.calendar {
+    margin-bottom: 20px;
+}
+
+.date-picker {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    background-color: #F0FFF0;
+    color: #2E8B57;
+    font-size: 16px;
+}
+
+/* Campsite cards */
+.campsite-card {
+    background-color: #FFF;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.campsite-card h3 {
+    color: #2E8B57;
+    margin-bottom: 10px;
+}
+
+.campsite-card p {
+    margin-bottom: 5px;
+}

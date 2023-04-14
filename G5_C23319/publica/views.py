@@ -3,6 +3,37 @@ from django.http import HttpResponse
 
 import publica
 
-def Bienvenidos_RN(request):
-    return render(request,'publica/index.html', {"titulo":"Reservas Naturales"}) 
+def index(request):
+    campsites_list = [
+        {'name': 'Abracal',
+         'location': 'San Javier - Córdoba',
+         'category':'Camping',
+         'services':'Conservación, educación ambiental, observación de fauna silvestre, turismo',
+         'cimg':'xxxx',
+         },
+          {'name': '',
+         'location': '',
+         'category':'',
+         'service':'',
+         'cimg':'',
+         },
+          {'name': '',
+         'location': '',
+         'category':'',
+         'service':'',
+         'cimg':'',
+         },
+
+
+    ]
+
+
+
+
+
+    context = {                
+                'campsites': campsites_list,
+                'title': "Reservas Naturales Privadas",
+            }
+    return render(request,'publica/index.html',context)
 

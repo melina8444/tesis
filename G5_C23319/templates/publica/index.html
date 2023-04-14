@@ -1,13 +1,35 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Grupo 5 - C23319 - RN</title>
+    {% load static %}
+    <title>{{title}}</title>
+    <link rel="stylesheet" href="{% static 'publica/css/styles.css' %}">
 </head>
 <body>
-  <h1 style="color:rgb(27, 60, 27)">{{titulo}}</h1>
-  <h2>Grupo 5 - C23319</h2>
+    <nav class="navbar">
+        <ul class="navbar-menu">
+            <li class="navbar-item"><a href="#" class="navbar-link">Inicio</a></li>
+            <li class="navbar-item"><a href="#" class="navbar-link">Acceder a tus reservas</a></li>
+            <li class="navbar-item"><a href="#" class="navbar-link">Registrarse</a></li>
+        </ul>
+    </nav>
+    <div class="container">
+        <h1>Reservas Naturales Privadas para visitar</h1>
+        <div class="calendar">
+            <input type="date" class="date-picker">
+        </div>
+        {% for campsite in campsites %}
+        <div class="campsite-card">
+            <h3>{{ campsite.name }}</h3>
+            <p>Ubicación: {{ campsite.location }}</p>
+            <p>Categoría: {{ campsite.category }}</p>
+            <p>Actividades disponibles: {{ campsite.services }}</p>
+            <p>Imagen: {{campsite.cimg}}</p>
+
+        </div>
+        {% empty %}
+        <p>Por el momento no hay reservas naturales privadas disponibles.</p>
+        {% endfor %}
+    </div>
 </body>
 </html>
