@@ -65,3 +65,11 @@ body, h1, h2, h3, p, input {
 .campsite-card p {
     margin-bottom: 5px;
 }
+
+.campsite-image {
+    width: 100%;
+    max-height: 400px;
+    object-fit: cover;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}

@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 
+
 import publica
 
 def index(request):
@@ -9,7 +10,7 @@ def index(request):
          'location': 'San Javier - Córdoba',
          'category':'Camping',
          'services':'Conservación, educación ambiental, observación de fauna silvestre, turismo',
-         'cimg':'xxxx',
+         'image': 'publica/pimg/abracal.jpeg',
          },
           {'name': '',
          'location': '',

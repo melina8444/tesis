@@ -24,7 +24,7 @@
             <p>Ubicación: {{ campsite.location }}</p>
             <p>Categoría: {{ campsite.category }}</p>
             <p>Actividades disponibles: {{ campsite.services }}</p>
-            <p>Imagen: {{campsite.cimg}}</p>
+            <img class="campsite-image" src="{% static '/publica/pimg/abracal.jpeg'%}" alt="{{ campsite.name }}">
 
         </div>
         {% empty %}
