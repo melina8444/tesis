@@ -33,3 +33,7 @@ def index(request):
             }
     return render(request,'publica/index.html',context)
 
+def login(request):
+
+    return render(request,'publica/login.html')
+
