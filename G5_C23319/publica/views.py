@@ -24,8 +24,7 @@ def index(request):
          'service':'Conservación, explotación forestal, ganadería, investigación y turismo',
          'image':'curindy.jpeg',
          },
-
-
+ 
     ]
 
     context = {                

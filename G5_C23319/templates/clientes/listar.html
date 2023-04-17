@@ -1,0 +1,51 @@
+{% extends '../administracion/index_master.html' %}
+
+{% block content %}
+<div class="right_col" role="main">
+
+<h1>{% block title%} Lista de clientes {% endblock%}</h1>
+
+
+<div class="table-responsive">
+    <table class="table table-striped table-borderless table-secondary border-dark">
+      <thead>
+          <a name="" id="" class="btn btn-success" href="#" role="button">Agregar Nuevo</a>
+          <br/>
+          <br/>
+          <tr>
+            {% comment %} <th scope="col">#</th> {% endcomment %}
+            <th scope="col" --bs-primary-border-subtle>Nombre</th>
+            <th scope="col">Apellido</th>
+            <th scope="col">E-mail</th>
+            <th scope="col">Teléfono</th>
+            <th scope="col">Fecha de Nacimiento</th>
+            <th scope="col">Dni</th>
+            <th scope="col">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+  
+
+          {% for c in clientes %}
+          <tr> 
+            {% comment %} <th scope="row">1</th> {% endcomment %}
+            <td>{{ c.nombre }}</td>
+            <td>{{ c.apellido }}</td>
+            <td>{{ c.email }}</td>
+
+            <td>{{ c.telefono }}</td>
+            <td>{{ c.f_nac }}</td>
+
+            <td>{{ c.dni }}</td>
+
+            <td><a name="" id="" class="btn btn-primary" href="#" role="button">Editar</a> │ <a name="" id="" class="btn btn-danger" href="#" role="button">Eliminar</a></td>
+          </tr>
+          {% endfor %}
+  
+        </tbody>
+    
+      </table>
+    </div>
+  </div>
+
+{% endblock %}
