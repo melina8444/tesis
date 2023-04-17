@@ -28,10 +28,6 @@ def index(request):
 
     ]
 
-
-
-
-
     context = {                
                 'campsites': campsites_list,
                 'title': "Reservas Naturales Privadas",
