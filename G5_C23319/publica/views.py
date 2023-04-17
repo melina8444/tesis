@@ -25,12 +25,7 @@ def index(request):
          'image':'curindy.jpeg',
          },
  
-
     ]
-
-
-
-
 
     context = {                
                 'campsites': campsites_list,
