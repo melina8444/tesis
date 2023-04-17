@@ -22,7 +22,7 @@ def listar_clientes(request):
          'email':'ceci@gmail.com',
          'telefono': '11245689',
          'f_nac':'02/08/1988',
-         'dni': '36565789',
+         'dni':'',
          },
     ]
     context = {                

@@ -4,7 +4,7 @@
     {% load static %}
     <title>{{title}}</title>
     <link rel="stylesheet" href="{% static 'publica/css/styles.css' %}">
-              
+   
 </head>
 <body>
     
@@ -13,14 +13,15 @@
             <li class="navbar-item"><a href="#" class="navbar-link">Inicio</a></li>
             <li class="navbar-item"><a href="#" class="navbar-link">Acceder a tus reservas</a></li>
             <li class="navbar-item"><a href="#" class="navbar-link">Registrarse</a></li>
+            <li class="navbar-item"><a href="{% url 'inicio_admin' %}" class="navbar-link">Admin-Logging</a></li>
         </ul>
     </nav>
     <div class="container">
-        <h1>Reservas Naturales Privadas para disfrutar - Rama Ceci</h1>
+        <h1>Reservas Naturales Privadas para disfrutar</h1>
         <div class="calendar">
             <input type="date" class="date-picker">
         </div>
-        {% for campsite in campsites %}
+    {% for campsite in campsites %}
         <div class="campsite-card">
             <h3>{{ campsite.name }}</h3>
             <p> <img class="campsite-image" src="{% static '/publica/pimg/' %}{{campsite.image}}" alt="{{ campsite.name }}"></p>
@@ -28,10 +29,11 @@
             <p>Categoría: {{ campsite.category }}</p>
             <p>Actividades disponibles: {{ campsite.services }}</p>
         </div>
-        {% empty %}
-        <p>Por el momento no hay reservas naturales privadas disponibles.</p>
-        {% endfor %}
+         {% empty %}
+              <p>Por el momento no hay reservas naturales privadas disponibles.</p>
+         {% endfor %}
+       
     </div>
-
+            
 </body>
 </html>
