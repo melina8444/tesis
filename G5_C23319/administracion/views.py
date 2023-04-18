@@ -25,7 +25,7 @@ def listar_clientes(request):
          'dni': '36565789',
          },
     ]
-    context = {                
+    context = {
                 'clientes': clientes,
                 'title': "Reservas Naturales Privadas",
             }

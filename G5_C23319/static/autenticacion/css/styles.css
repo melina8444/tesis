@@ -70,7 +70,6 @@ form{
     font-weight: 600;
     letter-spacing: 2px;
     font-size: 0.8em;
-    
     transition: background-color 0.2s , color:0.2s , opacity:0.2s;
 }
 
