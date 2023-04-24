@@ -1,0 +1,16 @@
+{%extends '../publica/index.html'%}
+
+    {% block content %}
+    <div class="container m-5">
+    <form class="form-control" action="#" method="post">
+         {% csrf_token %}
+         <table>
+         {{form}}
+        </table>
+         <br>
+        <input type="submit" class="btn btn-success" value="Enviar">
+      </form>
+    </div>
+      {% endblock %}
+</body>
+</html>

@@ -1,17 +1,7 @@
 {%extends '../publica/index.html'%}
-<!DOCTYPE html>
-<html lang= "en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="with=device-width, initial-scale=1.0">
-    
-    <title>Login</title>
-</head>
-<body>
 
-    {% block content %}<h2>Login</h2>  
-    <div class="container">
+    {% block content %}
+    <div class="container m-5">
     <form>
         <div class="form-group">
           <label for="exampleInputEmail1">Email</label>
@@ -25,8 +15,6 @@
         <button type="submit" class="btn btn-primary">Enviar</button>
       </form>
     </div>
-      {% endblock %}  
-
-      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+      {% endblock %}
 </body>
 </html>
