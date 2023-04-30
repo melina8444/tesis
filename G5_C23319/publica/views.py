@@ -1,8 +1,9 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from .forms import ContactForm
-from django.http import HttpResponseRedirect
 
+from django.http import HttpResponseRedirect
+from publica.forms import ContactForm
+from django.contrib import messages
 
 import publica
 
@@ -80,11 +81,15 @@ def login(request):
 def contacto(request):
     if request.method == 'POST':
         contactForm = ContactForm(request.POST)
+        # contactForm.save(); #Para guardar en la base de datos
         if contactForm.is_valid():
+            messages.success(request,'Hemos recibido tus datos')
             return HttpResponseRedirect('/contacto/')
+        else:
+            messages.warning(request,'Por favor revisa los errores en el formulario')
     else:
         contactForm = ContactForm()
-    return render(request, 'publica/contacto.html', {'form':contactForm})
+    return render(request, 'publica/contacto.html', {'contactform':contactForm})
         
     
     
