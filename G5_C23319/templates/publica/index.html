@@ -8,7 +8,7 @@
     />
     <meta name="description" content="" />
     <meta name="author" content="" />
-    <title>Reserva</title>
+    <title>{% block title %}Reservas Naturales{% endblock %}</title>
     <!-- Favicon-->
     <link
       rel="icon"
@@ -20,6 +20,9 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css"
       rel="stylesheet"
     />
+    <!--Fontawesome-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-U9jX8V0XXdYr+b7GxhIMR0M0MbjZpFv+i+lDkgG9oiTnS01kVRdSvSrhPDMoCn+aIn00sE2Z4zVVhrMZQ2N9XQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
     <!-- Core theme CSS (includes Bootstrap)-->
     <link href="/static/publica/css/styles.css" rel="stylesheet" />
   </head>
@@ -42,12 +45,15 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
             <li class="nav-item me-2 ms-2">
-              <a class="nav-link active" aria-current="page" href="{% url 'Inicio' %}"
+              <a
+                class="nav-link active"
+                aria-current="page"
+                href="{% url 'Inicio' %}"
                 >Inicio</a
               >
             </li>
             <li class="nav-item me-2 ms-2">
-              <a class="nav-link" href="#!">Sobre nosotros</a>
+              <a class="nav-link" href="{% url 'aboutus'%}">Sobre nosotros</a>
             </li>
             <li class="nav-item dropdown me-2 ms-2">
               <a
@@ -62,20 +68,26 @@
               <!--En este menú se incluyen las reservas naturales por categoría, con acceso al 
             listado con disponibilidad por categoría-->
               <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <li><a class="dropdown-item" href="#!">Las Reservas Naturales</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="#!">Camping Premium</a></li>
-                <li><a class="dropdown-item" href="#!">Camping Básico</a></li>
-                <li><a class="dropdown-item" href="#!">Camping Aventurero</a></li>
+                <li>
+                  <a class="dropdown-item" href="#!">Las Reservas Naturales</a>
+                </li>
+                <li><hr class="dropdown-divider" /></li>
+                <li><a class="dropdown-item" href="{% url 'campsites_by_category' 'Camping Premium' %}">Camping Premium</a></li>
+                <li><a class="dropdown-item" href="{% url 'campsites_by_category' 'Camping Básico' %}">Camping Básico</a></li>
+                <li>
+                  <a class="dropdown-item" href="{% url 'campsites_by_category' 'Camping Aventurero' %}">Camping Aventurero</a>
+                </li>
               </ul>
             </li>
             <li class="nav-item me-2 ms-2">
-                <a class="nav-link" href="{% url 'contacto' %}">Contactanos</a>
-              </li>
+              <a class="nav-link" href="{% url 'contacto' %}">Contactanos</a>
+            </li>
           </ul>
           <div class="d-flex">
-            <a class="btn btn-success" href="{% url 'login' %}"><i class="bi bi-person me-1"></i>Login</a>
-        </div>
+            <a class="btn btn-success" href="{% url 'login' %}"
+              ><i class="bi bi-person me-1"></i>Login</a
+            >
+          </div>
         </div>
       </div>
     </nav>
@@ -83,7 +95,7 @@
     <header class="bg-success py-5">
       <div class="container px-4 px-lg-5 my-5">
         <div class="text-center text-white">
-          <h1 class="display-4 fw-bolder">Reservas Naturales Privadas</h1>
+          <h1 class="display-4 fw-bolder">{% block page_title %}Reservas Naturales Privadas{% endblock %}</h1>
           <p class="lead fw-normal text-white-50 mb-0">
             Reservá un lugar en la naturaleza
           </p>
@@ -104,24 +116,23 @@
           <label for="fecha_fin" class="form-label ms-2"
             >Ingrese la Fecha de Finalización</label
           >
-          <input type="date" class="form-control"/>
+          <input type="date" class="form-control" />
         </div>
       </form>
 
-    
       <div class="container px-4 px-lg-5 mt-5">
-       
         <div
           class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center"
         >
-        {% for campsite in campsites %}
+          {% for campsite in campsites %}
           <div class="col mb-5">
             <div class="card h-100">
               <!-- Campsite image-->
               <img
                 class="card-img-top"
-                src="{% static 'publica/assets/' %}{{campsite.image}}" alt="{{ campsite.name }}"
-                >
+                src="{% static 'publica/assets/' %}{{campsite.image}}"
+                alt="{{ campsite.name }}"
+              />
               <!-- Campsite-->
               <div class="card-body p-4">
                 <div class="text-center">
@@ -129,7 +140,7 @@
                   <h4 class="fw-bolder">{{campsite.name}}</h4>
                   <!-- Campsite Detalis-->
                   <h5>{{campsite.location}}</h5>
-                  <h6 Class="btn btn-secondary">{{campsite.category}}</h6>
+                  <h6 class="btn btn-secondary">{{campsite.category}}</h6>
                   <p>{{campsite.description}}</p>
                   <p>Disponibilidad: {{campsite.availability}}</p>
                 </div>
@@ -137,9 +148,7 @@
               <!-- Actions-->
               <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
                 <div class="text-center">
-                  <a class="btn btn-outline-dark mt-auto" href="#"
-                    >Reservar</a
-                  >
+                  <a class="btn btn-outline-dark mt-auto" href="#">Reservar</a>
                 </div>
               </div>
             </div>
@@ -152,10 +161,11 @@
     </section>
     {%endblock content %}
     <!-- Footer-->
-    <footer class="py-5 bg-dark">
+    <footer class="py-3 bg-dark">
       <div class="container">
         <p class="m-0 text-center text-white">
-          Copyright &copy; Your Website 2023
+          Copyright &copy; 2023
+          by G5RN - C23319 - CodoaCodo - Django
         </p>
       </div>
     </footer>

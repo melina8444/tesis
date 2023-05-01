@@ -1,0 +1,55 @@
+{%extends '../publica/index.html'%}
+
+{% load static %}
+
+{% block title %}
+Lugares - {{ block.super }}
+{% endblock title%}
+
+
+{% block page_title %}
+Los Lugares - tu selección
+{% endblock %}
+
+{% block content %}
+<div class="container px-4 px-lg-5 mt-5">
+      <!--Campsite category-->
+    <h1 class="my-4">{{ category }}</h1>
+    <div
+      class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center"
+    >
+      {% for campsite in campsites %}
+      <div class="col mb-5">
+        <div class="card h-100">
+          <!-- Campsite image-->
+          <img
+            class="card-img-top"
+            src="{% static 'publica/assets/' %}{{campsite.image}}"
+            alt="{{ campsite.name }}"
+          />
+          <!-- Campsite-->
+          <div class="card-body p-4">
+            <div class="text-center">
+              <!-- Campsite name-->
+              <h4 class="fw-bolder">{{campsite.name}}</h4>
+              <!-- Campsite Detalis-->
+              <h5>{{campsite.location}}</h5>
+              <p>{{campsite.description}}</p>
+              <p>Disponibilidad: {{campsite.availability}}</p>
+            </div>
+          </div>
+          <!-- Actions-->
+          <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+            <div class="text-center">
+              <a class="btn btn-outline-dark mt-auto" href="#">Reservar</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <p>Por el momento no hay reservas naturales privadas disponibles para esta categoría.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{%endblock content %}

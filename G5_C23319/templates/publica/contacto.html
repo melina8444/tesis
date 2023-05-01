@@ -1,16 +1,54 @@
 {%extends '../publica/index.html'%}
-
+{% block title %}
+Contacto - {{ block.super }}
+{% endblock %}
     {% block content %}
-    <div class="container m-5">
-    <form class="form-control" action="#" method="post">
-         {% csrf_token %}
-         <table>
-         {{form}}
-        </table>
-         <br>
-        <input type="submit" class="btn btn-success" value="Enviar">
-      </form>
+    <div class="container">
+      <div class="row">
+          <div class="col-md-12 p-5">
+              <div class="well well-sm">
+                  <form class="form-horizontal form-control" method="post" action="#" novalidate>
+                    {% csrf_token %}
+                      <fieldset>
+                          <legend class="text-center header mb-3">Contacto</legend>
+    
+                          {% for campo in contactform %}
+                            <div class="row mb-3">
+
+                                <div class="col-md-1 col-md-offset-2 text-center iconos">
+                                  {% if campo.label == 'Nombre' %}
+                                  <i class="bi bi-person-circle"></i>
+                                  {% elif campo.label == 'Apellido' %}
+                                  <i class="bi bi-person-circle"></i>
+                                  {% elif campo.label == 'Email' %}
+                                  <i class="bi bi-envelope"></i>
+                                  {% else %}
+                                  <i class="bi bi-pencil-square"></i>
+                                  {% endif %}
+                                </div>
+                                <div class="col-md-11 contactoInputs">
+                                    {{campo}}
+                                </div>
+                                <div>
+                                  <p class="text-danger">{{campo.errors}}</p>
+                                </div>
+                            </div>
+                          {% endfor %}
+
+                          <div class="form-group">
+                              <div class="col-md-12 text-center">
+                                  <button type="submit" class="btn btn-success btn-lg m-3">Enviar</button>
+                              </div>
+                          </div>
+                      </fieldset>
+                  </form>
+              </div>
+          </div>
+      </div>
     </div>
-      {% endblock %}
-</body>
-</html>
+
+  {% endblock %}
+{% comment %} </body>
+</html> {% endcomment %}
+
+

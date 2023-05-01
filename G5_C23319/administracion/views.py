@@ -22,12 +22,12 @@ def listar_clientes(request):
          'email':'ceci@gmail.com',
          'telefono': '11245689',
          'f_nac':'02/08/1988',
-         'dni':'',
+         'dni': '36565789',
          },
     ]
-    context = {                
+    context = {
                 'clientes': clientes,
-                'title': "Admnistracion Reservas Naturales Privadas",
+                'title': "Reservas Naturales Privadas",
             }
     return render(request, 'clientes/listar.html', context)
 

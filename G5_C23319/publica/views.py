@@ -1,13 +1,14 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from .forms import ContactForm
+
 from django.http import HttpResponseRedirect
+from publica.forms import ContactForm
+from django.contrib import messages
 
 
 import publica
 
-def index(request):
-    campsites_list = [
+campsites_list = [
         {'name': 'Abracal',
          'location': 'San Javier - Córdoba',
          'category':'Camping Premium',
@@ -24,7 +25,7 @@ def index(request):
          },
           {'name': 'Curindy',
          'location': 'Localidad de Garuhapé, provincia de Misiones',
-         'category':'Camping Básico',
+         'category':'Camping Premium',
          'description':'Conservación, explotación forestal, ganadería, investigación y turismo',
          'image':'Curindy.jpeg',
          'availability': 'Octubre-Diciembre 2023'
@@ -40,7 +41,7 @@ def index(request):
          'location': ' Villaguay, Entre Ríos',
          'category':'Camping Aventurero',
          'description':'Conservación compatible con Turismo y Producción',
-         'image':'curindy.jpeg',
+         'image':'Caranday.jpeg',
          'availability': 'Octubre-Diciembre 2023'
          },
           {'name': 'Caspinchango',
@@ -64,14 +65,20 @@ def index(request):
          'image':'Pachamama.jpeg',
          'availability': 'Marzo-Diciembre 2023'
          },
-         
- 
     ]
 
+
+def index(request):
+    
     context = {                
                 'campsites': campsites_list
             }
     return render(request,'publica/index.html',context)
+
+def campsites_by_category(request, category):
+    campsites = [campsite for campsite in campsites_list if campsite['category'] == category]
+    context = {'campsites': campsites}
+    return render(request, 'publica/campsites_by_category.html', context)
 
 def login(request):
     
@@ -80,11 +87,47 @@ def login(request):
 def contacto(request):
     if request.method == 'POST':
         contactForm = ContactForm(request.POST)
+        # contactForm.save(); #Para guardar en la base de datos
         if contactForm.is_valid():
+            messages.success(request,'Hemos recibido tus datos')
             return HttpResponseRedirect('/contacto/')
+        else:
+            messages.warning(request,'Por favor revisa los errores en el formulario')
     else:
         contactForm = ContactForm()
-    return render(request, 'publica/contacto.html', {'form':contactForm})
+    return render(request, 'publica/contacto.html', {'contactform':contactForm})
         
+def aboutus(request):
+    developers_list = [
+        {'name': 'Melina',
+         'role': 'Desarrolladora',
+         'image': 'melina.jpg',
+         'socialnetinst':'#',
+         'socialnetwa':'#',
+         },
+          {'name': 'Santiago',
+         'role': 'Desarrollador',
+         'image': 'santi.jpg',
+         'socialnetinst':'#',
+         'socialnetwa':'#',
+         },
+          {'name': 'Nicolás',
+         'role': 'Desarrollador',
+         'image': 'nico.jpg',
+         'socialnetinst':'#',
+         'socialnetwa':'#',
+         },
+          {'name': 'Cecilia',
+         'role': 'Desarrolladora',
+         'image': 'ceci.jpeg',
+         'socialnetinst':'#',
+         'socialnetwa':'#',
+         
+         },
+         ]
     
+    context = {                
+                'developers': developers_list
+            }
+    return render(request,'publica/aboutus.html', context)
     
