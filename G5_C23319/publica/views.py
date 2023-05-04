@@ -140,13 +140,15 @@ def aboutus(request):
     return render(request,'publica/aboutus.html', context)
     
 def reserva(request):
+
     if request.method == 'POST':
-        reservaForm = ReservaForm(request.POST)
+        reservaForm = ReservaForm(request.POST, campsites_list)
         # reservaForm.save(); #Para guardar en la base de datos
         if reservaForm.is_valid():
             messages.success(request,'Hemos recibido tus datos')
             return HttpResponseRedirect('/reserva/')
         else:
+          
             messages.warning(request,'Por favor revisa los errores en el formulario')
     else:
         reservaForm = ReservaForm()
@@ -157,6 +159,7 @@ def reserva_camp_id(request, campsite_id):
     if request.method == 'POST':
         reservaForm = ReservaForm(request.POST)
         # reservaForm.save(); #Para guardar en la base de datos
+
         if reservaForm.is_valid():
             messages.success(request,'Hemos recibido tus datos')
             return HttpResponseRedirect('/reserva/<int:campsite_id>/')
