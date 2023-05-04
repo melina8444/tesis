@@ -30,7 +30,7 @@
     <!-- Navigation-->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
       <div class="container px-4 px-lg-5">
-        <a class="navbar-brand" href="#!">Reserva</a>
+        <a class="navbar-brand" href="{% url 'reserva' %}">Reserva</a>
         <button
           class="navbar-toggler"
           type="button"
@@ -80,7 +80,7 @@
               </ul>
             </li>
             <li class="nav-item me-2 ms-2">
-              <a class="nav-link" href="{% url 'contacto' %}">Contactanos</a>
+              <a class="nav-link" href="{% url 'contact' %}">Contactanos</a>
             </li>
           </ul>
           <div class="d-flex">
@@ -140,15 +140,16 @@
                   <h4 class="fw-bolder">{{campsite.name}}</h4>
                   <!-- Campsite Detalis-->
                   <h5>{{campsite.location}}</h5>
+                  <h6 class="text-center text-muted">Codigo Camping: {{campsite.id}}</h6>
                   <h6 class="btn btn-secondary">{{campsite.category}}</h6>
                   <p>{{campsite.description}}</p>
                   <p>Disponibilidad: {{campsite.availability}}</p>
                 </div>
               </div>
               <!-- Actions-->
-              <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+              <div class="card-footer p-2 pt-0 border-top-0 bg-transparent">
                 <div class="text-center">
-                  <a class="btn btn-outline-dark mt-auto" href="#">Reservar</a>
+                  <a class="btn btn-outline-dark mt-auto" href="{% url 'reserva_camp_id' campsite_id=campsite.id %}">Reservar</a>
                 </div>
               </div>
             </div>

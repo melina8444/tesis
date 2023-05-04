@@ -1,0 +1,30 @@
+{%extends '../publica/index.html'%}
+
+{% load static %}
+
+{% block title %}
+Reserva tu camping elegido - {{ block.super }}
+{% endblock title%}
+
+
+{% block page_title %}
+Reservá tu camping
+{% endblock %}
+
+{% block content %}
+
+<div class="container p-1">
+    <h6 class="text-center text-muted b-2">Código Camping: {{campsite_id}}</h6>
+</div>
+
+  <form class="form-horizontal form-control" method="post" action="#" novalidate>
+    {% csrf_token %}
+
+    <div class="container m-4 form-group">
+
+      {{reservaform}}
+    
+    <button type="submit" class="m-3 btn btn-success">Enviar</button>
+  </div>
+  </form>
+{% endblock %}
