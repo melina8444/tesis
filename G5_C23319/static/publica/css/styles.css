@@ -18,7 +18,7 @@
   --bs-red: #dc3545;
   --bs-orange: #fd7e14;
   --bs-yellow: #ffc107;
-  --bs-green: #198754;
+  --bs-green: #166942;
   --bs-teal: #20c997;
   --bs-cyan: #0dcaf0;
   --bs-black: #000;
@@ -36,7 +36,7 @@
   --bs-gray-900: #212529;
   --bs-primary: #0d6efd;
   --bs-secondary: #6c757d;
-  --bs-success: #198754;
+  --bs-success: #1b4f37;
   --bs-info: #0dcaf0;
   --bs-warning: #ffc107;
   --bs-danger: #dc3545;
@@ -11163,4 +11163,10 @@ fieldset:disabled .btn {
 .iconos {
   font-size: 1.5rem !important;
   color: #198754;
+}
+
+.carousel-caption {
+  background-color: rgba(0,0,0,0.5);
+  border-radius: 10px;
+  padding: 10px;
 }
