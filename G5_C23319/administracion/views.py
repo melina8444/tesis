@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-
+from django.http import HttpResponseRedirect
 
 
 def index_admin(request):
@@ -30,5 +30,3 @@ def listar_clientes(request):
                 'title': "Reservas Naturales Privadas",
             }
     return render(request, 'clientes/listar.html', context)
-
-

@@ -142,6 +142,8 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static'
 ]
 
+MEDIA_URL = "/media/"
+
 #esto se genera en producción y es la que deberemos 
 #crear y django ira a buscar ahi 
 #python manage.py collectstatic
