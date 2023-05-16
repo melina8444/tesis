@@ -42,6 +42,7 @@ class NaturalPark(models.Model):
 
     def __str__(self):
         return f'Nombre: {self.name}'
+    
 class Category(models.Model):
 
     class Meta:
@@ -67,9 +68,7 @@ class Campsite(models.Model):
 
     def __str__(self):
         return f'Nombre: {self.name}'
-
 class Availability(models.Model):
-
     class Meta:
         db_table='Disponibilidades'
 
@@ -78,7 +77,7 @@ class Availability(models.Model):
     end_date = models.DateField(blank=True, null=True)
 
     def __str__(self):
-        return f'Fecha inicio: {self.start_date} + Fecha fin: {self.start_date}'
+        return f'Fecha inicio: {self.start_date}  Fecha fin: {self.start_date}'
 class Reservation(models.Model):
     class Meta:
         db_table='Reservas'
