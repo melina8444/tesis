@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 import environ
 
@@ -143,6 +144,8 @@ STATICFILES_DIRS = [
 ]
 
 MEDIA_URL = "/media/"
+#media para produccion
+MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 
 #esto se genera en producción y es la que deberemos 
 #crear y django ira a buscar ahi 

@@ -11174,3 +11174,8 @@ fieldset:disabled .btn {
 .custom-bg-nav{
   background-color: #e7d5c0 !important
 }
+
+.footer-pattern {
+  background-image: url('/static/publica/assets/hojitas.png');
+  background-repeat: repeat;
+}

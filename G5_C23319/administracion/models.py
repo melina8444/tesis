@@ -37,7 +37,7 @@ class NaturalPark(models.Model):
     description = models.TextField()
     location = models.CharField(max_length=255)
     province = models.IntegerField(choices=Province.choices)
-    image = models.ImageField(upload_to='natural_parks/')
+    image = models.ImageField(upload_to='imagenes/')
     website = models.URLField(blank=True, null=True)
 
     def __str__(self):
@@ -63,7 +63,7 @@ class Campsite(models.Model):
     natural_park = models.ForeignKey(NaturalPark, on_delete=models.CASCADE, related_name='campsites')
     name = models.CharField(max_length=100)
     description = models.TextField()
-    image = models.ImageField(upload_to='campsites/', blank=True, null=True)
+    image = models.ImageField(upload_to='imagenes/', blank=True, null=True)
     categories = models.ManyToManyField(Category, related_name='campsites')
 
     def __str__(self):

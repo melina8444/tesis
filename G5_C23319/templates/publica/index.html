@@ -24,7 +24,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-U9jX8V0XXdYr+b7GxhIMR0M0MbjZpFv+i+lDkgG9oiTnS01kVRdSvSrhPDMoCn+aIn00sE2Z4zVVhrMZQ2N9XQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <!-- Core theme CSS (includes Bootstrap)-->
-    <link href="/static/publica/css/styles.css" rel="stylesheet" />
+    <link href="/static/publica/css/styles.css" rel="stylesheet"/>
   
     <!--Bootstrap carrousel-->
     
@@ -33,8 +33,8 @@
   </head>
   <body>
     <!-- Navigation-->
-    <nav class="navbar navbar-expand-lg navbar-light">
-      <div class="container px-4 px-lg-5">
+    <nav class="navbar navbar-expand-lg navbar-light bg-success justify-content-center bg-opacity-50 w-100">
+      <div class="container justify-content-center px-4 px-lg-5">
         <a class="navbar-brand" href="{% url 'reserva' %}"><i class="bi bi-calendar2-check me-2"></i>Reservar</a>
         <button
           class="navbar-toggler"
@@ -48,7 +48,7 @@
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4 justify-content-center">
             <li class="nav-item me-2 ms-2">
               <a
                 class="nav-link"
@@ -88,11 +88,6 @@
               <a class="nav-link" href="{% url 'contact' %}">Contactanos</a>
             </li>
           </ul>
-          <div class="d-flex">
-            <a class="btn btn-success" href="{% url 'login' %}"
-              ><i class="bi bi-person me-1"></i>Login</a
-            >
-          </div>
         </div>
       </div>
     </nav>
@@ -190,8 +185,8 @@
     </section>
     {%endblock content %}
     <!-- Footer-->
-    <footer class="py-3 bg-dark">
-      <div class="container">
+    <footer class="py-3 bg-dark bg-opacity-50">
+      <div class="container footer-pattern">
         <p class="m-0 text-center text-white">
           Copyright &copy; 2023
           by G5RN - C23319 - CodoaCodo - Django
