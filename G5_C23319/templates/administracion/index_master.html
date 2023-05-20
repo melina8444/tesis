@@ -13,9 +13,9 @@
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
     </head>
     <body class="sb-nav-fixed">
-        <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+        <nav class="sb-topnav navbar navbar-expand navbar-success bg-success">
             <!-- Navbar Brand-->
-            <a class="navbar-brand ps-3" href="{% url 'inicio_admin' %}">Admin</a>
+            <a class="navbar-brand ps-3" href="{% url 'inicio_admin' %}">Administración</a>
             <!-- Sidebar Toggle-->
             <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
             <!-- Navbar Search-->
@@ -41,7 +41,7 @@
         </nav>
         <div id="layoutSidenav">
             <div id="layoutSidenav_nav">
-                <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                <nav class="sb-sidenav accordion bg-success bg-opacity-50" id="sidenavAccordion">
                     <div class="sb-sidenav-menu">
                         <div class="nav">
                             
@@ -53,13 +53,10 @@
                             <div class="sb-sidenav-menu-heading">Clientes</div>
                             <a href="{% url 'listar_clientes' %}" class="nav-link">
                                 <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
-                                Admin clientes
+                                Clientes
                                 <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i>
                                 </div>
                             </a>
-                           
-                            
-                            
                 </nav>
             </div>
             <div id="layoutSidenav_content">
