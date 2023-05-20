@@ -66,7 +66,10 @@ class AvailabilityForm(forms.ModelForm):
         model = Availability
         fields = ['campsite', 'start_date', 'end_date']
         widgets = {
-            'campsite': forms.Select(attrs={'class': 'form-control'}),
+            'campsite': forms.ModelMultipleChoiceField(
+                queryset=User.objects.all(),
+                widget=forms.SelectMultiple(attrs={'class': 'form-control'})
+            ),
             'start_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'end_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
         }

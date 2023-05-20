@@ -29,4 +29,4 @@ def listar_clientes(request):
                 'clientes': clientes,
                 'title': "Reservas Naturales Privadas",
             }
-    return render(request, 'clientes/listar.html', context)
+    return render(request, 'administracion/listar_clientes.html', context)
