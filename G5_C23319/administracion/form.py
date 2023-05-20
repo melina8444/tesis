@@ -86,7 +86,7 @@ class ReservationForm(forms.ModelForm):
         widgets = {
             'user': forms.ModelMultipleChoiceField(
                 queryset=User.objects.filter(is_client=True),
-                widget=forms.SelectMultiple(attrs={'class': 'form-control'})
+                widget=forms.Select(attrs={'class': 'form-control'})
             ),
             'campsite': forms.ModelMultipleChoiceField(
                 queryset=Campsite.objects.all(),
@@ -94,7 +94,7 @@ class ReservationForm(forms.ModelForm):
             ),
             'availability': forms.ModelMultipleChoiceField(
                 queryset=Availability.objects.none(),
-                widget=forms.SelectMultiple(attrs={'class': 'form-control'})
+                widget=forms.Select(attrs={'class': 'form-control'})
             ),
             'check_in': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'check_out': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
