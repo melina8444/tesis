@@ -1,0 +1,14 @@
+{% extends '../index_master.html' %}
+
+{% block content %}
+<div class="right_col m-2" role="main">
+
+      <h3>Actualizar un Parque Natural</h3>
+     
+      <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Actualizar</button>
+      </form>
+  
+{% endblock %}

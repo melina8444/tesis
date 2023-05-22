@@ -1,7 +1,14 @@
 from django import forms
 from .models import NaturalPark, Category, Campsite, Availability, Reservation, Profile, User
 
+Province = NaturalPark.Province
+
+class NaturalParkFilterForm(forms.Form):
+    name = forms.CharField(label='', required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
+
 class NaturalParkForm(forms.ModelForm):
+    province = forms.ChoiceField(choices=Province.choices, widget=forms.Select(attrs={'class': 'form-control'}))
+
     class Meta:
         model = NaturalPark
         fields = ['name', 'description', 'location', 'province', 'image', 'website']
@@ -9,7 +16,6 @@ class NaturalParkForm(forms.ModelForm):
             'name': forms.TextInput(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control'}),
             'location': forms.TextInput(attrs={'class': 'form-control'}),
-            'province': forms.Select(attrs={'class': 'form-control'}),
             'image': forms.FileInput(attrs={'class': 'form-control'}),
             'website': forms.URLInput(attrs={'class': 'form-control'}),
         }
@@ -21,6 +27,10 @@ class NaturalParkForm(forms.ModelForm):
             'image': 'Imagen',
             'website': 'Sitio web',
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['province'].choices = [(choice.value, choice.name) for choice in Province]
 
 class CategoryForm(forms.ModelForm):
     class Meta:
@@ -48,10 +58,8 @@ class CampsiteForm(forms.ModelForm):
             'name': forms.TextInput(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control'}),
             'image': forms.FileInput(attrs={'class': 'form-control'}),
-            'categories': forms.ModelMultipleChoiceField(
-                queryset=Category.objects.all(),
-                widget=forms.SelectMultiple(attrs={'class': 'form-control'})
-            ),
+            'categories': forms.SelectMultiple(attrs={'class': 'form-control'})
+            
         }
         labels = {
             'natural_park': 'Natural Park',
@@ -61,15 +69,16 @@ class CampsiteForm(forms.ModelForm):
             'categories': 'Categories',
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['categories'].queryset = Category.objects.all()
+
 class AvailabilityForm(forms.ModelForm):
     class Meta:
         model = Availability
         fields = ['campsite', 'start_date', 'end_date']
         widgets = {
-            'campsite': forms.ModelMultipleChoiceField(
-                queryset=User.objects.all(),
-                widget=forms.SelectMultiple(attrs={'class': 'form-control'})
-            ),
+            'campsite': forms.SelectMultiple(attrs={'class': 'form-control'}),
             'start_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'end_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
         }
@@ -79,23 +88,18 @@ class AvailabilityForm(forms.ModelForm):
             'end_date': 'Fecha de fin',
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['campiste'].queryset = Campsite.objects.all()
+
 class ReservationForm(forms.ModelForm):
     class Meta:
         model = Reservation
         fields = ['user', 'campsite', 'availability', 'check_in', 'check_out', 'number_guests']
         widgets = {
-            'user': forms.ModelMultipleChoiceField(
-                queryset=User.objects.filter(is_client=True),
-                widget=forms.Select(attrs={'class': 'form-control'})
-            ),
-            'campsite': forms.ModelMultipleChoiceField(
-                queryset=Campsite.objects.all(),
-                widget=forms.SelectMultiple(attrs={'class': 'form-control'})
-            ),
-            'availability': forms.ModelMultipleChoiceField(
-                queryset=Availability.objects.none(),
-                widget=forms.Select(attrs={'class': 'form-control'})
-            ),
+            'user': forms.Select(attrs={'class': 'form-control'}),
+            'campsite': forms.Select(attrs={'class': 'form-control'}),
+            'availability': forms.Select(attrs={'class': 'form-control'}),
             'check_in': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'check_out': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'number_guests': forms.NumberInput(attrs={'class': 'form-control'}),
@@ -114,6 +118,10 @@ class ReservationForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields['campiste'].queryset = Campsite.objects.all()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         if 'campsite' in self.data:
             try:
                 campsite_id = int(self.data.get('campsite'))
@@ -128,10 +136,7 @@ class ProfileForm(forms.ModelForm):
         model = Profile
         fields = ['user', 'phone', 'address', 'dni', 'is_client']
         widgets = {
-            'user': forms.ModelMultipleChoiceField(
-                queryset=User.objects.all(),
-                widget=forms.SelectMultiple(attrs={'class': 'form-control'})
-            ),
+            'user': forms.SelectMultiple(attrs={'class': 'form-control'}),
             'phone': forms.TextInput(attrs={'class': 'form-control'}),
             'address': forms.TextInput(attrs={'class': 'form-control'}),
             'dni': forms.TextInput(attrs={'class': 'form-control'}),
@@ -145,4 +150,6 @@ class ProfileForm(forms.ModelForm):
             'is_client': 'Es cliente',
         }
 
-  
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['user'].queryset = User.objects.all()

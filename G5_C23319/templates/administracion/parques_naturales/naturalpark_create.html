@@ -1,0 +1,15 @@
+{% extends '../index_master.html' %}
+
+{% block content %}
+<div class="right_col m-2" role="main">
+
+<h3>{% block title%} Crear un Parque Natural {% endblock%}</h3>
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Guardar</button>
+  </form>
+
+
+{% endblock %}
