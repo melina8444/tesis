@@ -4,8 +4,14 @@ from .models import NaturalPark, Category, Campsite, Availability, Reservation, 
 Province = NaturalPark.Province
 
 class NaturalParkFilterForm(forms.Form):
-    name = forms.CharField(label='', required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    name = forms.CharField(label='', required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese el nombre'}))
 
+    def clean_name(self):
+        name = self.cleaned_data.get('name')
+        if name:
+            if not NaturalPark.objects.filter(name=name).exists():
+                raise forms.ValidationError("Nombre Inexistente")
+        return name
 class NaturalParkForm(forms.ModelForm):
     province = forms.ChoiceField(choices=Province.choices, widget=forms.Select(attrs={'class': 'form-control'}))
 
@@ -49,6 +55,15 @@ class CategoryForm(forms.ModelForm):
             'price': 'Precio',
         }
 
+class CampsiteFilterForm(forms.Form):
+    name = forms.CharField(max_length=255, required=False)
+
+    def clean_name(self):
+        name = self.cleaned_data.get('name')
+        if name:
+            if not Campsite.objects.filter(name=name).exists():
+                raise forms.ValidationError("No se encontraron campamentos con ese nombre.")
+        return name
 class CampsiteForm(forms.ModelForm):
     class Meta:
         model = Campsite
