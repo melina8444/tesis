@@ -114,20 +114,27 @@
     {%block content %}
 
     <section class="py-5">
-      <form class="row g-3 p-4 m-6" action="#">
-        <div class="col-md-6">
-          <label for="fecha_inicio" class="form-label ms-2"
-            >Ingrese la Fecha de Inicio</label
-          >
-          <input type="date" class="form-control" />
+      <div class="container mb-3">
+        <div class="row justify-content-center">
+          <div class="col-md-6 bg-light p-4 rounded border border-success rounded">
+            <form class="row g-3" action="#">
+              <h6 class="bg-success p-2 rounded text-center text-white">Elegí las fechas de tu viaje a la naturaleza</h6>
+              <div class="col-md-6">  
+                <label for="fecha_inicio" class="form-label">Ingrese la Fecha de Inicio</label>
+                <input type="date" class="form-control" />
+              </div>
+              <div class="col-md-6">
+                <label for="fecha_fin" class="form-label">Ingrese la Fecha de Finalización</label>
+                <input type="date" class="form-control" />
+              </div>
+              <div class="col-12">
+                <button type="submit" class="btn btn-primary">Enviar</button>
+              </div>
+            </form>
+          </div>
         </div>
-        <div class="col-md-6">
-          <label for="fecha_fin" class="form-label ms-2"
-            >Ingrese la Fecha de Finalización</label
-          >
-          <input type="date" class="form-control" />
-        </div>
-      </form>
+      </div>
+      
 
   
 <!--Con Carrousel-->
@@ -186,10 +193,10 @@
     {%endblock content %}
     <!-- Footer-->
     <footer class="py-3 bg-dark bg-opacity-50">
-      <div class="container footer-pattern">
-        <p class="m-0 text-center text-white">
+      <div class="container">
+        <p class="m-0 text-center text-white"><i class="bi bi-flower3 m-1"></i>
           Copyright &copy; 2023
-          by G5RN - C23319 - CodoaCodo - Django
+          by G5RN - C23319 - CodoaCodo - Django<i class="bi bi-flower3 m-1"></i>
         </p>
       </div>
     </footer>
