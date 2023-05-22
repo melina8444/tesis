@@ -3,8 +3,8 @@ from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
-from .models import NaturalPark
-from .forms import NaturalParkForm, NaturalParkFilterForm, NaturalParkFilterForm
+from .models import NaturalPark, Category, Campsite, Availability
+from .forms import CampsiteFilterForm, NaturalParkForm, NaturalParkFilterForm, NaturalParkFilterForm, CategoryForm, CampsiteForm, AvailabilityForm
 
 
 def index_admin(request):
@@ -70,3 +70,81 @@ class NaturalParkDeleteView(DeleteView):
     model = NaturalPark
     template_name = 'administracion/parques_naturales/naturalpark_delete.html'
     success_url = reverse_lazy('naturalpark_list')
+
+class CategoryListView(ListView):
+    model = Category
+    template_name = 'administracion/categorias/category_list.html'
+    context_object_name = 'categories'
+
+class CategoryCreateView(CreateView):
+    model = Category
+    form_class = CategoryForm
+    template_name = 'administracion/categorias/category_create.html'
+    success_url = reverse_lazy('category_list')
+
+class CategoryUpdateView(UpdateView):
+    model = Category
+    form_class = CategoryForm
+    template_name = 'administracion/categorias/category_update.html'
+    success_url = reverse_lazy('category_list')
+
+class CategoryDeleteView(DeleteView):
+    model = Category
+    template_name = 'administracion/categorias/category_delete.html'
+    success_url = reverse_lazy('category_list')
+
+class CampsiteListView(ListView):
+    model = Campsite
+    template_name = 'administracion/campings/campsite_list.html'
+    context_object_name = 'campsites'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filter_form'] = CampsiteFilterForm(self.request.GET)
+        return context
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        name = self.request.GET.get('name')
+        if name:
+            queryset = queryset.filter(name__icontains=name)
+        return queryset
+
+class CampsiteCreateView(CreateView):
+    model = Campsite
+    form_class = CampsiteForm
+    template_name = 'administracion/campings/campsite_create.html'
+    success_url = '/campsites/'
+
+class CampsiteUpdateView(UpdateView):
+    model = Campsite
+    form_class = CampsiteForm
+    template_name = 'administracion/campings/campsite_update.html'
+    success_url = '/campsites/'
+
+class CampsiteDeleteView(DeleteView):
+    model = Campsite
+    template_name = 'administracion/campings/campsite_delete.html'
+    success_url = '/campsites/'
+
+class AvailabilityListView(ListView):
+    model = Availability
+    template_name = 'administracion/disponibilidades/availability_list.html'
+    context_object_name = 'availabilities'
+
+class AvailabilityCreateView(CreateView):
+    model = Availability
+    form_class = AvailabilityForm
+    template_name = 'administracion/disponibilidades/availability_create.html'
+    success_url = '/availabilities/'
+
+class AvailabilityUpdateView(UpdateView):
+    model = Availability
+    form_class = AvailabilityForm
+    template_name = 'administracion/disponibilidades/availability_update.html'
+    success_url = '/availabilities/'
+
+class AvailabilityDeleteView(DeleteView):
+    model = Availability
+    template_name = 'administracion/disponibilidades/availability_delete.html'
+    success_url = '/availabilities/'
