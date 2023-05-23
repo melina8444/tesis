@@ -109,7 +109,7 @@ class AvailabilityForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['campiste'].queryset = Campsite.objects.all()
+        self.fields['campsite'].queryset = Campsite.objects.all()
 
 class ReservationForm(forms.ModelForm):
     class Meta:
