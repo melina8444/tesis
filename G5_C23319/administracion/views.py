@@ -1,11 +1,13 @@
-from django.shortcuts import render
+
+from django.shortcuts import redirect, render
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
+from django.http import request
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from .models import NaturalPark, Category, Campsite, Availability
 from .forms import CampsiteFilterForm, NaturalParkForm, NaturalParkFilterForm, NaturalParkFilterForm, CategoryForm, CampsiteForm, AvailabilityForm
-
+from django.core.files.uploadedfile import UploadedFile
 
 def index_admin(request):
     return render(request, 'administracion/index_master.html')
@@ -116,6 +118,16 @@ class CampsiteCreateView(CreateView):
     template_name = 'administracion/campings/campsite_create.html'
     success_url = reverse_lazy('campsite_list')
 
+    def form_valid(self, form):
+        campsite = form.save()
+
+        # Save the images to the database
+        for image in request.FILES['images']:
+            campsite.images.append(image)
+
+        campsite.save()
+
+        return redirect(self.success_url)
 class CampsiteUpdateView(UpdateView):
     model = Campsite
     form_class = CampsiteForm

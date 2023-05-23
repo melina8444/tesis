@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+
 class NaturalPark(models.Model):
 
     class Meta:
@@ -37,7 +38,7 @@ class NaturalPark(models.Model):
     description = models.TextField()
     location = models.CharField(max_length=255)
     province = models.IntegerField(choices=Province.choices)
-    image = models.ImageField(upload_to='imagenes/')
+    image = models.ImageField(upload_to='imagenes/', null=True)
     website = models.URLField(blank=True, null=True)
 
     def __str__(self):
@@ -63,11 +64,13 @@ class Campsite(models.Model):
     natural_park = models.ForeignKey(NaturalPark, on_delete=models.CASCADE, related_name='campsites')
     name = models.CharField(max_length=100)
     description = models.TextField()
-    image = models.ImageField(upload_to='imagenes/', blank=True, null=True)
+    images = models.ImageField(upload_to='imagenes/', null=True)
     categories = models.ManyToManyField(Category, related_name='campsites')
 
     def __str__(self):
         return f'Nombre: {self.name}'
+
+
 class Availability(models.Model):
     class Meta:
         db_table='Disponibilidades'

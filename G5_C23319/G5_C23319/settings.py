@@ -159,3 +159,11 @@ STATIC_ROOT = BASE_DIR / 'static_root'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# Tamaño máximo de archivo para subidas en memoria (en bytes)
+DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB
+
+# Tamaño máximo de archivo para subidas en disco (en bytes)
+FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB
+FILE_UPLOAD_MAX_SIZE = 10485760  # 10MB

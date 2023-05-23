@@ -38,7 +38,7 @@
                 <th>Parque Natural</th>
                 <th>Nombre</th>
                 <th>Descripcion</th>
-                <th>Imagen</th>
+                <th>Imágenes</th>
                 <th>Categorías</th>
                 <th>Acciones</th>
               </tr>
@@ -48,14 +48,14 @@
               <tr>
                 <td>{{ campsite.natural_park.name}}</td>
                 <td>{{ campsite.name }}</td>
-                <td>{{ campsite.description }}</td>
-                <td>
-                  <img
-                    src="{{ campsite.image.url }}"
-                    alt="Imagen"
-                    width="100"
-                  />
-                </td>
+                <td>{{ campsite.description }}</td>            
+  <td>
+    <img
+    src="{{ campsite.images.url }}"
+    alt="Imagen"
+    width="100"
+  />
+  </td> 
                 <td>
                   {% for category in campsite.categories.all %}
                     <p>{{ category.name }}</p>
