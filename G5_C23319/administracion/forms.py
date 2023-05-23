@@ -56,7 +56,7 @@ class CategoryForm(forms.ModelForm):
         }
 
 class CampsiteFilterForm(forms.Form):
-    name = forms.CharField(max_length=255, required=False)
+    name = forms.CharField(label='', required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese el nombre'}))
 
     def clean_name(self):
         name = self.cleaned_data.get('name')
@@ -88,6 +88,10 @@ class CampsiteForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['categories'].queryset = Category.objects.all()
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['natural_park'].queryset = NaturalPark.objects.all()
+
 class AvailabilityForm(forms.ModelForm):
     class Meta:
         model = Availability
@@ -98,7 +102,7 @@ class AvailabilityForm(forms.ModelForm):
             'end_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
         }
         labels = {
-            'campsite': 'Campamento',
+            'campsite': 'Camping',
             'start_date': 'Fecha de inicio',
             'end_date': 'Fecha de fin',
         }

@@ -114,37 +114,50 @@ class CampsiteCreateView(CreateView):
     model = Campsite
     form_class = CampsiteForm
     template_name = 'administracion/campings/campsite_create.html'
-    success_url = '/campsites/'
+    success_url = reverse_lazy('campsite_list')
 
 class CampsiteUpdateView(UpdateView):
     model = Campsite
     form_class = CampsiteForm
     template_name = 'administracion/campings/campsite_update.html'
-    success_url = '/campsites/'
+    success_url = reverse_lazy('campsite_list')
 
 class CampsiteDeleteView(DeleteView):
     model = Campsite
     template_name = 'administracion/campings/campsite_delete.html'
-    success_url = '/campsites/'
+    success_url = reverse_lazy('campsite_list')
 
 class AvailabilityListView(ListView):
     model = Availability
     template_name = 'administracion/disponibilidades/availability_list.html'
     context_object_name = 'availabilities'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filter_form'] = CampsiteFilterForm(self.request.GET)
+        return context
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        name = self.request.GET.get('name')
+        if name:
+            queryset = queryset.filter(name__icontains=name)
+        return queryset
+
+
 class AvailabilityCreateView(CreateView):
     model = Availability
     form_class = AvailabilityForm
     template_name = 'administracion/disponibilidades/availability_create.html'
-    success_url = '/availabilities/'
+    success_url = reverse_lazy('availability_list')
 
 class AvailabilityUpdateView(UpdateView):
     model = Availability
     form_class = AvailabilityForm
     template_name = 'administracion/disponibilidades/availability_update.html'
-    success_url = '/availabilities/'
+    success_url = reverse_lazy('availability_list')
 
 class AvailabilityDeleteView(DeleteView):
     model = Availability
     template_name = 'administracion/disponibilidades/availability_delete.html'
-    success_url = '/availabilities/'
+    success_url = reverse_lazy('availability_list')
