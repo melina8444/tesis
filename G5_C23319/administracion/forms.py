@@ -1,6 +1,6 @@
 from django import forms
 from django.http import HttpRequest, request
-from .models import NaturalPark, Category, Campsite, Availability, Reservation, Profile, User, Image
+from .models import NaturalPark, Category, Campsite, Availability, Reservation, Profile, User
 
 Province = NaturalPark.Province
 
@@ -71,18 +71,21 @@ class CampsiteForm(forms.ModelForm):
 
     class Meta:
         model = Campsite
-        fields = ['natural_park', 'name', 'description', 'categories']
+        fields = ['natural_park', 'name', 'description', 'images', 'categories']
         widgets = {
             'natural_park': forms.Select(attrs={'class': 'form-control'}),
             'name': forms.TextInput(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control'}),
-            'categories': forms.SelectMultiple(attrs={'class': 'form-control'}),
+            'images': forms.FileInput(attrs={'class': 'form-control'}),
+            'categories': forms.SelectMultiple(attrs={'class': 'form-control'})
+            
         }
         labels = {
-            'natural_park': 'Parque Natural',
-            'name': 'Nombre',
-            'description': 'Descripcion',
-            'categories': 'Categorias',
+            'natural_park': 'Natural Park',
+            'name': 'Name',
+            'description': 'Description',
+            'image': 'Image',
+            'categories': 'Categories',
         }
     
     def __init__(self, *args, **kwargs):
