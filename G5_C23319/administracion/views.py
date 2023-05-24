@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect
 from django.http import request
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
-from .models import NaturalPark, Category, Campsite, Availability
+from .models import NaturalPark, Category, Campsite, Availability, Image
 from .forms import CampsiteFilterForm, NaturalParkForm, NaturalParkFilterForm, NaturalParkFilterForm, CategoryForm, CampsiteForm, AvailabilityForm
 from django.core.files.uploadedfile import UploadedFile
 
@@ -103,8 +103,16 @@ class CampsiteListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['filter_form'] = CampsiteFilterForm(self.request.GET)
+        campsites = context['campsites']
+        images = Image.objects.filter(campsite__in=campsites)
+        context['images'] = images
         return context
-
+    
+    """ def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filter_form'] = CampsiteFilterForm(self.request.GET)
+        return context
+ """
     def get_queryset(self):
         queryset = super().get_queryset()
         name = self.request.GET.get('name')
@@ -119,15 +127,10 @@ class CampsiteCreateView(CreateView):
     success_url = reverse_lazy('campsite_list')
 
     def form_valid(self, form):
-        campsite = form.save()
+        form.instance.user = self.request.user
+        form.instance.images = self.request.FILES.getlist('images')
+        return super().form_valid(form)
 
-        # Save the images to the database
-        for image in request.FILES['images']:
-            campsite.images.append(image)
-
-        campsite.save()
-
-        return redirect(self.success_url)
 class CampsiteUpdateView(UpdateView):
     model = Campsite
     form_class = CampsiteForm
@@ -155,7 +158,6 @@ class AvailabilityListView(ListView):
         if name:
             queryset = queryset.filter(name__icontains=name)
         return queryset
-
 
 class AvailabilityCreateView(CreateView):
     model = Availability

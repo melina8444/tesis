@@ -1,5 +1,6 @@
 from django import forms
-from .models import NaturalPark, Category, Campsite, Availability, Reservation, Profile, User
+from django.http import HttpRequest, request
+from .models import NaturalPark, Category, Campsite, Availability, Reservation, Profile, User, Image
 
 Province = NaturalPark.Province
 
@@ -65,6 +66,34 @@ class CampsiteFilterForm(forms.Form):
                 raise forms.ValidationError("No se encontraron campamentos con ese nombre.")
         return name
 class CampsiteForm(forms.ModelForm):
+
+    images = forms.ImageField(widget=forms.ClearableFileInput(attrs={'class': 'form-control', 'multiple': True}), required=False)
+
+    class Meta:
+        model = Campsite
+        fields = ['natural_park', 'name', 'description', 'categories']
+        widgets = {
+            'natural_park': forms.Select(attrs={'class': 'form-control'}),
+            'name': forms.TextInput(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'class': 'form-control'}),
+            'categories': forms.SelectMultiple(attrs={'class': 'form-control'}),
+        }
+        labels = {
+            'natural_park': 'Parque Natural',
+            'name': 'Nombre',
+            'description': 'Descripcion',
+            'categories': 'Categorias',
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['categories'].queryset = Category.objects.all()
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['natural_park'].queryset = NaturalPark.objects.all()
+
+""" class CampsiteForm(forms.ModelForm):
     class Meta:
         model = Campsite
         fields = ['natural_park', 'name', 'description', 'images', 'categories']
@@ -72,7 +101,7 @@ class CampsiteForm(forms.ModelForm):
             'natural_park': forms.Select(attrs={'class': 'form-control'}),
             'name': forms.TextInput(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control'}),
-            'images': forms.FileInput(attrs={'class': 'form-control', 'multiple': True}),
+            'images': forms.ClearableFileInput(attrs={'class': 'form-control', 'multiple': True}),
             'categories': forms.SelectMultiple(attrs={'class': 'form-control'}),
         }
         labels = {
@@ -90,7 +119,7 @@ class CampsiteForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['natural_park'].queryset = NaturalPark.objects.all()
-
+ """
 class AvailabilityForm(forms.ModelForm):
     class Meta:
         model = Availability
