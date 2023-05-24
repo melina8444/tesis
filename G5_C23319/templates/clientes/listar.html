@@ -9,7 +9,7 @@
 <div class="table-responsive">
     <table class="table table-striped table-borderless table-secondary border-dark">
       <thead>
-          <a name="" id="" class="btn btn-success" href="#" role="button">Agregar Nuevo</a>
+          <a name="" id="" class="btn btn-success" href="{% url 'crear_cliente' %}" role="button">Agregar Nuevo</a>
           <br/>
           <br/>
           <tr>
@@ -42,7 +42,7 @@
               <p>El DNI debe existir y ser un número</p>
             {% endif %}</td>
 
-            <td><a name="" id="" class="btn btn-primary" href="#" role="button">Editar</a> │ <a name="" id="" class="btn btn-danger" href="#" role="button">Eliminar</a></td>
+            <td><a class="btn btn-primary" href="{% url 'modificar_cliente' c.nombre%}" role="button">Editar</a> │ <a class="btn btn-danger" href="#" role="button">Eliminar</a></td>
           </tr>
           {% endfor %}
   

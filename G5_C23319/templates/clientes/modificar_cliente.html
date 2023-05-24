@@ -1,0 +1,33 @@
+{% extends '../administracion/index_master.html' %}
+
+{% block title %}
+<title>Modificar de Clientes</title>
+{% endblock %}
+
+
+
+{% block main %}
+
+
+
+
+<div class="row">
+    <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
+        <h2>Modificar cliente</h2>
+        <div class="card" >
+            <div class="card-body">
+                <form  method="POST">{% csrf_token %}
+                    <div class="form-group">
+                       
+                        {{ form.as_p }}
+                        <input type="submit" class="btn btn-info" value="Modificar Cliente">
+                        <input type="submit" class="btn btn-secondary" value="Cancelar">
+                        
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {% endblock %}
+    </html>
