@@ -67,12 +67,12 @@ class CampsiteFilterForm(forms.Form):
 class CampsiteForm(forms.ModelForm):
     class Meta:
         model = Campsite
-        fields = ['natural_park', 'name', 'description', 'image', 'categories']
+        fields = ['natural_park', 'name', 'description', 'images', 'categories']
         widgets = {
             'natural_park': forms.Select(attrs={'class': 'form-control'}),
             'name': forms.TextInput(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control'}),
-            'image': forms.FileInput(attrs={'class': 'form-control'}),
+            'images': forms.FileInput(attrs={'class': 'form-control'}),
             'categories': forms.SelectMultiple(attrs={'class': 'form-control'})
             
         }

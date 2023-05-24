@@ -70,11 +70,6 @@ class Campsite(models.Model):
 
     def __str__(self):
         return f'Nombre: {self.name}'
-
-class Image(models.Model):
-    campsite = models.ForeignKey(Campsite, related_name='campsiteimages', on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='imagenes/')
-
 class Availability(models.Model):
     class Meta:
         db_table='Disponibilidades'
