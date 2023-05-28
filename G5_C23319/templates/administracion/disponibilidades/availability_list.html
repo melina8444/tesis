@@ -10,16 +10,16 @@
         <form method="GET" class="d-flex">
           {% csrf_token %}
           <div class="d-flex">
-              {{ filter_form.name.label_tag }}
-              {{ filter_form.name }}
+            {{ filter_form.campsite_name.label_tag }}
+            {{ filter_form.campsite_name }}
           </div>
           <div><button type="submit" class="btn btn-primary ms-1"><i class="bi bi-search"></i></button></div>
       </form>
       </div>
     </div>
     <div class="col-md-2 p-2 justify-content-center align-items-center">
-      {% if filter_form.name.errors %}
-          <p class="text-danger fw-bold">{{ filter_form.name.errors|join:" " }}</p>
+      {% if filter_form.campsite.errors %}
+          <p class="text-danger fw-bold">{{ filter_form.campsite.errors|join:" " }}</p>
       {% endif %}
     </div>
   </div>
@@ -54,7 +54,7 @@
                     class="btn btn-info me-2" title="Editar"
                     ><i class="bi bi-pencil-fill"></i></a
                   >
-                  <a href="{% url 'availavility_delete' availability.pk %}" class="btn btn-danger" title="Eliminar">
+                  <a href="{% url 'availability_delete' availability.pk %}" class="btn btn-danger" title="Eliminar">
                     <i class="bi bi-trash-fill"></i>
                   </a>
                 </td>

@@ -1,7 +1,6 @@
 from django.urls import path, re_path, include
 from . import views
-from .views import NaturalParkListView, NaturalParkCreateView,NaturalParkUpdateView, NaturalParkDeleteView, CategoryListView, CategoryCreateView, CategoryUpdateView, CategoryDeleteView, CampsiteListView, CampsiteCreateView, CampsiteUpdateView, CampsiteDeleteView, AvailabilityListView, AvailabilityCreateView, AvailabilityUpdateView, AvailabilityDeleteView
-
+from .views import NaturalParkListView, NaturalParkCreateView,NaturalParkUpdateView, NaturalParkDeleteView, CategoryListView, CategoryCreateView, CategoryUpdateView, CategoryDeleteView, CampsiteListView, CampsiteCreateView, CampsiteUpdateView, CampsiteDeleteView, AvailabilityListView, AvailabilityCreateView, AvailabilityUpdateView, AvailabilityDeleteView, ProfileListView, ProfileCreateView, ProfileUpdateView, ProfileDeleteView, ReservationListView, ReservationCreateView, ReservationDeleteView, ReservationUpdateView
 
 urlpatterns = [
     path('', views.index_admin, name='inicio_admin'),
@@ -22,4 +21,12 @@ urlpatterns = [
     path('availabilities/create/', AvailabilityCreateView.as_view(), name='availability_create'),
     path('availabilities/update/<int:pk>/', AvailabilityUpdateView.as_view(), name='availability_update'),
     path('availabilities/delete/<int:pk>/', AvailabilityDeleteView.as_view(), name='availability_delete'),
+    path('profiles/', ProfileListView.as_view(), name='profile_list'),
+    path('profiles/create/', ProfileCreateView.as_view(), name='profile_create'),
+    path('profiles/<int:pk>/update/', ProfileUpdateView.as_view(), name='profile_update'),
+    path('profiles/<int:pk>/delete/', ProfileDeleteView.as_view(), name='profile_delete'),
+    path('reservations/', ReservationListView.as_view(), name='reservation_list'),
+    path('reservations/create/', ReservationCreateView.as_view(), name='reservation_create'),
+    path('reservations/update/<int:pk>/', ReservationUpdateView.as_view(), name='reservation_update'),
+    path('reservations/delete/<int:pk>/', ReservationDeleteView.as_view(), name='reservation_delete'),
 ]

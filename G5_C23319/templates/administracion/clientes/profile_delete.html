@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="center_col m-2 text-center bg-success rounded text-white" role="main">
-  <h3>{% block title%} Eliminar una disponibilidad {% endblock%}</h3>
+  <h3>{% block title%} Eliminar un Cliente/Usuario {% endblock%}</h3>
 </div>
 <div class="container">
   <div class="row justify-content-center">
@@ -14,13 +14,13 @@
   >
     <div class="col-md-6">
       <div class="border rounded p-3 bg-success text-white" style="opacity: 0.75">
-       <h2 class="mb-5"> {{ availavility.name }}</h2>
-  <h6 class="fw-bold mb-5">¿Estás seguro de que querés borrar de la base de datos esta disponibilidad para este campamento?</h6>
+       <h2 class="mb-5"> {{ profile.user.username }}</h2>
+  <h6 class="fw-bold mb-5">¿Estás seguro de que querés borrar de la base de datos este perfil de cliente/usuario?</h6>
   
   <form method="POST">
     {% csrf_token %}
     <button type="submit" class="btn btn-danger">Eliminar</button>
-    <a href="{% url 'naturalpark_list' %}" class="btn btn-secondary">Cancelar</a>
+    <a href="{% url 'profile_list' %}" class="btn btn-secondary">Cancelar</a>
   </form>
  </div>
 </div>
