@@ -1,0 +1,28 @@
+{%extends '../publica/index.html'%}
+
+{% load static %}
+
+{% block title %}
+Reserva - {{ block.super }}
+{% endblock title%}
+
+
+{% block page_title %}
+Hacé tu reserva
+{% endblock %}
+{% block video %}
+{% endblock %}
+{% block content %}
+
+
+  <form class="form-horizontal form-control" method="post" action="#" novalidate>
+    {% csrf_token %}
+
+    <div class="container m-4 form-group">
+
+      {{reservaform}}
+    
+    <button type="submit" class="m-3 btn btn-success">Enviar</button>
+  </div>
+  </form>
+{% endblock %}
