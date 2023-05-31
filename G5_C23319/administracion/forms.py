@@ -113,6 +113,16 @@ class AvailabilityForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['campsite'].queryset = Campsite.objects.all()
 
+class AvailabilityCampsiteFilterForm(forms.Form):
+    campsite_name = forms.CharField(label='', required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese el nombre'}))
+
+    def clean_campsite_name(self):
+        campsite_name = self.cleaned_data.get('campsite_name')
+        if campsite_name:
+            if not Availability.objects.filter(campsite__name=campsite_name).exists():
+                raise forms.ValidationError("No se encontraron campamentos con ese nombre.")
+        return campsite_name
+
 class ReservationForm(forms.ModelForm):
     check_in = forms.DateField(widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}))
     check_out = forms.DateField(widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}))
