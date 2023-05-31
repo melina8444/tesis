@@ -1,13 +1,12 @@
 
-from django.shortcuts import redirect, render
-from django.http import HttpResponse
-from django.http import HttpResponseRedirect
-from django.http import request
+from django.shortcuts import render
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
-from .models import NaturalPark, Category, Campsite, Availability, Profile
-from .forms import CampsiteFilterForm, NaturalParkForm, NaturalParkFilterForm, NaturalParkFilterForm, CategoryForm, CampsiteForm, AvailabilityForm, ProfileForm
-from django.core.files.uploadedfile import UploadedFile
+from .models import NaturalPark, Category, Campsite, Availability, Profile, Reservation
+from .forms import CampsiteFilterForm, NaturalParkForm, NaturalParkFilterForm, NaturalParkFilterForm, CategoryForm, CampsiteForm, AvailabilityForm, AvailabilityCampsiteFilterForm, ProfileFilterForm, ProfileForm, ReservationForm
+from django.db.models import Min, Avg
+from datetime import timedelta
+import uuid
 
 def index_admin(request):
     return render(request, 'administracion/index_master.html')
@@ -104,7 +103,7 @@ class CampsiteListView(ListView):
         context = super().get_context_data(**kwargs)
         context['filter_form'] = CampsiteFilterForm(self.request.GET)
         return context
-
+    
     def get_queryset(self):
         queryset = super().get_queryset()
         name = self.request.GET.get('name')
@@ -118,16 +117,6 @@ class CampsiteCreateView(CreateView):
     template_name = 'administracion/campings/campsite_create.html'
     success_url = reverse_lazy('campsite_list')
 
-    def form_valid(self, form):
-        campsite = form.save()
-
-        # Save the images to the database
-        for image in request.FILES['images']:
-            campsite.images.append(image)
-
-        campsite.save()
-
-        return redirect(self.success_url)
 class CampsiteUpdateView(UpdateView):
     model = Campsite
     form_class = CampsiteForm
@@ -146,16 +135,15 @@ class AvailabilityListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['filter_form'] = CampsiteFilterForm(self.request.GET)
+        context['filter_form'] = AvailabilityCampsiteFilterForm(self.request.GET)
         return context
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        name = self.request.GET.get('name')
-        if name:
-            queryset = queryset.filter(name__icontains=name)
+        campsite_name = self.request.GET.get('campsite_name')
+        if campsite_name:
+            queryset = queryset.filter(campsite__name__icontains=campsite_name)
         return queryset
-
 
 class AvailabilityCreateView(CreateView):
     model = Availability
@@ -174,26 +162,102 @@ class AvailabilityDeleteView(DeleteView):
     template_name = 'administracion/disponibilidades/availability_delete.html'
     success_url = reverse_lazy('availability_list')
 
-
 class ProfileListView(ListView):
     model = Profile
-    template_name = 'administracion/clientes/listar_clientes.html'
-    context_object_name = 'clientes'
+    template_name = 'administracion/clientes/profile_list.html'
+    context_object_name = 'profiles'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filter_form'] = ProfileFilterForm(self.request.GET)
+        return context
+    
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        user = self.request.GET.get('user')
+        is_client = self.request.GET.get('is_client')
+
+        if user:
+            queryset = queryset.filter(user__username__icontains=user)
+        if is_client:
+            queryset = queryset.filter(is_client=True)
+
+        return queryset
+    
 class ProfileCreateView(CreateView):
     model = Profile
     form_class = ProfileForm
-    template_name = 'administracion/clientes/crear_cliente.html'
-    success_url = reverse_lazy('listar_clientes')
-
+    template_name = 'administracion/clientes/profile_create.html'
+    success_url = reverse_lazy('profile_list')
 
 class ProfileUpdateView(UpdateView):
     model = Profile
-    form_class = CategoryForm
-    template_name = 'administracion/clientes/modificar_cliente.html'
-    success_url = reverse_lazy('listar_clientes')
+    form_class = ProfileForm
+    template_name = 'administracion/clientes/profile_update.html'
+    success_url = reverse_lazy('profile_list')
 
 class ProfileDeleteView(DeleteView):
     model = Profile
-    template_name = 'administracion/clientes/eliminar_cliente.html'
-    success_url = reverse_lazy('listar_clientes')
+    template_name = 'administracion/clientes/profile_delete.html'
+    success_url = reverse_lazy('profile_list')
+
+class ReservationListView(ListView):
+    model = Reservation
+    template_name = 'administracion/reservas/reservation_list.html'
+    context_object_name = 'reservations'
+        
+class ReservationCreateView(CreateView):
+    model = Reservation
+    form_class = ReservationForm
+    template_name = 'administracion/reservas/reservation_create.html'
+    success_url = reverse_lazy('reservation_list')
+
+    def form_valid(self, form):
+        campsite = form.cleaned_data.get('campsite')
+        number_guests = form.cleaned_data.get('number_guests')
+        check_in = form.cleaned_data.get('check_in')
+        check_out = form.cleaned_data.get('check_out')
+
+        if campsite and number_guests:
+            capacity = campsite.categories.aggregate(min_capacity=Min('capacity'))['min_capacity']
+            if capacity:
+                total_cost = (number_guests / capacity) * campsite.categories.aggregate(avg_price=Avg('price'))['avg_price'] * (check_out - check_in).days
+                form.instance.total_cost = total_cost
+
+        availability = Availability.objects.get(campsite=form.cleaned_data['campsite'])
+        form.instance.availability = availability
+
+        return super().form_valid(form)
+
+class ReservationUpdateView(UpdateView):
+    model = Reservation
+    form_class = ReservationForm
+    template_name = 'administracion/reservas/reservation_update.html'
+    success_url = reverse_lazy('reservation_list')
+
+    def form_valid(self, form):
+        reservation = form.save(commit=False)
+        
+        campsite = reservation.campsite
+        number_guests = reservation.number_guests
+        check_in = reservation.check_in
+        check_out = reservation.check_out
+        
+        if campsite and number_guests:
+            capacity = campsite.categories.aggregate(min_capacity=Min('capacity'))['min_capacity']
+            if capacity:
+                total_cost = (number_guests / capacity) * campsite.categories.aggregate(avg_price=Avg('price'))['avg_price'] * (check_out - check_in).days
+                reservation.total_cost = total_cost
+        
+        if reservation.code == 0:
+            reservation.code = uuid.uuid4().hex[:8].upper()  # Generar un código aleatorio
+            
+        
+        return super().form_valid(form)
+
+
+class ReservationDeleteView(DeleteView):
+    model = Reservation
+    template_name = 'administracion/reservas/reservation_delete.html'
+    success_url = reverse_lazy('reservation_list')
+

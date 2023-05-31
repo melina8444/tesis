@@ -46,16 +46,16 @@
             <tbody>
               {% for campsite in campsites %}
               <tr>
-                <td>{{ campsite.natural_park.name}}</td>
+                <td>{{ campsite.natural_park.name }}</td>
                 <td>{{ campsite.name }}</td>
-                <td>{{ campsite.description }}</td>            
-  <td>
-    <img
-    src="{{ campsite.images.url }}"
-    alt="Imagen"
-    width="100"
-  />
-  </td> 
+                <td>{{ campsite.description }}</td> 
+                <td>
+                  <img
+                    src="{{ campsite.images.url }}"
+                    alt="Imagen"
+                    width="100"
+                  />
+                </td>
                 <td>
                   {% for category in campsite.categories.all %}
                     <p>{{ category.name }}</p>

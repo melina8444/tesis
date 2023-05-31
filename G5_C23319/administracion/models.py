@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -56,6 +57,7 @@ class Category(models.Model):
     
     def __str__(self):
         return f'Nombre: {self.name}'
+    
 class Campsite(models.Model):
 
     class Meta:
@@ -70,7 +72,6 @@ class Campsite(models.Model):
     def __str__(self):
         return f'Nombre: {self.name}'
 
-
 class Availability(models.Model):
     class Meta:
         db_table='Disponibilidades'
@@ -80,12 +81,12 @@ class Availability(models.Model):
     end_date = models.DateField(blank=True, null=True)
 
     def __str__(self):
-        return f'Fecha inicio: {self.start_date}  Fecha fin: {self.start_date}'
+        return f'Fecha inicio: {self.start_date}  Fecha fin: {self.end_date}'
 class Reservation(models.Model):
     class Meta:
         db_table='Reservas'
     
-    code = models.FloatField(unique=True, auto_created=True, default=0.0)
+    code = models.CharField(max_length=8, unique=True)
     campsite = models.ForeignKey(Campsite, on_delete=models.CASCADE)
     availability = models.ForeignKey(Availability, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -96,7 +97,12 @@ class Reservation(models.Model):
 
     def __str__(self):
         return f'Código Reserva: {self.code} + Nombre y Apellido: {self.user.first_name}+ " " +{self.user.last_name}'
-
+    
+    def save(self, *args, **kwargs):
+        if not self.code:
+            self.code = uuid.uuid4().hex[:8].upper()
+        super().save(*args, **kwargs)
+        
 class Profile(models.Model):
     class Meta:
         db_table="Perfiles"

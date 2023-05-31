@@ -65,6 +65,7 @@ class CampsiteFilterForm(forms.Form):
                 raise forms.ValidationError("No se encontraron campamentos con ese nombre.")
         return name
 class CampsiteForm(forms.ModelForm):
+
     class Meta:
         model = Campsite
         fields = ['natural_park', 'name', 'description', 'images', 'categories']
@@ -72,31 +73,33 @@ class CampsiteForm(forms.ModelForm):
             'natural_park': forms.Select(attrs={'class': 'form-control'}),
             'name': forms.TextInput(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control'}),
-            'images': forms.FileInput(attrs={'class': 'form-control', 'multiple': True}),
-            'categories': forms.SelectMultiple(attrs={'class': 'form-control'}),
+            'images': forms.FileInput(attrs={'class': 'form-control'}),
+            'categories': forms.SelectMultiple(attrs={'class': 'form-control'})
+            
         }
         labels = {
-            'natural_park': 'Parque Natural',
-            'name': 'Nombre',
-            'description': 'Descripcion',
-            'images': 'Imagenes',
-            'categories': 'Categorias',
+            'natural_park': 'Natural Park',
+            'name': 'Name',
+            'description': 'Description',
+            'image': 'Image',
+            'categories': 'Categories',
         }
-
+    
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['categories'].queryset = Category.objects.all()
-
+    
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['natural_park'].queryset = NaturalPark.objects.all()
+
 
 class AvailabilityForm(forms.ModelForm):
     class Meta:
         model = Availability
         fields = ['campsite', 'start_date', 'end_date']
         widgets = {
-            'campsite': forms.SelectMultiple(attrs={'class': 'form-control'}),
+            'campsite': forms.Select(attrs={'class': 'form-control'}),
             'start_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'end_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
         }
@@ -110,44 +113,49 @@ class AvailabilityForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['campsite'].queryset = Campsite.objects.all()
 
+class AvailabilityCampsiteFilterForm(forms.Form):
+    campsite_name = forms.CharField(label='', required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese el nombre'}))
+
+    def clean_campsite_name(self):
+        campsite_name = self.cleaned_data.get('campsite_name')
+        if campsite_name:
+            if not Availability.objects.filter(campsite__name=campsite_name).exists():
+                raise forms.ValidationError("No se encontraron campamentos con ese nombre.")
+        return campsite_name
+
 class ReservationForm(forms.ModelForm):
+    check_in = forms.DateField(widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}))
+    check_out = forms.DateField(widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}))
+    user = forms.ModelChoiceField(queryset=User.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
+
     class Meta:
         model = Reservation
-        fields = ['user', 'campsite', 'availability', 'check_in', 'check_out', 'number_guests']
+        fields = ['code', 'campsite', 'user', 'check_in', 'check_out', 'number_guests']
         widgets = {
-            'user': forms.Select(attrs={'class': 'form-control'}),
             'campsite': forms.Select(attrs={'class': 'form-control'}),
-            'availability': forms.Select(attrs={'class': 'form-control'}),
-            'check_in': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-            'check_out': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'number_guests': forms.NumberInput(attrs={'class': 'form-control'}),
         }
-        labels = {
-            'user': 'Usuario',
-            'campsite': 'Camping',
-            'availability': 'Disponibilidad',
-            'check_in': 'Fecha de entrada',
-            'check_out': 'Fecha de salida',
-            'number_guests': 'Número de huéspedes',
-        }
-        help_texts = {
-            'availability': 'Seleccione las disponibilidades para la reserva',
-        }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['campiste'].queryset = Campsite.objects.all()
+    def clean(self):
+        cleaned_data = super().clean()
+        campsite = cleaned_data.get('campsite')
+        check_in = cleaned_data.get('check_in')
+        check_out = cleaned_data.get('check_out')
+        number_guests = cleaned_data.get('number_guests')
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if 'campsite' in self.data:
+        if campsite and check_in and check_out and number_guests:
             try:
-                campsite_id = int(self.data.get('campsite'))
-                self.fields['availability'].queryset = Availability.objects.filter(campsite_id=campsite_id)
-            except (ValueError, TypeError):
-                self.add_error(Availability, "Ocurrió un error al obtener las disponibilidades.")
-        elif self.instance.pk:
-            self.fields['availability'].queryset = self.instance.campsite.availabilities.all()
+                availability = Availability.objects.get(campsite=campsite)
+                if check_in < availability.start_date or check_out > availability.end_date:
+                    raise forms.ValidationError(f"Las fechas de check-in y check-out deben estar dentro del rango de disponibilidad para el campsite. Start Date: {availability.start_date}, End Date: {availability.end_date}")
+            except Availability.DoesNotExist:
+                raise forms.ValidationError("No se encontró disponibilidad para el campsite seleccionado.")
+
+            if check_out <= check_in:
+                raise forms.ValidationError("La fecha de check-out debe ser posterior a la fecha de check-in.")
+            
+        return cleaned_data
+
 
 class ProfileForm(forms.ModelForm):
     class Meta:
@@ -171,3 +179,44 @@ class ProfileForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['user'].queryset = User.objects.all()
+
+
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['user', 'phone', 'address', 'dni', 'is_client']
+        widgets = {
+            'user': forms.Select(attrs={'class': 'form-control'}),
+            'phone': forms.TextInput(attrs={'class': 'form-control'}),
+            'address': forms.TextInput(attrs={'class': 'form-control'}),
+            'dni': forms.TextInput(attrs={'class': 'form-control'}),
+            'is_client': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+        labels = {
+            'user': 'Usuario',
+            'phone': 'Teléfono',
+            'address': 'Dirección',
+            'dni': 'DNI',
+            'is_client': 'Is Client',
+        }
+
+    def clean_dni(self):
+        dni = self.cleaned_data.get('dni')
+        if dni:
+            if not dni.isnumeric():
+                raise forms.ValidationError("El DNI debe ser un valor numérico.")
+            if len(dni) < 7 or len(dni) > 8:
+                raise forms.ValidationError("El DNI debe tener entre 7 y 8 dígitos.")
+        return dni
+    
+class ProfileFilterForm(forms.Form):
+    user = forms.CharField(label='', required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese el usuario'}))
+    is_client = forms.BooleanField(label='Es cliente', widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),required=False)
+
+    def clean_name(self):
+        user = self.cleaned_data.get('user')
+        if user:
+            if not Profile.objects.filter(user__username=user).exists():
+                raise forms.ValidationError("No se encontraron perfiles con ese nombre.")
+        return user
+
