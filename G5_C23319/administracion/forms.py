@@ -1,5 +1,5 @@
 from django import forms
-from .models import NaturalPark, Category, Campsite, Availability, Reservation, Profile, User
+from .models import NaturalPark, Category, Campsite, Availability, Reservation, Profile, Usuario
 
 Province = NaturalPark.Province
 
@@ -97,16 +97,18 @@ class CampsiteForm(forms.ModelForm):
 class AvailabilityForm(forms.ModelForm):
     class Meta:
         model = Availability
-        fields = ['campsite', 'start_date', 'end_date']
+        fields = ['campsite', 'start_date', 'end_date', 'max_capacity']
         widgets = {
             'campsite': forms.Select(attrs={'class': 'form-control'}),
             'start_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'end_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'max_capacity': forms.NumberInput(attrs={'class': 'form-control'}),
         }
         labels = {
             'campsite': 'Camping',
             'start_date': 'Fecha de inicio',
             'end_date': 'Fecha de fin',
+            'max_capacity': 'Capacidad máxima'
         }
 
     def __init__(self, *args, **kwargs):
@@ -126,7 +128,7 @@ class AvailabilityCampsiteFilterForm(forms.Form):
 class ReservationForm(forms.ModelForm):
     check_in = forms.DateField(widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}))
     check_out = forms.DateField(widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}))
-    user = forms.ModelChoiceField(queryset=User.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
+    user = forms.ModelChoiceField(queryset=Usuario.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
 
     class Meta:
         model = Reservation
@@ -178,7 +180,7 @@ class ProfileForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['user'].queryset = User.objects.all()
+        self.fields['user'].queryset = Usuario.objects.all()
 
 
 class ProfileForm(forms.ModelForm):

@@ -167,3 +167,7 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB
 # Tamaño máximo de archivo para subidas en disco (en bytes)
 FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB
 FILE_UPLOAD_MAX_SIZE = 10485760  # 10MB
+
+#Autenticaciones model Usuario
+
+AUTH_USER_MODEL = 'administracion.Usuario'

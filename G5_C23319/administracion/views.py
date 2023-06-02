@@ -255,7 +255,29 @@ class ReservationUpdateView(UpdateView):
         
         return super().form_valid(form)
 
+        """ response = super().form_valid(form)
 
+        # Obtener el usuario registrado en la reserva
+        user = form.cleaned_data['user']
+
+        # Obtener la URL del sitio actual
+        current_site = get_current_site(self.request)
+
+        # Generar el contenido del correo electrónico
+        subject = 'Confirmación de reserva modificada'
+        message = render_to_string('administracion/reservas/reservation_update_confirmation.html', {
+            'user': user,
+            'reservation': reservation,
+            'site': current_site,
+        })
+        from_email = 'noreply@example.com'
+        to_email = user.email
+
+        # Enviar el correo electrónico
+        send_mail(subject, message, from_email, [to_email])
+
+        return response
+ """
 class ReservationDeleteView(DeleteView):
     model = Reservation
     template_name = 'administracion/reservas/reservation_delete.html'
