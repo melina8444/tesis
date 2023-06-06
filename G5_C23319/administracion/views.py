@@ -4,9 +4,11 @@ from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from .models import NaturalPark, Category, Campsite, Availability, Profile, Reservation
 from .forms import CampsiteFilterForm, NaturalParkForm, NaturalParkFilterForm, NaturalParkFilterForm, CategoryForm, CampsiteForm, AvailabilityForm, AvailabilityCampsiteFilterForm, ProfileFilterForm, ProfileForm, ReservationForm
-from django.db.models import Min, Avg
-from datetime import timedelta
+from django.db.models import Min, Sum
 import uuid
+from django.contrib import messages
+from django.contrib.messages.views import SuccessMessageMixin
+
 
 def index_admin(request):
     return render(request, 'administracion/index_master.html')
@@ -206,12 +208,13 @@ class ReservationListView(ListView):
     template_name = 'administracion/reservas/reservation_list.html'
     context_object_name = 'reservations'
         
-class ReservationCreateView(CreateView):
+class ReservationCreateView(SuccessMessageMixin, CreateView):
     model = Reservation
     form_class = ReservationForm
     template_name = 'administracion/reservas/reservation_create.html'
     success_url = reverse_lazy('reservation_list')
-
+    success_message_popup = "La reserva se registró con éxito"
+    
     def form_valid(self, form):
         campsite = form.cleaned_data.get('campsite')
         number_guests = form.cleaned_data.get('number_guests')
@@ -221,14 +224,16 @@ class ReservationCreateView(CreateView):
         if campsite and number_guests:
             capacity = campsite.categories.aggregate(min_capacity=Min('capacity'))['min_capacity']
             if capacity:
-                total_cost = (number_guests / capacity) * campsite.categories.aggregate(avg_price=Avg('price'))['avg_price'] * (check_out - check_in).days
+                total_cost = (number_guests / capacity) * campsite.categories.aggregate(sum_price=Sum('price'))['sum_price'] * (check_out - check_in).days
                 form.instance.total_cost = total_cost
 
         availability = Availability.objects.get(campsite=form.cleaned_data['campsite'])
         form.instance.availability = availability
 
-        return super().form_valid(form)
+        messages.success(self.request, self.success_message_popup)
 
+        return super().form_valid(form)
+    
 class ReservationUpdateView(UpdateView):
     model = Reservation
     form_class = ReservationForm
@@ -246,13 +251,12 @@ class ReservationUpdateView(UpdateView):
         if campsite and number_guests:
             capacity = campsite.categories.aggregate(min_capacity=Min('capacity'))['min_capacity']
             if capacity:
-                total_cost = (number_guests / capacity) * campsite.categories.aggregate(avg_price=Avg('price'))['avg_price'] * (check_out - check_in).days
+                total_cost = (number_guests / capacity) * campsite.categories.aggregate(sum_price=Sum('price'))['sum_price'] * (check_out - check_in).days
                 reservation.total_cost = total_cost
         
         if reservation.code == 0:
             reservation.code = uuid.uuid4().hex[:8].upper()  # Generar un código aleatorio
-            
-        
+      
         return super().form_valid(form)
 
         """ response = super().form_valid(form)

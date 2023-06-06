@@ -38,6 +38,15 @@
     </div>
 </div>
 
+<div class="container">{% if messages %}
+  {% for message in messages %}
+      <div class="text-center alert alert-{{ message.tags }}">
+          {{ message|safe }}
+      </div>
+  {% endfor %}
+{% endif %}
+</div>
+
 <div class="container">
   <div class="row justify-content-center">
     <div class="col-lg-12">

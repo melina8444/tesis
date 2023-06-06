@@ -98,13 +98,13 @@ class Reservation(models.Model):
     number_guests = models.IntegerField()
     total_cost = models.FloatField(max_length=10)
 
-    def __str__(self):
-        return f'Código Reserva: {self.code} + Nombre y Apellido: {self.user.first_name}+ " " +{self.user.last_name}'
-    
     def save(self, *args, **kwargs):
         if not self.code:
             self.code = uuid.uuid4().hex[:8].upper()
         super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f'Código Reserva: {self.code} + Nombre y Apellido: {self.user.first_name}+ " " +{self.user.last_name}'
 
 
 class Profile(models.Model):

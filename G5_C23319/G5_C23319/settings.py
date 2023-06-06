@@ -120,7 +120,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-ar'
+LANGUAGE_CODE = 'es'
 
 TIME_ZONE = 'UTC'
 
@@ -171,3 +171,5 @@ FILE_UPLOAD_MAX_SIZE = 10485760  # 10MB
 #Autenticaciones model Usuario
 
 AUTH_USER_MODEL = 'administracion.Usuario'
+
+

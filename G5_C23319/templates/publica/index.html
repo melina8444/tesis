@@ -35,7 +35,7 @@
     <!-- Navigation-->
     <nav class="navbar navbar-expand-lg navbar-light bg-success justify-content-center bg-opacity-50 w-100">
       <div class="container justify-content-center px-4 px-lg-5">
-        <a class="navbar-brand" href="{% url 'reserva' %}"><i class="bi bi-calendar2-check me-2"></i>Reservar</a>
+        <a class="navbar-brand" href="#"><i class="bi bi-calendar2-check me-2"></i>Reservar</a>
         <button
           class="navbar-toggler"
           type="button"
@@ -77,10 +77,10 @@
                   <a class="dropdown-item" href="#!">Las Reservas Naturales</a>
                 </li>
                 <li><hr class="dropdown-divider" /></li>
-                <li><a class="dropdown-item" href="{% url 'campsites_by_category' 'Camping Premium' %}">Camping Premium</a></li>
-                <li><a class="dropdown-item" href="{% url 'campsites_by_category' 'Camping Básico' %}">Camping Básico</a></li>
+                <li><a class="dropdown-item" href="#">Camping Premium</a></li>
+                <li><a class="dropdown-item" href="#">Camping Básico</a></li>
                 <li>
-                  <a class="dropdown-item" href="{% url 'campsites_by_category' 'Camping Aventurero' %}">Camping Aventurero</a>
+                  <a class="dropdown-item" href="#">Camping Aventurero</a>
                 </li>
               </ul>
             </li>
@@ -144,18 +144,22 @@
 
 <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
   <div class="carousel-inner">
-    {% for campsite in campsites %}
+    {% for naturalpark in naturalparks %}
     <div class="carousel-item {% if forloop.first %}active{% endif %}">
-      <img src="{% static 'publica/assets/' %}{{campsite.image}}" class="d-block w-100" style="object-fit: cover; height: 500px;" alt="{{ campsite.name }}">
+      <img src="{{ naturalpark.image.url }}" class="d-block w-100" style="object-fit: cover; height: 500px;" alt="{{ naturalpark.name }}">
       
       <div class="carousel-caption bg-dark bg-opacity-50 rounded d-md-block">
-        <h3 class="fw-bolder">{{ campsite.name }}</h3>
-        <p>{{ campsite.description }}</p>
-        <p>{{ campsite.location }} - {{campsite.province}}</p>
-        <p>Disponibilidad: {{campsite.availability}}</p>
-        <h6 class="btn btn-secondary">{{campsite.category}}</h6>
+        <h3 class="fw-bolder">{{ naturalpark.name }}</h3>
+        <p>{{ naturalpark.description }}</p>
+        <p>{{ naturalpark.location }} - {{naturalpark.get_province_display}}</p>
+        <p>
+          <a href="{{ naturalpark.website }}" target="_blank" class="fw-bold text-white">{{ naturalpark.website }}</a>
+        </p>
+        <p>
+          <a href="{% url 'campsites_by_naturalpark' naturalpark.id %}" class="btn btn-secondary">Campings Disponibles</a>
+        </p>
         <div class="container">
-        <a href="{% url 'reserva_camp_id' campsite_id=campsite.id %}" class="btn btn-light">Reservar</a>
+        <a href="#" class="btn btn-light">Reservar</a>
         </div>
       </div>
     </div>

@@ -1,5 +1,10 @@
+import random
+import string
+import uuid
 from django import forms
 from .models import NaturalPark, Category, Campsite, Availability, Reservation, Profile, Usuario
+from django.db.models import Sum
+from django.core.exceptions import ValidationError
 
 Province = NaturalPark.Province
 
@@ -88,11 +93,7 @@ class CampsiteForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['categories'].queryset = Category.objects.all()
-    
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
         self.fields['natural_park'].queryset = NaturalPark.objects.all()
-
 
 class AvailabilityForm(forms.ModelForm):
     class Meta:
@@ -126,9 +127,11 @@ class AvailabilityCampsiteFilterForm(forms.Form):
         return campsite_name
 
 class ReservationForm(forms.ModelForm):
-    check_in = forms.DateField(widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}))
-    check_out = forms.DateField(widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}))
-    user = forms.ModelChoiceField(queryset=Usuario.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
+
+    code = forms.CharField(label='Código de Reserva', widget=forms.TextInput(attrs={'class': 'form-control', 'readonly': True}))
+    check_in = forms.DateField(label='Check_in - Fecha de Llegada', widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}))
+    check_out = forms.DateField(label='Check_out - Fecha de Salida',widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}))
+    user = forms.ModelChoiceField(label='Usuario',queryset=Usuario.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
 
     class Meta:
         model = Reservation
@@ -137,8 +140,23 @@ class ReservationForm(forms.ModelForm):
             'campsite': forms.Select(attrs={'class': 'form-control'}),
             'number_guests': forms.NumberInput(attrs={'class': 'form-control'}),
         }
+        labels = {
+            'campsite': 'Camping',
+            'number_guests': 'Número de Huéspedes'
+        }
+        
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not self.instance.pk:  # Verificar si es una nueva reserva
+            self.initial['code'] = self.generate_random_code()
 
+    def generate_random_code(self):
+        length = 8
+        chars = string.ascii_uppercase + string.digits
+        return ''.join(random.choice(chars) for _ in range(length))
+    
     def clean(self):
+
         cleaned_data = super().clean()
         campsite = cleaned_data.get('campsite')
         check_in = cleaned_data.get('check_in')
@@ -149,15 +167,25 @@ class ReservationForm(forms.ModelForm):
             try:
                 availability = Availability.objects.get(campsite=campsite)
                 if check_in < availability.start_date or check_out > availability.end_date:
-                    raise forms.ValidationError(f"Las fechas de check-in y check-out deben estar dentro del rango de disponibilidad para el campsite. Start Date: {availability.start_date}, End Date: {availability.end_date}")
-            except Availability.DoesNotExist:
-                raise forms.ValidationError("No se encontró disponibilidad para el campsite seleccionado.")
-
-            if check_out <= check_in:
-                raise forms.ValidationError("La fecha de check-out debe ser posterior a la fecha de check-in.")
+                    self.add_error(None, forms.ValidationError(f"Las fechas de check-in y check-out deben estar dentro del rango de disponibilidad: De {availability.start_date} a {availability.end_date}"))
             
-        return cleaned_data
+                suma_guests = Reservation.objects.filter(campsite=campsite, check_in__lte=check_out, check_out__gte=check_in).aggregate(total_guests=Sum('number_guests'))['total_guests']
 
+                # Verificar si la suma de guests_number supera el max_capacity de availability
+                if suma_guests is not None and (suma_guests + number_guests) > availability.max_capacity:
+                    self.add_error(None, forms.ValidationError(f"El camping seleccionado para este rango de fechas está ocupado al 100%"))
+            
+            except Availability.DoesNotExist:
+                self.add_error(None, forms.ValidationError(f"No se encontró disponibilidad para el camping seleccionado."))
+
+        if check_out <= check_in:
+            self.add_error(None, forms.ValidationError(f"La fecha de check-out debe ser posterior a la fecha de check-in."))
+        
+        if number_guests <= 0:
+            self.add_error(None, forms.ValidationError(f"Se debe ingresar un número de huéspedes"))
+
+        return cleaned_data
+    
 
 class ProfileForm(forms.ModelForm):
     class Meta:

@@ -2,22 +2,32 @@
 
 {% block content %}
 <div class="center_col m-2 text-center bg-success rounded text-white" role="main">
-  <h3>{% block title%} Actualizar un perfil de Cliente/Usuario {% endblock%}</h3>
+  <h3>{% block title%} Actualizar una Reserva {% endblock%}</h3>
 </div>
 <div class="container">
   <div class="row justify-content-center">
-    <div class="col-lg-12">
+
+    <div class="col-lg-6">
       <div class="border rounded p-4">
-     
-      <form method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Actualizar</button>
-      </form>
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %} {{ form.as_p }}
+
+          <div class="row justify-content-center">
+            {% if form.non_field_errors %}
+            <div class="col-lg-12">
+                <div class="border rounded p-4 bg-success text-white">
+                    {% for error in form.non_field_errors %}
+                        <div class="h6">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+        </div>
+      </div>
+          <button type="submit" class="btn btn-info">Actualizar</button>
+          <a href="{% url 'reservation_list' %}" class="btn btn-secondary">Cancelar</a>
+        </form>
+      </div>
     </div>
   </div>
-</div>
-</div>
-
-  
 {% endblock %}
