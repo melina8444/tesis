@@ -86,9 +86,13 @@ class ReservationCreateView(LoginRequiredMixin, CreateView):
         campsite_id = self.kwargs.get('campsite_id')
         campsite = get_object_or_404(Campsite, id=campsite_id)
         initial['campsite'] = campsite
-        if self.request.user.is_authenticated:
-            initial['username'] = self.request.user.username
         return initial
+    
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        if self.request.user.is_authenticated:
+            form.fields['user'].initial = self.request.user
+        return form
     
     def form_valid(self, form):
 
