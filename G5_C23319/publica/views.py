@@ -1,9 +1,10 @@
-from django.shortcuts import get_object_or_404, render
-from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
-from publica.forms import ContactForm
+from publica.forms import ContactForm, UsuarioCreationForm, LoginForm
 from django.contrib import messages
 from administracion.models import Availability, Campsite, NaturalPark, Reservation
 from administracion.forms import ReservationForm
@@ -74,7 +75,7 @@ def aboutus(request):
             }
     return render(request,'publica/aboutus.html', context)
     
-class ReservationCreateView(CreateView):
+class ReservationCreateView(LoginRequiredMixin, CreateView):
     model = Reservation
     template_name = 'publica/reserva.html'
     form_class = ReservationForm
@@ -85,6 +86,8 @@ class ReservationCreateView(CreateView):
         campsite_id = self.kwargs.get('campsite_id')
         campsite = get_object_or_404(Campsite, id=campsite_id)
         initial['campsite'] = campsite
+        if self.request.user.is_authenticated:
+            initial['username'] = self.request.user.username
         return initial
     
     def form_valid(self, form):
@@ -116,3 +119,40 @@ class SuccessView(TemplateView):
         reservation = Reservation.objects.latest('id')
         context['reservation'] = reservation
         return context
+
+
+class CustomLoginView(LoginView):
+    form_class = LoginForm
+    template_name = 'publica/login.html'
+    success_url = reverse_lazy('Inicio')
+
+class RegistroUsuarioView(CreateView):
+    form_class = UsuarioCreationForm
+    template_name = 'publica/register.html'
+    success_url = reverse_lazy('loginrn')  
+    
+class CustomLogoutView(LogoutView):
+    next_page = 'Inicio'  # URL a la que redirigir después de cerrar sesión
+
+class VerificacionRegView(TemplateView):
+    template_name = 'publica/register_verification.html'
+
+    def get(self, request, *args, **kwargs):
+        next_url = request.GET.get('next')
+        campsite_id = request.GET.get('campsite_id')
+
+        # Verificar si el usuario está autenticado
+        if request.user.is_authenticated:
+            # Si está autenticado, redirigir directamente a la página de reserva
+            if next_url:
+                return redirect(next_url)
+            elif campsite_id:
+                return redirect('reservation_campsite', campsite_id=campsite_id)
+
+        return super().get(request, *args, **kwargs)
+
+
+
+
+
+        

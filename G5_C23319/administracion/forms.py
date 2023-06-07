@@ -192,30 +192,6 @@ class ProfileForm(forms.ModelForm):
         model = Profile
         fields = ['user', 'phone', 'address', 'dni', 'is_client']
         widgets = {
-            'user': forms.SelectMultiple(attrs={'class': 'form-control'}),
-            'phone': forms.TextInput(attrs={'class': 'form-control'}),
-            'address': forms.TextInput(attrs={'class': 'form-control'}),
-            'dni': forms.TextInput(attrs={'class': 'form-control'}),
-            'is_client': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-        }
-        labels = {
-            'user': 'Usuario',
-            'phone': 'Teléfono',
-            'address': 'Dirección',
-            'dni': 'DNI',
-            'is_client': 'Es cliente',
-        }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['user'].queryset = Usuario.objects.all()
-
-
-class ProfileForm(forms.ModelForm):
-    class Meta:
-        model = Profile
-        fields = ['user', 'phone', 'address', 'dni', 'is_client']
-        widgets = {
             'user': forms.Select(attrs={'class': 'form-control'}),
             'phone': forms.TextInput(attrs={'class': 'form-control'}),
             'address': forms.TextInput(attrs={'class': 'form-control'}),
@@ -229,6 +205,10 @@ class ProfileForm(forms.ModelForm):
             'dni': 'DNI',
             'is_client': 'Is Client',
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['user'].queryset = Usuario.objects.all()
 
     def clean_dni(self):
         dni = self.cleaned_data.get('dni')
