@@ -20,8 +20,8 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css"
       rel="stylesheet"
     />
-    <!--Fontawesome-->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-U9jX8V0XXdYr+b7GxhIMR0M0MbjZpFv+i+lDkgG9oiTnS01kVRdSvSrhPDMoCn+aIn00sE2Z4zVVhrMZQ2N9XQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!--Fontawesome
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-U9jX8V0XXdYr+b7GxhIMR0M0MbjZpFv+i+lDkgG9oiTnS01kVRdSvSrhPDMoCn+aIn00sE2Z4zVVhrMZQ2N9XQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />-->
 
     <!-- Core theme CSS (includes Bootstrap)-->
     <link href="/static/publica/css/styles.css" rel="stylesheet"/>
@@ -35,7 +35,7 @@
     <!-- Navigation-->
     <nav class="navbar navbar-expand-lg navbar-light bg-success justify-content-center bg-opacity-50 w-100">
       <div class="container justify-content-center px-4 px-lg-5">
-        <a class="navbar-brand" href="#"><i class="bi bi-calendar2-check me-2"></i>Reservar</a>
+        
         <button
           class="navbar-toggler"
           type="button"
@@ -74,7 +74,7 @@
             listado con disponibilidad por categoría-->
               <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <li>
-                  <a class="dropdown-item" href="#!">Las Reservas Naturales</a>
+                  <a class="dropdown-item" href="#!">Categorías</a>
                 </li>
                 <li><hr class="dropdown-divider" /></li>
                 <li><a class="dropdown-item" href="#">Camping Premium</a></li>
@@ -156,11 +156,8 @@
           <a href="{{ naturalpark.website }}" target="_blank" class="fw-bold text-white">{{ naturalpark.website }}</a>
         </p>
         <p>
-          <a href="{% url 'campsites_by_naturalpark' naturalpark.id %}" class="btn btn-secondary">Campings Disponibles</a>
+          <a href="{% url 'campsites_by_naturalpark' naturalpark.id %}" class="btn btn-success">Campings Disponibles</a>
         </p>
-        <div class="container">
-        <a href="#" class="btn btn-light">Reservar</a>
-        </div>
       </div>
     </div>
     {% endfor %}

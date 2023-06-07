@@ -1,10 +1,14 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse
 
 from django.http import HttpResponseRedirect
-from publica.forms import ContactForm, ReservaForm
+from django.urls import reverse_lazy
+from publica.forms import ContactForm
 from django.contrib import messages
-from administracion.models import NaturalPark
+from administracion.models import Availability, Campsite, NaturalPark, Reservation
+from administracion.forms import ReservationForm
+from django.views.generic import CreateView, TemplateView
+from django.db.models import Min, Sum
 
 import publica
 
@@ -70,32 +74,45 @@ def aboutus(request):
             }
     return render(request,'publica/aboutus.html', context)
     
-""" def reserva(request):
+class ReservationCreateView(CreateView):
+    model = Reservation
+    template_name = 'publica/reserva.html'
+    form_class = ReservationForm
+    success_url = reverse_lazy('success')
 
-    if request.method == 'POST':
-        reservaForm = ReservaForm(request.POST, campsites_list)
-        # reservaForm.save(); #Para guardar en la base de datos
-        if reservaForm.is_valid():
-            messages.success(request,'Hemos recibido tus datos')
-            return HttpResponseRedirect('/reserva/')
-        else:
-          
-            messages.warning(request,'Por favor revisa los errores en el formulario')
-    else:
-        reservaForm = ReservaForm()
-    return render(request, 'publica/reserva.html', {'reservaform':reservaForm})
+    def get_initial(self):
+        initial = super().get_initial()
+        campsite_id = self.kwargs.get('campsite_id')
+        campsite = get_object_or_404(Campsite, id=campsite_id)
+        initial['campsite'] = campsite
+        return initial
+    
+    def form_valid(self, form):
 
-def reserva_camp_id(request, campsite_id):
-  
-    if request.method == 'POST':
-        reservaForm = ReservaForm(request.POST)
-        # reservaForm.save(); #Para guardar en la base de datos
+        campsite = form.cleaned_data.get('campsite')
+        number_guests = form.cleaned_data.get('number_guests')
+        check_in = form.cleaned_data.get('check_in')
+        check_out = form.cleaned_data.get('check_out')
 
-        if reservaForm.is_valid():
-            messages.success(request,'Hemos recibido tus datos')
-            return HttpResponseRedirect('/reserva/<int:campsite_id>/')
-        else:
-            messages.warning(request,'Por favor revisa los errores en el formulario')
-    else:
-        reservaForm = ReservaForm()
-    return render(request, 'publica/reserva_camp_id.html', {'reservaform':reservaForm, 'campsite_id':campsite_id}) """
+        if campsite and number_guests:
+            capacity = campsite.categories.aggregate(min_capacity=Min('capacity'))['min_capacity']
+            if capacity:
+                total_cost = (number_guests / capacity) * campsite.categories.aggregate(sum_price=Sum('price'))['sum_price'] * (check_out - check_in).days
+                form.instance.total_cost = total_cost
+
+        availability = Availability.objects.get(campsite=form.cleaned_data['campsite'])
+        form.instance.availability = availability
+
+
+        return super().form_valid(form)
+        
+    
+class SuccessView(TemplateView):
+    template_name = 'publica/success.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Obtén la reserva guardada
+        reservation = Reservation.objects.latest('id')
+        context['reservation'] = reservation
+        return context
