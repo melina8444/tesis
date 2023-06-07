@@ -120,7 +120,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-ar'
+LANGUAGE_CODE = 'es'
 
 TIME_ZONE = 'UTC'
 
@@ -168,9 +168,8 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB
 FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB
 FILE_UPLOAD_MAX_SIZE = 10485760  # 10MB
 
-#Modelo User
+#Autenticaciones model Usuario
+
 AUTH_USER_MODEL = 'administracion.Usuario'
 
-LOGIN_URL ='/accounts/login/'
 
-LOGIN_REDIRECT_URL = "inicio_admin"

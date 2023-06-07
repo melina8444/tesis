@@ -1,0 +1,66 @@
+{%extends '../publica/index.html'%}
+
+{% load static %}
+
+
+{% block title %}
+Los campings - {{ block.super }}
+{% endblock title%}
+
+
+{% block page_title %}
+Campings disponibles
+{% endblock %}
+{% block video %}
+{% endblock %}
+{% block content %}
+<div class="container px-4 px-lg-5 mt-5">
+      <!--Campsite category-->
+    <h1 class="my-4 border rounded border-success text-center justify-content-center">{{ naturalpark.name }}</h1>
+    <div
+      class="row row-cols-1 row-cols-md-2 justify-content-center"
+    >
+      {% for campsite in campsites %}
+      <div class="col mb-5">
+        <div class="card h-100">
+          <!-- Campsite image-->
+          <img
+            class="card-img-top"
+            src="{{campsite.images.url}}"
+            alt="{{ campsite.name }}"
+          />
+          <!-- Campsite-->
+          <div class="card-body p-4">
+            <div class="text-center">
+              <!-- Campsite name-->
+              <h4 class="fw-bolder p-2">{{campsite.name}}</h4>
+              <!-- Campsite Detalis-->
+              <h6 class="fw-bolder p-1">Categoría</h6>
+              {% for category in campsite.categories.all %}
+                <p>{{ category.name }}</p>
+              {% endfor %}
+              <h6 class="fw-bolder p-1">Breve Reseña</h6>
+              <p>{{campsite.description}}</p>
+              <h6 class="fw-bolder p-1">Disponibilidad</h6>
+              {% for availability in campsite.availabilities.all %}
+                <p> Desde: {{ availability.start_date }} - Hasta: {{ availability.end_date }}, Capacidad Máxima: {{ availability.max_capacity }}</p>
+                {% empty %}
+                <p>Por el momento este camping no tiene disponibilidad.</p>
+                {% endfor %}
+            </div>
+          </div>
+          <!-- Actions-->
+          <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+            <div class="text-center">
+              <a class="btn btn-outline-success mt-auto" href="{% url 'reservation_campsite' campsite.id %}">Reservar</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <p>Por el momento no hay campings disponibles para este parque natural.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{%endblock content %}

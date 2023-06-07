@@ -1,9 +1,9 @@
 import uuid
 from django.db import models
-from django.contrib.auth.models import User
 from django.contrib.auth.models import AbstractUser
 
-
+class Usuario(AbstractUser):
+    pass
 class NaturalPark(models.Model):
 
     class Meta:
@@ -80,9 +80,11 @@ class Availability(models.Model):
     campsite = models.ForeignKey(Campsite, on_delete=models.CASCADE, related_name='availabilities')
     start_date = models.DateField(blank=True, null=True)
     end_date = models.DateField(blank=True, null=True)
+    max_capacity=models.IntegerField(blank=True, null=True)
 
     def __str__(self):
-        return f'Fecha inicio: {self.start_date}  Fecha fin: {self.end_date}'
+        return f'Fecha inicio: {self.start_date}  Fecha fin: {self.end_date} Capacidad Máxima: {self.max_capacity}'
+    
 class Reservation(models.Model):
     class Meta:
         db_table='Reservas'
@@ -90,24 +92,21 @@ class Reservation(models.Model):
     code = models.CharField(max_length=8, unique=True)
     campsite = models.ForeignKey(Campsite, on_delete=models.CASCADE)
     availability = models.ForeignKey(Availability, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     check_in = models.DateField()
     check_out = models.DateField()
     number_guests = models.IntegerField()
     total_cost = models.FloatField(max_length=10)
 
-    def __str__(self):
-        return f'Código Reserva: {self.code} + Nombre y Apellido: {self.user.first_name}+ " " +{self.user.last_name}'
-    
     def save(self, *args, **kwargs):
         if not self.code:
             self.code = uuid.uuid4().hex[:8].upper()
         super().save(*args, **kwargs)
 
-class Usuario(AbstractUser):
-    pass
+    def __str__(self):
+        return f'Código Reserva: {self.code} + Nombre y Apellido: {self.user.first_name}+ " " +{self.user.last_name}'
 
-        
+
 class Profile(models.Model):
     class Meta:
         db_table="Perfiles"
