@@ -24,9 +24,9 @@ def campsites_by_naturalpark(request, naturalpark_id):
     campsites = naturalpark.campsites.all()
     return render(request, 'publica/campsites_by_naturalpark.html', {'naturalpark': naturalpark, 'campsites': campsites})
 
-def login(request):
+""" def login(request):
     
-    return render(request,'publica/login.html')
+    return render(request,'publica/login.html') """
 
 def contact(request):
     if request.method == 'POST':
