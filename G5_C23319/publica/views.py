@@ -1,9 +1,14 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 
 from django.http import HttpResponseRedirect
 from publica.forms import ContactForm, ReservaForm
 from django.contrib import messages
+
+
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.views import LoginView
 
 
 import publica
@@ -176,3 +181,22 @@ def reserva_camp_id(request, campsite_id):
     else:
         reservaForm = ReservaForm()
     return render(request, 'publica/reserva_camp_id.html', {'reservaform':reservaForm, 'campsite_id':campsite_id})
+
+
+def login_view(request):
+    if request.method == 'POST':
+        # AuthenticationForm_can_also_be_used__
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            nxt = request.GET.get("next", None)
+            if nxt is None:
+                return redirect('inicio_admin')
+            else:
+                return redirect(nxt)
+        else:
+            messages.error(request, f'Cuenta o password incorrecto, realice el login correctamente')
+    form = AuthenticationForm()
+    return render(request, 'publica/login.html', {'form': form, 'title': 'Log in'})

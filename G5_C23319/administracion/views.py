@@ -1,5 +1,5 @@
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from .models import NaturalPark, Category, Campsite, Availability, Profile, Reservation
@@ -7,6 +7,10 @@ from .forms import CampsiteFilterForm, NaturalParkForm, NaturalParkFilterForm, N
 from django.db.models import Min, Avg
 from datetime import timedelta
 import uuid
+
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib import messages
 
 def index_admin(request):
     return render(request, 'administracion/index_master.html')
@@ -260,4 +264,19 @@ class ReservationDeleteView(DeleteView):
     model = Reservation
     template_name = 'administracion/reservas/reservation_delete.html'
     success_url = reverse_lazy('reservation_list')
+
+
+# def login_view(request):
+#     if request.method == 'POST':
+#         username = request.POST.get('username')
+#         password = request.POST.get('password')
+
+#         user = authenticate(username = username, password = password)
+#         if user:
+#             login(request, user)
+#             return redirect('inicio_admin')
+#     return render(request, 'publica/login.html', {
+
+#     })
+
 

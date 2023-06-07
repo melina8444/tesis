@@ -1,6 +1,7 @@
 import uuid
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 
 
 class NaturalPark(models.Model):
@@ -102,12 +103,16 @@ class Reservation(models.Model):
         if not self.code:
             self.code = uuid.uuid4().hex[:8].upper()
         super().save(*args, **kwargs)
+
+class Usuario(AbstractUser):
+    pass
+
         
 class Profile(models.Model):
     class Meta:
         db_table="Perfiles"
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(Usuario, on_delete=models.CASCADE)
     phone = models.CharField(max_length=255)
     address = models.CharField(max_length=255)
     dni = models.CharField(max_length=255)
