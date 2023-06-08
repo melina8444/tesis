@@ -19,5 +19,6 @@ urlpatterns = [
     path('accounts/login/', CustomLoginView.as_view(), name='loginrn'),
     path('accounts/logout/', CustomLogoutView.as_view(), name='logoutrn'),
     path('register_verification/', VerificacionRegView.as_view(), name='register_verification'),
+    path('categories/', views.categories, name="categories"),
 ]
 

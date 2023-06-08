@@ -6,7 +6,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from publica.forms import ContactForm, UsuarioCreationForm, LoginForm
 from django.contrib import messages
-from administracion.models import Availability, Campsite, NaturalPark, Reservation
+from administracion.models import Availability, Campsite, NaturalPark, Reservation, Category
 from administracion.forms import ReservationForm
 from django.views.generic import CreateView, TemplateView
 from django.db.models import Min, Sum
@@ -156,7 +156,10 @@ class VerificacionRegView(TemplateView):
         return super().get(request, *args, **kwargs)
 
 
-
+def categories(request):
+    
+    categories = Category.objects.all()
+    return render(request, 'publica/categories.html', {'categories': categories})
 
 
         

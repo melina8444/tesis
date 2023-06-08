@@ -60,30 +60,10 @@
             <li class="nav-item me-2 ms-2">
               <a class="nav-link" href="{% url 'aboutus'%}">Sobre nosotros</a>
             </li>
-            <li class="nav-item dropdown me-2 ms-2">
-              <a
-                class="nav-link dropdown-toggle"
-                id="navbarDropdown"
-                href="#"
-                role="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-                >Lugares</a
-              >
-              <!--En este menú se incluyen las reservas naturales por categoría, con acceso al 
-            listado con disponibilidad por categoría-->
-              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <li>
-                  <a class="dropdown-item" href="#!">Categorías</a>
-                </li>
-                <li><hr class="dropdown-divider" /></li>
-                <li><a class="dropdown-item" href="#">Camping Premium</a></li>
-                <li><a class="dropdown-item" href="#">Camping Básico</a></li>
-                <li>
-                  <a class="dropdown-item" href="#">Camping Aventurero</a>
-                </li>
-              </ul>
+            <li class="nav-item me-2 ms-2">
+              <a class="nav-link" href="{% url 'categories'%}">Categorías</a>
             </li>
+          
             <li class="nav-item me-2 ms-2">
               <a class="nav-link" href="{% url 'contact' %}">Contactanos</a>
             </li>
