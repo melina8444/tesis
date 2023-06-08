@@ -80,6 +80,23 @@ class UsuarioCreationForm(UserCreationForm):
         model = Usuario
         fields = ['username', 'first_name', 'last_name', 'email', 'password1', 'password2']
 
+        widgets = {
+            'username': forms.TextInput(attrs={'class': 'form-control'}),
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'password1': forms.PasswordInput(attrs={'class': 'form-control'}),
+            'password2': forms.PasswordInput(attrs={'class': 'form-control'}),
+        }
+        labels = {
+            'username': 'Nombre de usuario',
+            'first_name': 'Nombre',
+            'last_name': 'Apellido',
+            'email': 'Email',
+            'password1': 'Contraseña',
+            'password2': 'Confirmacion de contraseña',
+        }
+
     def clean_dni(self):
         dni = self.cleaned_data.get('dni')
         if dni:
