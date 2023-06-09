@@ -2,12 +2,12 @@
 {% load static %}
 
 {% block title %}
-Login - {{ block.super }}
+Registro - {{ block.super }}
 {% endblock title%}
 
 
 {% block page_title %}
-LOGIN - Inicio de Sesión
+Registrate para hacer tu reserva
 {% endblock %}
 {% block video %}
 {% endblock %}
@@ -15,19 +15,17 @@ LOGIN - Inicio de Sesión
     {% block content %}
     <div class="container m-5">
         <div class="row justify-content-center">
-            <div class="col-lg-6">
-              <div class="border rounded p-4">
+          <div class="col-lg-6">
+            <div class="border rounded p-4">
       <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit" class="btn btn-success">Login</button>
+        <button type="submit" class="btn btn-success">Registarte</button>
       </form>
     </div>
+  </div>
 </div>
 </div>
-</div>
-
-    
       {% endblock %}
 </body>
 </html>

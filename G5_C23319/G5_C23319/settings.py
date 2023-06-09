@@ -172,4 +172,8 @@ FILE_UPLOAD_MAX_SIZE = 10485760  # 10MB
 
 AUTH_USER_MODEL = 'administracion.Usuario'
 
+LOGIN_URL ='/accounts/login/'
+
+
+
 
