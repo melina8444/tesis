@@ -128,7 +128,18 @@ class SuccessView(TemplateView):
 class CustomLoginView(LoginView):
     form_class = LoginForm
     template_name = 'publica/login.html'
-    success_url = reverse_lazy('Inicio')
+    success_url = reverse_lazy('Inicio') 
+
+    def form_valid(self, form):
+        user = form.get_user()
+
+        if user.is_authenticated:
+            if user.is_staff:
+                return redirect('inicio_admin')
+            else:
+                return super().form_valid(form)
+            
+        return super().form_valid(form)
 
 class RegistroUsuarioView(CreateView):
     form_class = UsuarioCreationForm
