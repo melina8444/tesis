@@ -69,32 +69,51 @@
             </li>
           </ul>
           <ul class="navbar-nav ml-auto mb-2 mb-lg-0">
-            {% if user.is_authenticated %}
-              <!-- Enlace de inicio de sesión con nombre de usuario -->
-              <li class="nav-item">
-                <span class="nav-link">
-                  {{ user.username }} <i class="bi bi-person-fill"></i>
-                </span>
-              </li>
-              <li class="nav-item mr-1">
-                <a class="nav-link" href="{% url 'logoutrn' %}">
-                  Cerrar sesión <i class="bi bi-door-closed-fill"></i>
-                </a>
-              </li>
-            {% else %}
-              <!-- Enlace de registro -->
-              <li class="nav-item mr-1">
-                <a class="nav-link" aria-current="page" href="{% url 'register' %}">
-                  Registrarse <i class="bi bi-person-plus-fill"></i>
-                </a>
-              </li>
-              <!-- Enlace de inicio de sesión -->
-              <li class="nav-item mr-1">
-                <a class="nav-link" href="{% url 'loginrn' %}">
-                  Iniciar sesión <i class="bi bi-door-open-fill"></i>
-                </a>
-              </li>
-            {% endif %}
+
+            {% if user.is_authenticated and user.is_staff %}
+          <!-- Enlace de inicio de sesión con nombre de usuario staff-->
+          <li class="nav-item">
+            <span class="nav-link">
+              {{ user.username }} <i class="bi bi-person-fill"></i>
+            </span>
+          </li>
+          <li class="nav-item mr-1">
+            <a class="nav-link" href="{% url 'inicio_admin' %}">
+             Administracion <i class="bi bi-door-closed-fill"></i>
+            </a>
+          </li>
+          <li class="nav-item mr-1">
+            <a class="nav-link" href="{% url 'logoutrn' %}">
+              Cerrar sesión <i class="bi bi-door-closed-fill"></i>
+            </a>
+          </li>
+        {% elif user.is_authenticated %}
+          <!-- Enlace de inicio de sesión con nombre de usuario -->
+          <li class="nav-item">
+            <span class="nav-link">
+              {{ user.username }} <i class="bi bi-person-fill"></i>
+            </span>
+          </li>
+          <li class="nav-item mr-1">
+            <a class="nav-link" href="{% url 'logoutrn' %}">
+              Cerrar sesión <i class="bi bi-door-closed-fill"></i>
+            </a>
+          </li>
+        {% else %}
+          <!-- Enlace de registro -->
+          <li class="nav-item mr-1">
+            <a class="nav-link" aria-current="page" href="{% url 'register' %}">
+              Registrarse <i class="bi bi-person-plus-fill"></i>
+            </a>
+          </li>
+          <!-- Enlace de inicio de sesión -->
+          <li class="nav-item mr-1">
+            <a class="nav-link" href="{% url 'loginrn' %}">
+              Iniciar sesión <i class="bi bi-door-open-fill"></i>
+            </a>
+          </li>
+        {% endif %}
+
           </ul>
         </div>
       </div>

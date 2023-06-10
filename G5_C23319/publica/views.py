@@ -15,9 +15,12 @@ import publica
 
 
 def index(request):
-    
     naturalparks = NaturalPark.objects.all()
-    return render(request, 'publica/index.html', {'naturalparks': naturalparks})
+    is_staff = request.user.is_staff
+    return render(request, 'publica/index.html', {'naturalparks': naturalparks, 'is_staff': is_staff})
+
+    #naturalparks = NaturalPark.objects.all()
+    #return render(request, 'publica/index.html', {'naturalparks': naturalparks})
 
 def campsites_by_naturalpark(request, naturalpark_id):
     naturalpark = NaturalPark.objects.get(pk=naturalpark_id)
@@ -130,7 +133,7 @@ class CustomLoginView(LoginView):
     template_name = 'publica/login.html'
     success_url = reverse_lazy('Inicio') 
 
-    def form_valid(self, form):
+    """ def form_valid(self, form):
         user = form.get_user()
 
         if user.is_authenticated:
@@ -139,7 +142,7 @@ class CustomLoginView(LoginView):
             else:
                 return super().form_valid(form)
             
-        return super().form_valid(form)
+        return super().form_valid(form) """
 
 class RegistroUsuarioView(CreateView):
     form_class = UsuarioCreationForm

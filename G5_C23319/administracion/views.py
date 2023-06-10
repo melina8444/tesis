@@ -1,5 +1,7 @@
 
-from django.shortcuts import render
+
+
+from django.shortcuts import render, redirect
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from .models import NaturalPark, Category, Campsite, Availability, Profile, Reservation
@@ -8,10 +10,28 @@ from django.db.models import Min, Sum
 import uuid
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
 
-
+@staff_member_required(login_url='access_denied')  # Requiere que el usuario sea miembro del staff
+@login_required(login_url='loginrn')  # Requiere que el usuario esté autenticado
 def index_admin(request):
+    if not request.user.is_staff:
+        # Si el usuario no es miembro del staff, redirigir a una página de acceso denegado o mostrar un mensaje de error.
+        return redirect('access_denied')
+
+    # Lógica de la vista del administrador aquí
     return render(request, 'administracion/index_master.html')
+
+
+
+""" def index_admin(request):
+
+    return render(request, 'administracion/index_master.html') """
+
+def access_denied(request):
+
+    return render(request, 'administracion/access_denied.html')
 
 
 """ def listar_clientes(request):
