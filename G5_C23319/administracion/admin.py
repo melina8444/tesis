@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import NaturalPark, Category, Campsite, Availability, Reservation, Profile, Usuario
+from .models import NaturalPark, Category, Campsite, Availability, Reservation, Profile, Usuario, Guest
 from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin, GroupAdmin
 
@@ -42,6 +42,15 @@ class ReservationAdmin(admin.ModelAdmin):
     list_display = ('code', 'campsite', 'availability', 'user', 'check_in', 'check_out', 'number_guests')
     search_fields = ('code', 'user', 'user.last_name')
 
+class GuestAdmin(admin.ModelAdmin):
+    list_display = ('reservation_code', 'first_name', 'last_name', 'dni', 'age')
+    search_fields = ('first_name', 'last_name', 'dni')
+
+    def reservation_code(self, obj):
+        return obj.reservation.code
+    
+    reservation_code.short_description = 'Código de Reserva'
+
 class ProfileAdminInline(admin.TabularInline):
     model = Profile
 
@@ -56,6 +65,7 @@ rn_admin.register(Category, CategoryAdmin)
 rn_admin.register(Campsite, CampsiteAdmin)
 rn_admin.register(Availability, AvailabilityAdmin)
 rn_admin.register(Reservation, ReservationAdmin)
+rn_admin.register(Guest, GuestAdmin)
 rn_admin.register(Usuario, UsuarioAdmin)
 rn_admin.register(Group, GroupAdmin)
 

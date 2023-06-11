@@ -2,7 +2,7 @@ import random
 import string
 import uuid
 from django import forms
-from .models import NaturalPark, Category, Campsite, Availability, Reservation, Profile, Usuario
+from .models import NaturalPark, Category, Campsite, Availability, Reservation, Profile, Usuario, Guest
 from django.db.models import Sum
 from django.core.exceptions import ValidationError
 
@@ -126,6 +126,7 @@ class AvailabilityCampsiteFilterForm(forms.Form):
                 raise forms.ValidationError("No se encontraron campamentos con ese nombre.")
         return campsite_name
 
+
 class ReservationForm(forms.ModelForm):
 
     code = forms.CharField(label='Código de Reserva', widget=forms.TextInput(attrs={'class': 'form-control', 'readonly': True}))
@@ -186,6 +187,22 @@ class ReservationForm(forms.ModelForm):
 
         return cleaned_data
     
+class GuestForm(forms.ModelForm):
+    class Meta:
+        model = Guest
+        fields = ['first_name', 'last_name', 'dni', 'age']
+        widgets = {
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'dni': forms.TextInput(attrs={'class': 'form-control'}),
+            'age': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+        labels = {
+            'first_name': 'Nombre',
+            'last_name': 'Apellido',
+            'dni': 'DNI',
+            'age': 'Edad',
+        }
 
 class ProfileForm(forms.ModelForm):
     class Meta:

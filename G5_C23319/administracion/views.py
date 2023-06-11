@@ -1,6 +1,3 @@
-
-
-
 from django.shortcuts import render, redirect
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
@@ -23,41 +20,9 @@ def index_admin(request):
     # Lógica de la vista del administrador aquí
     return render(request, 'administracion/index_master.html')
 
-
-
-""" def index_admin(request):
-
-    return render(request, 'administracion/index_master.html') """
-
 def access_denied(request):
 
     return render(request, 'administracion/access_denied.html')
-
-
-""" def listar_clientes(request):
-    clientes = [
-        {'nombre': 'Melina',
-         'apellido': 'Yangüez',
-         'email':'mel@gmail.com',
-         'telefono': '114564568',
-         'f_nac':'27/02/1980',
-         'dni': '26776232',
-         },
-
-         {'nombre': 'Cecilia',
-         'apellido': 'Santillan',
-         'email':'ceci@gmail.com',
-         'telefono': '11245689',
-         'f_nac':'02/08/1988',
-         'dni': '36565789',
-         },
-    ]
-    context = {
-                'clientes': clientes,
-                'title': "Reservas Naturales Privadas",
-            }
-    return render(request, 'administracion/clientes/listar_clientes.html', context)
- """
 
 class NaturalParkListView(ListView):
     model = NaturalPark

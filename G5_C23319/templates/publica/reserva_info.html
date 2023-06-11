@@ -1,0 +1,37 @@
+{% extends '../publica/index.html' %}
+{% load static %}
+
+{% block title %}Tu Reserva{% endblock %}
+{% block video %}
+{% endblock %}
+
+{% block content %}
+  <div class="container mt-5">
+    <div class="row justify-content-center">
+      <div class="col-md-6 bg-light p-4 rounded border border-success m-4">
+        <h2 class="text-success text-center justify-content-center p-2">Datos de tu Reserva</h2>
+        
+        <p class="text-center">Código de Reserva: {{ reservation.code }}</p>
+        <p class="text-center">Nombre y Apellido: {{ reservation.user.get_full_name }}</p>
+        <p class="text-center">Camping Reservado: {{ reservation.campsite.name }}</p>
+        <p class="text-center">Fecha de Check-in: {{ reservation.check_in }}</p>
+        <p class="text-center">Fecha de Check-out: {{ reservation.check_out }}</p>
+        <p class="text-center">Número de Huéspedes: {{ reservation.number_guests }}</p>
+        <p class="text-center">Costo Total: ${{ reservation.total_cost }}</p>
+      </div>
+      <div class="col-md-6 bg-light p-4 rounded border border-success m-4">
+        <h2 class="text-success text-center justify-content-center p-2">Datos de los Huéspedes</h2>
+        {% for guest in reservation.guest_set.all %}
+        <div class="container p-3 rounded border border-success text-center mb-3">
+          <p>Nombre: {{ guest.first_name }}</p>
+          <p>Apellido: {{ guest.last_name }}</p>
+          <p>DNI: {{ guest.dni}}</p>
+        </div>
+        {% endfor %}
+        <p class="p-2 text-center">
+            <p>Recibirás un mail con los datos de tu reserva. Que disfrutes tu aventura</p>
+            <a href="{% url 'Inicio' %}" class="btn btn-secondary">Inicio</a>
+          </p>
+      </div>
+  </div>
+{% endblock %}

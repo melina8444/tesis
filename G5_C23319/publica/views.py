@@ -1,14 +1,15 @@
+from django.forms import formset_factory, inlineformset_factory
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.http import HttpResponseRedirect
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from publica.forms import ContactForm, UsuarioCreationForm, LoginForm
 from django.contrib import messages
-from administracion.models import Availability, Campsite, NaturalPark, Reservation, Category
-from administracion.forms import ReservationForm
-from django.views.generic import CreateView, TemplateView
+from administracion.models import Availability, Campsite, NaturalPark, Reservation, Category, Guest
+from administracion.forms import ReservationForm, GuestForm
+from django.views.generic import CreateView, TemplateView, DetailView, FormView
 from django.db.models import Min, Sum
 
 import publica
@@ -77,7 +78,7 @@ def aboutus(request):
                 'developers': developers_list
             }
     return render(request,'publica/aboutus.html', context)
-    
+
 class ReservationCreateView(LoginRequiredMixin, CreateView):
     model = Reservation
     template_name = 'publica/reserva.html'
@@ -113,20 +114,100 @@ class ReservationCreateView(LoginRequiredMixin, CreateView):
         availability = Availability.objects.get(campsite=form.cleaned_data['campsite'])
         form.instance.availability = availability
 
+        return super().form_valid(form)   
+     
 
-        return super().form_valid(form)
-        
+def success_view(request):
+    reservation = Reservation.objects.latest('id')
+
+    # Verificar si los huéspedes ya han sido guardados
+    if request.session.get('guests_saved', False):
+        messages.error(request, "Los datos de los huéspedes ya han sido guardados.")
+        return redirect(reverse('reserva_info', args=[reservation.id]))
+
+    if request.method == 'POST':
+        GuestFormSet = formset_factory(GuestForm, extra=reservation.number_guests)
+        formset = GuestFormSet(request.POST)
+
+        if formset.is_valid():
+            for form in formset:
+                guest = form.save(commit=False)
+                guest.reservation = reservation
+                guest.save()
+
+            # Marcar los huéspedes como guardados en la variable de sesión
+            request.session['guests_saved'] = True
+
+            # Realizar la redirección manualmente
+            return redirect(reverse('reserva_info', args=[reservation.id]))
+        else:
+            messages.error(request, "Ha ocurrido un error. Por favor, revisa los datos ingresados.")
+    else:
+        GuestFormSet = formset_factory(GuestForm, extra=reservation.number_guests)
+        formset = GuestFormSet()
     
-class SuccessView(TemplateView):
+    return render(request, 'publica/success.html', {
+        'reservation': reservation,
+        'formset': formset
+    })
+
+
+
+
+""" class SuccessView(TemplateView):
     template_name = 'publica/success.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Obtén la reserva guardada
         reservation = Reservation.objects.latest('id')
         context['reservation'] = reservation
+        
+        # Verificar si hay huéspedes guardados previamente
+        has_guests = Guest.objects.filter(reservation=reservation).exists()
+        
+        if not has_guests:
+            # Si no hay huéspedes guardados, crear el formulario
+            GuestFormSet = inlineformset_factory(Reservation, Guest, form=GuestForm, extra=reservation.number_guests)
+            context['formset'] = GuestFormSet()
+        else:
+            # Si hay huéspedes guardados, mostrar mensaje de error
+            messages.error(self.request, "Ya se han guardado los datos de los huéspedes.")
+        
         return context
 
+    def post(self, request, *args, **kwargs):
+        reservation = Reservation.objects.latest('id')
+        GuestFormSet = inlineformset_factory(Reservation, Guest, form=GuestForm, extra=reservation.number_guests)
+        formset = GuestFormSet(request.POST)
+        if formset.is_valid():
+            for form in formset:
+                form.instance.reservation = reservation
+                form.save()
+            return redirect(reverse('reserva_info', args=[reservation.id]))  # Redirigir a la vista de detalle de la reserva
+        else:
+            context = self.get_context_data()
+            context['formset'] = formset
+            return self.render_to_response(context)
+ """
+class ReservaDetailView(DetailView):
+    model = Reservation
+    template_name = 'publica/reserva_info.html'
+    context_object_name = 'reservation'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        reservation = self.get_object()
+        
+        # Verificar si hay registros duplicados de huéspedes
+        duplicated_guests = Guest.objects.filter(reservation=reservation, duplicated=True)
+        
+        if duplicated_guests.exists():
+            # Eliminar los registros duplicados
+            duplicated_guests.delete()
+            messages.warning(self.request, "Se han eliminado los datos duplicados de los huéspedes.")
+        
+        context['duplicated_guests'] = duplicated_guests
+        return context
 
 class CustomLoginView(LoginView):
     form_class = LoginForm

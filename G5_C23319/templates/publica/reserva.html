@@ -25,6 +25,13 @@ Hacé tu reserva
           {% csrf_token %}
           {{ form.as_p }}
 
+{% comment %} <!-- Sección de huéspedes -->
+<h4>Datos de los Huéspedes</h4>
+{{ formset.management_form }}
+{% for form in formset %}
+  {{ form.as_table }}
+{% endfor %} {% endcomment %}
+
           <div class="row justify-content-center">
             {% if form.non_field_errors %}
             <div class="col-lg-12">
