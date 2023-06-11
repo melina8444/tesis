@@ -24,7 +24,7 @@ Hacé tu reserva
         <form method="post" enctype="multipart/form-data">
           {% csrf_token %}
           {% for field in form %}
-              <div class="form-group">
+              <div class="form-group m-3">
                   <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                   {{ field }}
               </div>
@@ -33,7 +33,7 @@ Hacé tu reserva
           <div class="row justify-content-center">
               {% if form.non_field_errors %}
                   <div class="col-lg-12">
-                      <div class="border rounded p-4 bg-success text-white">
+                      <div class="border rounded p-4 bg-success text-white m-3">
                           {% for error in form.non_field_errors %}
                               <div class="h6">{{ error }}</div>
                           {% endfor %}
@@ -42,51 +42,9 @@ Hacé tu reserva
               {% endif %}
           </div>
       
-          <button type="submit" class="btn btn-success">Guardar</button>
-          <a href="{% url 'Inicio' %}" class="btn btn-secondary">Cancelar</a>
-      </form>
-
-        {% comment %} <form method="post" enctype="multipart/form-data">
-          {% csrf_token %}
-          {{ form.as_p }}
-
-          <div class="row justify-content-center">
-            {% if form.non_field_errors %}
-            <div class="col-lg-12">
-                <div class="border rounded p-4 bg-success text-white">
-                    {% for error in form.non_field_errors %}
-                        <div class="h6">{{ error }}</div>
-                    {% endfor %}
-                </div>
-            </div>
-        {% endif %}
-        </div>
-         
-         
-          <button type="submit" class="btn btn-success">Guardar</button>
-          <a href="{% url 'Inicio' %}" class="btn btn-secondary">Cancelar</a>
-        
-        </form> {% endcomment %}
-        
-
-        {% comment %} <form method="post" enctype="multipart/form-data">
-          {% csrf_token %}
-          {{ form.as_p }}
-
-          <div class="row justify-content-center">
-            {% if form.non_field_errors %}
-            <div class="col-lg-12">
-                <div class="border rounded p-4 bg-success text-white">
-                    {% for error in form.non_field_errors %}
-                        <div class="h6">{{ error }}</div>
-                    {% endfor %}
-                </div>
-            </div>
-        {% endif %}
-        </div>
-          {% endcomment %}
-         
-          
+          <button type="submit" class="btn btn-success m-3">Guardar</button>
+          <a href="{% url 'Inicio' %}" class="btn btn-secondary m-3">Cancelar</a>
+      </form>        
       </div>
       </div>
     </div>
