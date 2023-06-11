@@ -38,9 +38,16 @@ class AvailabilityAdmin(admin.ModelAdmin):
     list_display = ('campsite', 'start_date', 'end_date', 'max_capacity')
     search_fields = ('start_date', 'end_date')
 
+class GuestAdminInline(admin.TabularInline):
+    model = Guest
+
 class ReservationAdmin(admin.ModelAdmin):
     list_display = ('code', 'campsite', 'availability', 'user', 'check_in', 'check_out', 'number_guests')
     search_fields = ('code', 'user', 'user.last_name')
+
+    inlines = [
+        GuestAdminInline,
+    ]
 
 class GuestAdmin(admin.ModelAdmin):
     list_display = ('reservation_code', 'first_name', 'last_name', 'dni', 'age')
@@ -50,6 +57,7 @@ class GuestAdmin(admin.ModelAdmin):
         return obj.reservation.code
     
     reservation_code.short_description = 'Código de Reserva'
+
 
 class ProfileAdminInline(admin.TabularInline):
     model = Profile

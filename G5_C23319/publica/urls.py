@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import CustomLoginView, RegistroUsuarioView, ReservationCreateView, CustomLogoutView, VerificacionRegView, ReservaDetailView, success_view
+from .views import CustomLoginView, RegistroUsuarioView, ReservationCreateView, CustomLogoutView, VerificacionRegView, ReservaDetailView
 
 urlpatterns = [
     path('', views.index, name="Inicio"),
@@ -21,5 +21,6 @@ urlpatterns = [
     path('register_verification/', VerificacionRegView.as_view(), name='register_verification'),
     path('categories/', views.categories, name="categories"),
     path('reserva_info/<int:pk>/', ReservaDetailView.as_view(), name='reserva_info'),
+     path('error_page/', views.error_page, name='error_page'),
 ]
 

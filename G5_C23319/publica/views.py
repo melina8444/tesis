@@ -1,6 +1,7 @@
 from django.forms import formset_factory, inlineformset_factory
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth import logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.http import HttpResponseRedirect
@@ -9,7 +10,7 @@ from publica.forms import ContactForm, UsuarioCreationForm, LoginForm
 from django.contrib import messages
 from administracion.models import Availability, Campsite, NaturalPark, Reservation, Category, Guest
 from administracion.forms import ReservationForm, GuestForm
-from django.views.generic import CreateView, TemplateView, DetailView, FormView
+from django.views.generic import CreateView, TemplateView, DetailView
 from django.db.models import Min, Sum
 
 import publica
@@ -118,7 +119,14 @@ class ReservationCreateView(LoginRequiredMixin, CreateView):
      
 
 def success_view(request):
-    reservation = Reservation.objects.latest('id')
+
+    try:
+        reservation = Reservation.objects.latest('id')
+    except Reservation.DoesNotExist:
+        # Si no se encuentra la reserva, redirigir a pagina de error
+        return redirect(reverse('error_page'))
+
+    #reservation = Reservation.objects.latest('id')
 
     # Verificar si los huéspedes ya han sido guardados
     if request.session.get('guests_saved', False):
@@ -152,43 +160,6 @@ def success_view(request):
     })
 
 
-
-
-""" class SuccessView(TemplateView):
-    template_name = 'publica/success.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        reservation = Reservation.objects.latest('id')
-        context['reservation'] = reservation
-        
-        # Verificar si hay huéspedes guardados previamente
-        has_guests = Guest.objects.filter(reservation=reservation).exists()
-        
-        if not has_guests:
-            # Si no hay huéspedes guardados, crear el formulario
-            GuestFormSet = inlineformset_factory(Reservation, Guest, form=GuestForm, extra=reservation.number_guests)
-            context['formset'] = GuestFormSet()
-        else:
-            # Si hay huéspedes guardados, mostrar mensaje de error
-            messages.error(self.request, "Ya se han guardado los datos de los huéspedes.")
-        
-        return context
-
-    def post(self, request, *args, **kwargs):
-        reservation = Reservation.objects.latest('id')
-        GuestFormSet = inlineformset_factory(Reservation, Guest, form=GuestForm, extra=reservation.number_guests)
-        formset = GuestFormSet(request.POST)
-        if formset.is_valid():
-            for form in formset:
-                form.instance.reservation = reservation
-                form.save()
-            return redirect(reverse('reserva_info', args=[reservation.id]))  # Redirigir a la vista de detalle de la reserva
-        else:
-            context = self.get_context_data()
-            context['formset'] = formset
-            return self.render_to_response(context)
- """
 class ReservaDetailView(DetailView):
     model = Reservation
     template_name = 'publica/reserva_info.html'
@@ -208,6 +179,7 @@ class ReservaDetailView(DetailView):
         
         context['duplicated_guests'] = duplicated_guests
         return context
+
 
 class CustomLoginView(LoginView):
     form_class = LoginForm
@@ -256,5 +228,7 @@ def categories(request):
     categories = Category.objects.all()
     return render(request, 'publica/categories.html', {'categories': categories})
 
+def error_page(request):
 
+    return render(request, 'publica/error_page.html')
         
