@@ -118,7 +118,7 @@ class Guest(models.Model):
     duplicated = models.BooleanField(default=False)
 
     def __str__(self):
-        return f'{self.nombre} {self.apellido}'
+        return f'{self.first_name} {self.last_name}'
 
 class Profile(models.Model):
     class Meta:

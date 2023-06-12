@@ -11179,3 +11179,12 @@ fieldset:disabled .btn {
   background-image: url('/static/publica/assets/hojitas.png');
   background-repeat: repeat;
 }
+
+.custom-popup-class {
+  width: 300px;
+  margin: 0 auto;
+  border: 2px solid green;
+  border-radius: 5px;
+  background-color: white;
+  text-align: center;
+}

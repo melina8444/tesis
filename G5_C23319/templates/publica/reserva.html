@@ -21,7 +21,7 @@ Hacé tu reserva
     <div class="col-lg-6">
       <div class="border rounded p-4 m-3 align-center">
 
-        <form method="post" enctype="multipart/form-data">
+        <form method="post" enctype="multipart/form-data" id="form-reserva">
           {% csrf_token %}
           {% for field in form %}
               <div class="form-group m-3">
@@ -42,11 +42,50 @@ Hacé tu reserva
               {% endif %}
           </div>
       
-          <button type="submit" class="btn btn-success m-3">Guardar</button>
+          <button type="submit" class="btn btn-success m-3" onclick="confirmSave(event)">Guardar</button>
           <a href="{% url 'Inicio' %}" class="btn btn-secondary m-3">Cancelar</a>
       </form>        
       </div>
       </div>
     </div>
   </div>
+
+  <script>
+    function confirmSave(event) {
+      event.preventDefault();
+  
+      Swal.fire({
+        title: '¿Confirmás estos datos?',
+        text: 'Esta acción no se puede deshacer, ante cualquier consulta o cambios en su reserva contactanos',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3d8c40',
+        cancelButtonColor: '#e9382e',
+        confirmButtonText: '<span style="color:white;">Guardar</span>',
+        cancelButtonText: '<span style="color:white;">Cancelar</span>',
+        customClass: {
+          confirmButton: 'btn btn-success',
+          cancelButton: 'btn btn-danger',
+          popup: 'custom-popup-class' // Clase personalizada para el mensaje de SweetAlert
+        }
+      }).then((result) => {
+        if (result.isConfirmed) {
+          document.getElementById('form-reserva').submit();
+        }
+      });
+    }
+  </script>
+  {% comment %} <script>
+    function confirmSave(event) {
+      var confirmationBox = document.createElement('div');
+      confirmationBox.classList.add('confirmation-box');
+      confirmationBox.innerHTML = '¿Estás seguro que deseas guardar los datos? Esta acción no se puede deshacer, ante cualquier consulta o cambios en su reserva contáctenos';
+  
+      if (!confirm('¿Estás seguro que deseas guardar los datos? Esta acción no se puede deshacer, ante cualquier consulta o cambios en su reserva contáctenos')) {
+        event.preventDefault();
+      }
+    }
+  </script> {% endcomment %}
+
 {% endblock %}
+
