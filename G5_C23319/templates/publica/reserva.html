@@ -49,14 +49,14 @@ Hacé tu reserva
       </div>
     </div>
   </div>
-
+  
   <script>
     function confirmSave(event) {
       event.preventDefault();
   
       Swal.fire({
         title: '¿Confirmás estos datos?',
-        text: 'Esta acción no se puede deshacer, ante cualquier consulta o cambios en su reserva contactanos',
+        text: 'Esta acción guardará tu reserva, ante cualquier consulta o cambios requeridos contactanos',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3d8c40',
@@ -75,17 +75,7 @@ Hacé tu reserva
       });
     }
   </script>
-  {% comment %} <script>
-    function confirmSave(event) {
-      var confirmationBox = document.createElement('div');
-      confirmationBox.classList.add('confirmation-box');
-      confirmationBox.innerHTML = '¿Estás seguro que deseas guardar los datos? Esta acción no se puede deshacer, ante cualquier consulta o cambios en su reserva contáctenos';
-  
-      if (!confirm('¿Estás seguro que deseas guardar los datos? Esta acción no se puede deshacer, ante cualquier consulta o cambios en su reserva contáctenos')) {
-        event.preventDefault();
-      }
-    }
-  </script> {% endcomment %}
+ 
 
 {% endblock %}
 

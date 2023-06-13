@@ -1,7 +1,7 @@
-from django.forms import formset_factory, inlineformset_factory
+from django.forms import formset_factory
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.views import LoginView, LogoutView
-from django.contrib.auth import logout
+#from django.contrib.auth import logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.http import HttpResponseRedirect
@@ -12,6 +12,10 @@ from administracion.models import Availability, Campsite, NaturalPark, Reservati
 from administracion.forms import ReservationForm, GuestForm
 from django.views.generic import CreateView, TemplateView, DetailView
 from django.db.models import Min, Sum
+from django.conf import settings
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 
 import publica
 
@@ -168,6 +172,7 @@ class ReservaDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         reservation = self.get_object()
+        guests = reservation.guest_set.all()
         
         # Verificar si hay registros duplicados de huéspedes
         duplicated_guests = Guest.objects.filter(reservation=reservation, duplicated=True)
@@ -178,24 +183,28 @@ class ReservaDetailView(DetailView):
             messages.warning(self.request, "Se han eliminado los datos duplicados de los huéspedes.")
         
         context['duplicated_guests'] = duplicated_guests
-        return context
 
+        total_cost = reservation.total_cost
+        twenty_percent = total_cost * 0.2
+        context['twenty_percent'] = twenty_percent
+
+        # Enviar correo electrónico al usuario con los datos de la reserva y los invitados
+        recipient_email = reservation.user.email
+        subject = 'Datos de tu Reserva'
+        context['reservation'] = reservation
+        context['guests'] = guests
+        context['twenty_percent'] = twenty_percent
+        html_message = render_to_string('publica/reserva_mail.html', context)
+        plain_message = strip_tags(html_message)
+        from_email = settings.EMAIL_HOST_USER
+        send_mail(subject, plain_message, from_email, [recipient_email], html_message=html_message)
+
+        return context
 
 class CustomLoginView(LoginView):
     form_class = LoginForm
     template_name = 'publica/login.html'
     success_url = reverse_lazy('Inicio') 
-
-    """ def form_valid(self, form):
-        user = form.get_user()
-
-        if user.is_authenticated:
-            if user.is_staff:
-                return redirect('inicio_admin')
-            else:
-                return super().form_valid(form)
-            
-        return super().form_valid(form) """
 
 class RegistroUsuarioView(CreateView):
     form_class = UsuarioCreationForm
