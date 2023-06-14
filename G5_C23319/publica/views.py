@@ -25,30 +25,62 @@ def index(request):
     is_staff = request.user.is_staff
     return render(request, 'publica/index.html', {'naturalparks': naturalparks, 'is_staff': is_staff})
 
-    #naturalparks = NaturalPark.objects.all()
-    #return render(request, 'publica/index.html', {'naturalparks': naturalparks})
-
 def campsites_by_naturalpark(request, naturalpark_id):
     naturalpark = NaturalPark.objects.get(pk=naturalpark_id)
     campsites = naturalpark.campsites.all()
     return render(request, 'publica/campsites_by_naturalpark.html', {'naturalpark': naturalpark, 'campsites': campsites})
 
-""" def login(request):
-    
-    return render(request,'publica/login.html') """
-
 def contact(request):
     if request.method == 'POST':
         contactForm = ContactForm(request.POST)
-        # contactForm.save(); #Para guardar en la base de datos
         if contactForm.is_valid():
-            messages.success(request,'Hemos recibido tus datos')
-            return HttpResponseRedirect('/contact/')
+            messages.success(request, 'Hemos recibido tus datos')
+
+            # Obtener los datos del formulario
+            nombre = contactForm.cleaned_data['nombre']
+            email = contactForm.cleaned_data['email']
+            comentario = contactForm.cleaned_data['comentario']
+
+            # enviar el correo electrónico utilizando send_mail()
+            subject = 'Nuevo mensaje de contacto'
+            message = f'Nombre: {nombre}\nEmail: {email}\nMensaje: {comentario}'
+            from_email = settings.EMAIL_HOST_USER
+            recipient_email = 'chikhakituti@gmail.com'
+
+            send_mail(subject, message, from_email, [recipient_email])
+           
+            return render(request, 'publica/contact.html', {'contactform': contactForm})
         else:
-            messages.warning(request,'Por favor revisa los errores en el formulario')
+            messages.warning(request, 'Por favor revisa los errores en el formulario')
     else:
         contactForm = ContactForm()
-    return render(request, 'publica/contact.html', {'contactform':contactForm})
+    return render(request, 'publica/contact.html', {'contactform': contactForm})
+
+""" def contact(request):
+    if request.method == 'POST':
+        contactForm = ContactForm(request.POST)
+        if contactForm.is_valid():
+            # Obtener los datos del formulario
+            nombre = contactForm.cleaned_data['nombre']
+            email = contactForm.cleaned_data['email']
+            comentario = contactForm.cleaned_data['comentario']
+
+            # Enviar correo electrónico
+            subject = 'Nuevo mensaje de contacto'
+            message = f'Nombre: {nombre}\nEmail: {email}\nMensaje: {comentario}'
+            from_email = settings.EMAIL_HOST_USER
+            recipient_email = 'chikhakituti@gmail.com'
+
+            send_mail(subject, message, from_email, [recipient_email])
+
+            messages.success(request, 'Hemos recibido tus datos')
+            return HttpResponseRedirect('/contact/')
+        else:
+            messages.warning(request, 'Por favor revisa los errores en el formulario')
+    else:
+        contactForm = ContactForm()
+    return render(request, 'publica/contact.html', {'contactform': contactForm}) """
+
         
 def aboutus(request):
     developers_list = [
