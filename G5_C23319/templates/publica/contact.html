@@ -13,10 +13,19 @@ Contactanos
         <div class="row">
           <div class="col-md-8">
             <div class="container p-5">
+             
               <form class="form-horizontal border-0 form-control" method="post" action="#" novalidate>
                 {% csrf_token %}
                 <fieldset>
                   <legend class="text-center header mb-4">Contacto</legend>
+
+                  {% if messages %}
+                  <div class="alert alert-success">
+                    {% for message in messages %}
+                    <p>{{ message }}</p>
+                    {% endfor %}
+                  </div>
+                  {% endif %}
     
                   {% for campo in contactform %}
                     <div class="row mb-3">
@@ -54,6 +63,8 @@ Contactanos
               <div class="container d-flex flex-column align-items-center text-center">
                 <p><i class="bi bi-telephone-forward-fill"></i></p>
                   <p><strong>Teléfono:</strong> 4444-4444</p>
+                  <p><i class="bi bi-envelope-fill"></i></p>
+                  <p><strong>Email:</strong> contacto@reservasnat.com</p>
                 <p><i class="bi bi-geo-alt-fill"></i></p>
                 <p><strong>Dirección:</strong> Calle BuenaVidaNatural 123, Buenos Aires</p>
               </div>
@@ -82,7 +93,6 @@ Contactanos
     </section>
     
   {% endblock %}
-{% comment %} </body>
-</html> {% endcomment %}
+
 
 

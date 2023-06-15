@@ -8,40 +8,21 @@ from django.db.models import Min, Sum
 import uuid
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
 
-
-from django.contrib.auth import authenticate, login
-from django.contrib.auth.forms import AuthenticationForm
-from django.contrib import messages
 
 def index_admin(request):
+    if not request.user.is_staff:
+        # Si el usuario no es miembro del staff, redirigir a una página de acceso denegado o mostrar un mensaje de error.
+        return redirect('access_denied')
+
+    # Lógica de la vista del administrador aquí
     return render(request, 'administracion/index_master.html')
 
+def access_denied(request):
 
-""" def listar_clientes(request):
-    clientes = [
-        {'nombre': 'Melina',
-         'apellido': 'Yangüez',
-         'email':'mel@gmail.com',
-         'telefono': '114564568',
-         'f_nac':'27/02/1980',
-         'dni': '26776232',
-         },
-
-         {'nombre': 'Cecilia',
-         'apellido': 'Santillan',
-         'email':'ceci@gmail.com',
-         'telefono': '11245689',
-         'f_nac':'02/08/1988',
-         'dni': '36565789',
-         },
-    ]
-    context = {
-                'clientes': clientes,
-                'title': "Reservas Naturales Privadas",
-            }
-    return render(request, 'administracion/clientes/listar_clientes.html', context)
- """
+    return render(request, 'administracion/access_denied.html')
 
 class NaturalParkListView(ListView):
     model = NaturalPark

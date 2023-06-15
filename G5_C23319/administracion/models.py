@@ -106,6 +106,19 @@ class Reservation(models.Model):
     def __str__(self):
         return f'Código Reserva: {self.code} + Nombre y Apellido: {self.user.first_name}+ " " +{self.user.last_name}'
 
+class Guest(models.Model):
+    class Meta:
+        db_table = 'Guests'
+
+    reservation = models.ForeignKey(Reservation, on_delete=models.CASCADE)
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    dni = models.CharField(max_length=10)
+    age = models.IntegerField()
+    duplicated = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f'{self.first_name} {self.last_name}'
 
 class Profile(models.Model):
     class Meta:
