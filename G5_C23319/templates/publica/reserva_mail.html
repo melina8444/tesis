@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Correo Reserva</title>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+          <div class="col-md-6 bg-light p-4 rounded border border-success m-4">
+            <h2 class="text-success text-center justify-content-center p-2">Datos de tu Reserva</h2>
+            
+            <p class="text-center">Código de Reserva: {{ reservation.code }}</p>
+            <p class="text-center">Nombre y Apellido: {{ reservation.user.get_full_name }}</p>
+            <p class="text-center">Camping Reservado: {{ reservation.campsite.name }}</p>
+            <p class="text-center">Fecha de Check-in: {{ reservation.check_in }}</p>
+            <p class="text-center">Fecha de Check-out: {{ reservation.check_out }}</p>
+            <p class="text-center">Número de Huéspedes: {{ reservation.number_guests }}</p>
+            <p class="text-center">Costo Total: ${{ reservation.total_cost }}</p>
+          </div>
+          <div class="col-md-6 bg-light p-4 rounded border border-success m-4">
+            <h2 class="text-success text-center justify-content-center p-2">Datos de los Huéspedes</h2>
+            {% for guest in reservation.guest_set.all %}
+            <div class="container p-3 rounded border border-success text-center mb-3">
+              <p>Nombre: {{ guest.first_name }}</p>
+              <p>Apellido: {{ guest.last_name }}</p>
+              <p>DNI: {{ guest.dni}}</p>
+            </div>
+            <div class="container p-3 rounded border border-success text-center mb-3">
+              <h3>Datos para realizar el pago del 20% de tu Reserva<h3>
+              <p>Pago a realizar: ${{ twenty_percent }}</p>
+              <h4>Datos de la cuenta</h4>
+              <p>Alias: ssdfdsf.sdfasdfds.adsfsdf</p>
+              <p>CBU: q98dkfj984374983458sdjfkdjsf</p>
+              <p>Una vez realizado el pago, envíanos el comprobante a: reservasnaturalesg@gmail.com
+              </p>
+              <p>¡MUCHAS GRACIAS!</p>
+            </div>
+            {% endfor %}
+</body>
+</html>

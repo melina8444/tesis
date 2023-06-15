@@ -1,0 +1,32 @@
+{%extends '../publica/index.html'%}
+{% load static %}
+
+{% block title %}
+Login - {{ block.super }}
+{% endblock title%}
+
+
+{% block page_title %}
+Hubo un error, lo sentimos
+{% endblock %}
+{% block video %}
+{% endblock %}
+
+    {% block content %}
+    <div class="container m-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+              <div class="border rounded p-4">
+                <p>Se produjo un error</p>
+                <p>Puedes regresar a la página de inicio o contactarnos para más información</p>
+                <a href="{% url 'Inicio' %}" class="btn btn-sm btn-secondary m-2">Inicio</a>
+                <a href="{% url 'contact' %}" class="btn btn-sm btn-success m-2">Contáctanos</a>
+    </div>
+</div>
+</div>
+</div>
+
+    
+      {% endblock %}
+</body>
+</html>

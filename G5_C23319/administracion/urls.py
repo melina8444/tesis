@@ -29,4 +29,5 @@ urlpatterns = [
     path('reservations/create/', ReservationCreateView.as_view(), name='reservation_create'),
     path('reservations/update/<int:pk>/', ReservationUpdateView.as_view(), name='reservation_update'),
     path('reservations/delete/<int:pk>/', ReservationDeleteView.as_view(), name='reservation_delete'),
+    path('access_denied/', views.access_denied, name='access_denied'),
 ]

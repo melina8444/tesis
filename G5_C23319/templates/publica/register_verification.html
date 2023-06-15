@@ -13,12 +13,18 @@ Registrate o Iniciá Sesión
 
 
 {% block content %}
-<div class="container px-4 px-lg-5 mt-5">
-  <h1 class="my-4 border rounded border-success text-center justify-content-center">Verificación de registro</h1>
-  <p>Para continuar con la reserva, tenés que registrarte e iniciar sesión.</p>
-  <div class="text-center">
+<div class="container m-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+<div class="container px-4 px-lg-5 mt-5 text-center">
+  <h5>Para continuar con la reserva, tenés que registrarte e iniciar sesión.</h5>
+  <div class="text-center p-3 m-5">
     <a class="btn btn-outline-success mt-auto" href="{% url 'loginrn' %}?next={{ request.GET.next }}">Iniciar sesión</a>
     <a class="btn btn-outline-success mt-auto" href="{% url 'register' %}?next={{ request.GET.next }}">Registrarse</a>
   </div>
 </div>
+</div>
+</div>
+</div>
+
 {% endblock content %}
