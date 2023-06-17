@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
-from .models import NaturalPark, Category, Campsite, Availability, Profile, Reservation
-from .forms import CampsiteFilterForm, NaturalParkForm, NaturalParkFilterForm, NaturalParkFilterForm, CategoryForm, CampsiteForm, AvailabilityForm, AvailabilityCampsiteFilterForm, ProfileFilterForm, ProfileForm, ReservationForm
+from .models import NaturalPark, Category, Campsite, Availability, Profile, Reservation, Guest
+from .forms import CampsiteFilterForm, NaturalParkForm, NaturalParkFilterForm, NaturalParkFilterForm, CategoryForm, CampsiteForm, AvailabilityForm, AvailabilityCampsiteFilterForm, ProfileFilterForm, ProfileForm, ReservationForm, GuestForm, GuestFilterForm
 from django.db.models import Min, Sum
 import uuid
 from django.contrib import messages
@@ -271,4 +271,45 @@ class ReservationDeleteView(DeleteView):
     model = Reservation
     template_name = 'administracion/reservas/reservation_delete.html'
     success_url = reverse_lazy('reservation_list')
+    
 
+class GuestListView(ListView):
+    model = Guest
+    template_name = 'administracion/huespedes/guest_list.html'
+    context_object_name = 'guests'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filter_form'] = GuestFilterForm(self.request.GET)
+        
+        reservation = self.request.GET.get('reservation')
+        if reservation:
+            queryset = self.get_queryset()
+            if not queryset:
+                messages.info(self.request, "No hay reservas con ese código.")
+                
+        return context
+    
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        reservation = self.request.GET.get('reservation')
+        if reservation:
+            queryset = queryset.filter(reservation__code=reservation)
+        return queryset
+
+class GuestCreateView(CreateView):
+    model = Guest
+    form_class = GuestForm
+    template_name = 'administracion/huespedes/guest_create.html'
+    success_url = reverse_lazy('guest_list')
+
+class GuestUpdateView(UpdateView):
+    model = Guest
+    form_class = GuestForm
+    template_name = 'administracion/huespedes/guest_update.html'
+    success_url = reverse_lazy('guest_list')
+
+class GuestDeleteView(DeleteView):
+    model = Guest
+    template_name = 'administracion/huespedes/guest_delete.html'
+    success_url = reverse_lazy('guest_list')

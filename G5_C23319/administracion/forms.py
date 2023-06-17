@@ -247,3 +247,12 @@ class ProfileFilterForm(forms.Form):
                 raise forms.ValidationError("No se encontraron perfiles con ese nombre.")
         return user
 
+class GuestFilterForm(forms.Form):
+    reservation = forms.CharField(label='', required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese la reserva'}))
+
+    def clean_reservation(self):
+        reservation = self.cleaned_data.get('reservation')
+        if reservation:
+            if not Guest.objects.filter(reservation=reservation).exists():
+                raise forms.ValidationError("No se encontraron huéspedes para esa reserva.")
+        return reservation

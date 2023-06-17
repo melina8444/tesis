@@ -1,3 +1,5 @@
+
+from django.utils import timezone
 import uuid
 from django.db import models
 from django.contrib.auth.models import AbstractUser
@@ -97,6 +99,7 @@ class Reservation(models.Model):
     check_out = models.DateField()
     number_guests = models.IntegerField()
     total_cost = models.FloatField(max_length=10)
+    reservation_date = models.DateTimeField(default=timezone.now, editable=False)
 
     def save(self, *args, **kwargs):
         if not self.code:
@@ -104,7 +107,7 @@ class Reservation(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f'Código Reserva: {self.code} + Nombre y Apellido: {self.user.first_name}+ " " +{self.user.last_name}'
+        return f'Código Reserva: {self.code} / Usuario: {self.user.first_name} {self.user.last_name}'
 
 class Guest(models.Model):
     class Meta:
@@ -115,10 +118,10 @@ class Guest(models.Model):
     last_name = models.CharField(max_length=100)
     dni = models.CharField(max_length=10)
     age = models.IntegerField()
-    duplicated = models.BooleanField(default=False)
+    is_saved = models.BooleanField(default=False)
 
     def __str__(self):
-        return f'{self.first_name} {self.last_name}'
+        return f'{self.reservation}'
 
 class Profile(models.Model):
     class Meta:

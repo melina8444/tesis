@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.views import LoginView, LogoutView
 #from django.contrib.auth import logout
 from django.contrib.auth.mixins import LoginRequiredMixin
-
+import smtplib
 from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from publica.forms import ContactForm, UsuarioCreationForm, LoginForm
@@ -55,50 +55,12 @@ def contact(request):
     else:
         contactForm = ContactForm()
     return render(request, 'publica/contact.html', {'contactform': contactForm})
-
-""" def contact(request):
-    if request.method == 'POST':
-        contactForm = ContactForm(request.POST)
-        if contactForm.is_valid():
-            # Obtener los datos del formulario
-            nombre = contactForm.cleaned_data['nombre']
-            email = contactForm.cleaned_data['email']
-            comentario = contactForm.cleaned_data['comentario']
-
-            # Enviar correo electrónico
-            subject = 'Nuevo mensaje de contacto'
-            message = f'Nombre: {nombre}\nEmail: {email}\nMensaje: {comentario}'
-            from_email = settings.EMAIL_HOST_USER
-            recipient_email = 'chikhakituti@gmail.com'
-
-            send_mail(subject, message, from_email, [recipient_email])
-
-            messages.success(request, 'Hemos recibido tus datos')
-            return HttpResponseRedirect('/contact/')
-        else:
-            messages.warning(request, 'Por favor revisa los errores en el formulario')
-    else:
-        contactForm = ContactForm()
-    return render(request, 'publica/contact.html', {'contactform': contactForm}) """
-
         
 def aboutus(request):
     developers_list = [
         {'name': 'Melina',
          'role': 'Desarrolladora',
          'image': 'melina.jpg',
-         'socialnetinst':'#',
-         'socialnetwa':'#',
-         },
-          {'name': 'Santiago',
-         'role': 'Desarrollador',
-         'image': 'santi.jpg',
-         'socialnetinst':'#',
-         'socialnetwa':'#',
-         },
-          {'name': 'Nicolás',
-         'role': 'Desarrollador',
-         'image': 'nico.jpg',
          'socialnetinst':'#',
          'socialnetwa':'#',
          },
@@ -152,9 +114,48 @@ class ReservationCreateView(LoginRequiredMixin, CreateView):
         form.instance.availability = availability
 
         return super().form_valid(form)   
+    
+def success_view(request):
+    try:
+        reservation = Reservation.objects.latest('id')
+    except Reservation.DoesNotExist:
+        # Si no se encuentra la reserva, redirigir a página de error
+        return redirect(reverse('error_page'))
+
+    if request.method == 'POST':
+        GuestFormSet = formset_factory(GuestForm, extra=reservation.number_guests)
+        formset = GuestFormSet(request.POST)
+
+        if formset.is_valid():
+            # Eliminar los huéspedes existentes marcados como guardados
+            Guest.objects.filter(reservation=reservation, is_saved=True).delete()
+
+            # Crear los nuevos huéspedes y marcarlos como guardados
+            for form in formset:
+                guest = form.save(commit=False)
+                guest.reservation = reservation
+                guest.is_saved = True  # Marcar como guardado
+                guest.save()
+
+            # Realizar la redirección manualmente
+            return redirect(reverse('reserva_info', args=[reservation.id]))
+        else:
+            messages.error(request, "Ha ocurrido un error. Por favor, revisa los datos ingresados.")
+    else:
+        # Verificar si existen huéspedes marcados como guardados y eliminarlos
+        Guest.objects.filter(reservation=reservation, is_saved=True).delete()
+
+        GuestFormSet = formset_factory(GuestForm, extra=reservation.number_guests)
+        formset = GuestFormSet()
+
+    return render(request, 'publica/success.html', {
+        'reservation': reservation,
+        'formset': formset
+    })
+
      
 
-def success_view(request):
+""" def success_view(request):
 
     try:
         reservation = Reservation.objects.latest('id')
@@ -194,7 +195,7 @@ def success_view(request):
         'reservation': reservation,
         'formset': formset
     })
-
+ """
 
 class ReservaDetailView(DetailView):
     model = Reservation
@@ -205,32 +206,28 @@ class ReservaDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         reservation = self.get_object()
         guests = reservation.guest_set.all()
-        
-        # Verificar si hay registros duplicados de huéspedes
-        duplicated_guests = Guest.objects.filter(reservation=reservation, duplicated=True)
-        
-        if duplicated_guests.exists():
-            # Eliminar los registros duplicados
-            duplicated_guests.delete()
-            messages.warning(self.request, "Se han eliminado los datos duplicados de los huéspedes.")
-        
-        context['duplicated_guests'] = duplicated_guests
 
         total_cost = reservation.total_cost
         twenty_percent = total_cost * 0.2
         context['twenty_percent'] = twenty_percent
 
         # Enviar correo electrónico al usuario con los datos de la reserva y los invitados
-        recipient_email = reservation.user.email
-        subject = 'Datos de tu Reserva'
-        context['reservation'] = reservation
-        context['guests'] = guests
-        context['twenty_percent'] = twenty_percent
-        html_message = render_to_string('publica/reserva_mail.html', context)
-        plain_message = strip_tags(html_message)
-        from_email = settings.EMAIL_HOST_USER
-        send_mail(subject, plain_message, from_email, [recipient_email], html_message=html_message)
+        try:
 
+            recipient_email = reservation.user.email
+            subject = 'Datos de tu Reserva'
+            context['reservation'] = reservation
+            context['guests'] = guests
+            context['twenty_percent'] = twenty_percent
+            html_message = render_to_string('publica/reserva_mail.html', context)
+            plain_message = strip_tags(html_message)
+            from_email = settings.EMAIL_HOST_USER
+            send_mail(subject, plain_message, from_email, [recipient_email], html_message=html_message)
+            #return redirect('reserva_info', reservation.id)
+        except:
+            messages.error(self.request, "Error al enviar el correo electrónico. Por favor, inténtalo nuevamente.")
+            #return redirect('reserva_info', reservation.id)
+        
         return context
 
 class CustomLoginView(LoginView):
