@@ -1,17 +1,19 @@
 
 import calendar
 from django.shortcuts import render, redirect
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from .models import NaturalPark, Category, Campsite, Availability, Profile, Reservation, Guest
-from .forms import CampsiteFilterForm, NaturalParkForm, NaturalParkFilterForm, NaturalParkFilterForm, CategoryForm, CampsiteForm, AvailabilityForm, AvailabilityCampsiteFilterForm, ProfileFilterForm, ProfileForm, ReservationForm, GuestForm, GuestFilterForm
+from .forms import CampsiteFilterForm, NaturalParkForm, NaturalParkFilterForm, NaturalParkFilterForm, CategoryForm, CampsiteForm, AvailabilityForm, AvailabilityCampsiteFilterForm, ProfileFilterForm, ProfileForm, ReservationCampsiteFilterForm, ReservationForm, GuestForm, GuestFilterForm
 from django.db.models import Min, Sum, Q, OuterRef, Subquery
 import uuid
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
+from openpyxl import Workbook
+from django.http import HttpResponse
 
 
 @staff_member_required(login_url='access_denied')  # Requiere que el usuario sea miembro del staff
@@ -63,6 +65,10 @@ def index_admin(request):
             ),
         ).values('name', 'total_guests', 'total_capacity')
 
+
+        if not campsites_occupancy:
+            campsites_occupancy = None
+
         # Calcular la capacidad total para ese mes
         total_capacity = sum(campsite['total_capacity'] or 0 for campsite in campsites_occupancy)
 
@@ -99,29 +105,6 @@ def index_admin(request):
         }
 
     return render(request, 'administracion/index_master.html', context)
-"""     # Obtener la fecha actual
-    today = date.today()
-
-    # Definir el rango de fechas desde el inicio hasta el final del día
-    start_of_day = datetime.combine(today, datetime.min.time())
-    end_of_day = datetime.combine(today, datetime.max.time())
-
-
-    num_naturalparks = NaturalPark.objects.count()
-    num_clients = Profile.objects.filter(is_client=True).count()
-    num_reservations = Reservation.objects.count()
-
-    # Obtener las reservas del día
-    reservations_today = Reservation.objects.filter(reservation_date__range=(start_of_day, end_of_day))
-
-    context = {
-        'num_naturalparks': num_naturalparks,
-        'num_clients': num_clients,
-        'num_reservations': num_reservations,
-        'reservations_today': reservations_today,
-    }
-
-    return render(request, 'administracion/index_master.html', context) """
 
 def access_denied(request):
 
@@ -295,6 +278,19 @@ class ReservationListView(ListView):
     model = Reservation
     template_name = 'administracion/reservas/reservation_list.html'
     context_object_name = 'reservations'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filter_form'] = ReservationCampsiteFilterForm(self.request.GET)
+        return context
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        campsite_name = self.request.GET.get('campsite_name')
+        if campsite_name:
+            queryset = queryset.filter(campsite__name__icontains=campsite_name)
+        return queryset
+
         
 class ReservationCreateView(SuccessMessageMixin, CreateView):
     model = Reservation
@@ -302,7 +298,7 @@ class ReservationCreateView(SuccessMessageMixin, CreateView):
     template_name = 'administracion/reservas/reservation_create.html'
     success_url = reverse_lazy('reservation_list')
     success_message_popup = "La reserva se registró con éxito"
-    
+
     def form_valid(self, form):
         campsite = form.cleaned_data.get('campsite')
         number_guests = form.cleaned_data.get('number_guests')
@@ -347,29 +343,6 @@ class ReservationUpdateView(UpdateView):
       
         return super().form_valid(form)
 
-        """ response = super().form_valid(form)
-
-        # Obtener el usuario registrado en la reserva
-        user = form.cleaned_data['user']
-
-        # Obtener la URL del sitio actual
-        current_site = get_current_site(self.request)
-
-        # Generar el contenido del correo electrónico
-        subject = 'Confirmación de reserva modificada'
-        message = render_to_string('administracion/reservas/reservation_update_confirmation.html', {
-            'user': user,
-            'reservation': reservation,
-            'site': current_site,
-        })
-        from_email = 'noreply@example.com'
-        to_email = user.email
-
-        # Enviar el correo electrónico
-        send_mail(subject, message, from_email, [to_email])
-
-        return response
- """
 class ReservationDeleteView(DeleteView):
     model = Reservation
     template_name = 'administracion/reservas/reservation_delete.html'
@@ -385,8 +358,8 @@ class GuestListView(ListView):
         context = super().get_context_data(**kwargs)
         context['filter_form'] = GuestFilterForm(self.request.GET)
         
-        reservation = self.request.GET.get('reservation')
-        if reservation:
+        reservation_code = self.request.GET.get('reservation_code')
+        if reservation_code:
             queryset = self.get_queryset()
             if not queryset:
                 messages.info(self.request, "No hay reservas con ese código.")
@@ -395,9 +368,9 @@ class GuestListView(ListView):
     
     def get_queryset(self):
         queryset = super().get_queryset()
-        reservation = self.request.GET.get('reservation')
-        if reservation:
-            queryset = queryset.filter(reservation__code=reservation)
+        reservation_code = self.request.GET.get('reservation_code')
+        if reservation_code:
+            queryset = queryset.filter(reservation__code=reservation_code)
         return queryset
 
 class GuestCreateView(CreateView):
@@ -416,3 +389,52 @@ class GuestDeleteView(DeleteView):
     model = Guest
     template_name = 'administracion/huespedes/guest_delete.html'
     success_url = reverse_lazy('guest_list')
+
+def download_excel(request):
+    reservations = Reservation.objects.all()  # Obtener todas las reservas
+
+    # Crear un nuevo libro de Excel y una hoja de cálculo
+    workbook = Workbook()
+    worksheet = workbook.active
+
+    # Agregar encabezados a la hoja de cálculo
+    headers = [
+        'Código Reserva',
+        'Fecha de Reserva',
+        'Nombre y Apellido',
+        'Camping',
+        'Check-in',
+        'Check-out',
+        'Número de Huéspedes',
+        'Costo Total',
+    ]
+    worksheet.append(headers)
+
+    # Agregar los datos de las reservas a la hoja de cálculo
+    for reservation in reservations:
+       
+        # Convertir fechas para que las acepte Excel
+        reservation_date = datetime.combine(reservation.reservation_date, datetime.min.time())
+        check_in = datetime.combine(reservation.check_in, datetime.min.time())
+        check_out = datetime.combine(reservation.check_out, datetime.min.time())
+
+        row = [
+            reservation.code,
+            reservation_date.astimezone(timezone.utc).replace(tzinfo=None),
+            reservation.user.username,
+            reservation.campsite.name,
+            check_in.astimezone(timezone.utc).replace(tzinfo=None),
+            check_out.astimezone(timezone.utc).replace(tzinfo=None),
+            reservation.number_guests,
+            reservation.total_cost,
+        ]
+        worksheet.append(row)
+
+    # Configurar la respuesta HTTP para descargar el archivo Excel
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=reservas.xlsx'
+
+    # Guardar el libro de Excel en la respuesta
+    workbook.save(response)
+
+    return response

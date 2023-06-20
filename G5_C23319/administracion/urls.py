@@ -34,4 +34,5 @@ urlpatterns = [
     path('guests/update/<int:pk>/', GuestUpdateView.as_view(), name='guest_update'),
     path('guests/delete/<int:pk>/', GuestDeleteView.as_view(), name='guest_delete'),
     path('access_denied/', views.access_denied, name='access_denied'),
+    path('reservations/download_excel/', views.download_excel, name='download_excel'),
 ]

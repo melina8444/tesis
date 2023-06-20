@@ -67,7 +67,7 @@ class CampsiteFilterForm(forms.Form):
         name = self.cleaned_data.get('name')
         if name:
             if not Campsite.objects.filter(name=name).exists():
-                raise forms.ValidationError("No se encontraron campamentos con ese nombre.")
+                raise forms.ValidationError("No se encontraron campings con ese nombre.")
         return name
 class CampsiteForm(forms.ModelForm):
 
@@ -123,7 +123,7 @@ class AvailabilityCampsiteFilterForm(forms.Form):
         campsite_name = self.cleaned_data.get('campsite_name')
         if campsite_name:
             if not Availability.objects.filter(campsite__name=campsite_name).exists():
-                raise forms.ValidationError("No se encontraron campamentos con ese nombre.")
+                raise forms.ValidationError("No se encontraron disponibilidades para ese camping o el nombre es incorrecto.")
         return campsite_name
 
 
@@ -186,7 +186,16 @@ class ReservationForm(forms.ModelForm):
             self.add_error(None, forms.ValidationError(f"Se debe ingresar un número de huéspedes"))
 
         return cleaned_data
-    
+
+class ReservationCampsiteFilterForm(forms.Form):
+    campsite_name = forms.CharField(label='', required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese el nombre'}))
+
+    def clean_campsite_name(self):
+        campsite_name = self.cleaned_data.get('campsite_name')
+        if campsite_name:
+            if not Reservation.objects.filter(campsite__name=campsite_name).exists():
+                raise forms.ValidationError("No se encontraron reservas para ese camping o el nombre del camping es incorrecto.")
+        return campsite_name
 class GuestForm(forms.ModelForm):
     class Meta:
         model = Guest
@@ -248,11 +257,11 @@ class ProfileFilterForm(forms.Form):
         return user
 
 class GuestFilterForm(forms.Form):
-    reservation = forms.CharField(label='', required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese la reserva'}))
+    reservation_code = forms.CharField(label='', required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese la reserva'}))
 
-    def clean_reservation(self):
-        reservation = self.cleaned_data.get('reservation')
-        if reservation:
-            if not Guest.objects.filter(reservation=reservation).exists():
+    def clean_reservation_code(self):
+        reservation_code = self.cleaned_data.get('reservation_code')
+        if reservation_code:
+            if not Guest.objects.filter(reservation__code=reservation_code).exists():
                 raise forms.ValidationError("No se encontraron huéspedes para esa reserva.")
-        return reservation
+        return reservation_code

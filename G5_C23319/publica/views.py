@@ -1,10 +1,7 @@
 from django.forms import formset_factory
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.views import LoginView, LogoutView
-#from django.contrib.auth import logout
 from django.contrib.auth.mixins import LoginRequiredMixin
-import smtplib
-from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from publica.forms import ContactForm, UsuarioCreationForm, LoginForm
 from django.contrib import messages
@@ -16,8 +13,6 @@ from django.conf import settings
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
-
-import publica
 
 
 def index(request):
@@ -69,7 +64,6 @@ def aboutus(request):
          'image': 'ceci.jpeg',
          'socialnetinst':'#',
          'socialnetwa':'#',
-         
          },
          ]
     
@@ -137,6 +131,11 @@ def success_view(request):
                 guest.is_saved = True  # Marcar como guardado
                 guest.save()
 
+            # Actualizar el campo is_client en el perfil del usuario
+            profile = request.user.profile
+            profile.is_client = True
+            profile.save()
+
             # Realizar la redirección manualmente
             return redirect(reverse('reserva_info', args=[reservation.id]))
         else:
@@ -152,50 +151,6 @@ def success_view(request):
         'reservation': reservation,
         'formset': formset
     })
-
-     
-
-""" def success_view(request):
-
-    try:
-        reservation = Reservation.objects.latest('id')
-    except Reservation.DoesNotExist:
-        # Si no se encuentra la reserva, redirigir a pagina de error
-        return redirect(reverse('error_page'))
-
-    #reservation = Reservation.objects.latest('id')
-
-    # Verificar si los huéspedes ya han sido guardados
-    if request.session.get('guests_saved', False):
-        messages.error(request, "Los datos de los huéspedes ya han sido guardados.")
-        return redirect(reverse('reserva_info', args=[reservation.id]))
-
-    if request.method == 'POST':
-        GuestFormSet = formset_factory(GuestForm, extra=reservation.number_guests)
-        formset = GuestFormSet(request.POST)
-
-        if formset.is_valid():
-            for form in formset:
-                guest = form.save(commit=False)
-                guest.reservation = reservation
-                guest.save()
-
-            # Marcar los huéspedes como guardados en la variable de sesión
-            request.session['guests_saved'] = True
-
-            # Realizar la redirección manualmente
-            return redirect(reverse('reserva_info', args=[reservation.id]))
-        else:
-            messages.error(request, "Ha ocurrido un error. Por favor, revisa los datos ingresados.")
-    else:
-        GuestFormSet = formset_factory(GuestForm, extra=reservation.number_guests)
-        formset = GuestFormSet()
-    
-    return render(request, 'publica/success.html', {
-        'reservation': reservation,
-        'formset': formset
-    })
- """
 
 class ReservaDetailView(DetailView):
     model = Reservation

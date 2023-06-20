@@ -245,8 +245,8 @@
                               {% endif %}
                             </div>
                           </div>
-                              {% if mes and campsites_occupancy %}
-                              {% if campsites_occupancy|length > 0 %}
+                             {% if mes and campsites_occupancy %}
+                              {% if campsites_occupancy %}
                               <table class="table table-bordered table-success rounded text-center">
                                   <thead>
                                       <tr>
@@ -266,17 +266,19 @@
                                       </tr>
                                       {% empty %}
                                       <tr>
-                                          <td colspan="4">No hay datos para mostrar este mes.</td>
+                                          <td colspan="4">Seleccione un mes para mostrar los datos mensuales registrados.</td>
                                       </tr>
                                       {% endfor %}
                                   </tbody>
                               </table>
+
                               {% else %}
-                              <p>No hay datos para mostrar este mes.</p>
+                                  <p>No hay datos registrados este mes.</p>
+                              {% endif %}
+                          {% else %}
+                              <p>Seleccione un mes para mostrar los datos mensuales registrados.</p>
                           {% endif %}
-                      {% else %}
-                          <p>No hay valores para mostrar.</p>
-                      {% endif %}
+                      
                           </div>
                       </div>
                   </div>
@@ -284,7 +286,7 @@
 
                 <h2 class="display-6 mt-5 text-center">Reservas del Día</h2>
                 <div class="table-responsive rounded mt-4" style="overflow-x: auto;">
-                    <table class="table table-bordered table-success rounded text-center">
+                    <table class="table table-bordered table-warning rounded text-center">
                         <thead>
                             <tr>
                                 <th>Código de reserva</th>
