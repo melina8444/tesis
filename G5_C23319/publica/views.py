@@ -23,6 +23,16 @@ def index(request):
 def campsites_by_naturalpark(request, naturalpark_id):
     naturalpark = NaturalPark.objects.get(pk=naturalpark_id)
     campsites = naturalpark.campsites.all()
+
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    if start_date and end_date:
+        campsites = campsites.filter(
+            availabilities__start_date__lte=start_date,
+            availabilities__end_date__gte=end_date
+        )
+
     return render(request, 'publica/campsites_by_naturalpark.html', {'naturalpark': naturalpark, 'campsites': campsites})
 
 def contact(request):
@@ -128,7 +138,7 @@ def success_view(request):
             for form in formset:
                 guest = form.save(commit=False)
                 guest.reservation = reservation
-                guest.is_saved = True  # Marcar como guardado
+                guest.is_saved = True  # Marcar el huésped como guardado
                 guest.save()
 
             # Actualizar el campo is_client en el perfil del usuario
@@ -136,7 +146,7 @@ def success_view(request):
             profile.is_client = True
             profile.save()
 
-            # Realizar la redirección manualmente
+            # Realizar la redirección
             return redirect(reverse('reserva_info', args=[reservation.id]))
         else:
             messages.error(request, "Ha ocurrido un error. Por favor, revisa los datos ingresados.")
@@ -178,10 +188,9 @@ class ReservaDetailView(DetailView):
             plain_message = strip_tags(html_message)
             from_email = settings.EMAIL_HOST_USER
             send_mail(subject, plain_message, from_email, [recipient_email], html_message=html_message)
-            #return redirect('reserva_info', reservation.id)
+           
         except:
             messages.error(self.request, "Error al enviar el correo electrónico. Por favor, inténtalo nuevamente.")
-            #return redirect('reserva_info', reservation.id)
         
         return context
 

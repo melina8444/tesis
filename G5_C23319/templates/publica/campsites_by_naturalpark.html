@@ -15,8 +15,39 @@ Campings disponibles
 {% endblock %}
 {% block content %}
 <div class="container px-4 px-lg-5 mt-5">
-      <!--Campsite category-->
+     
     <h1 class="my-4 border rounded border-success text-center justify-content-center">{{ naturalpark.name }}</h1>
+    
+
+    <div class="container mb-3">
+      <div class="row justify-content-center">
+        <div class="col-md-6 bg-light p-4 rounded border border-success rounded">
+          <form method="GET" action="" class="row g-3">
+            <h6 class="bg-success p-2 rounded text-center text-white">Elegí las fechas de tu viaje a la naturaleza</h6>
+            <div class="col-md-6">  
+              <label for="start_date" class="form-label">Fecha de Inicio</label>
+              <input type="date" name="start_date" class="form-control" />
+            </div>
+            <div class="col-md-6">
+              <label for="end_date" class="form-label">Fecha de Fin</label>
+              <input type="date" name="end_date" class="form-control" />
+            </div>
+            <div class="col-12 d-flex justify-content-end">
+              <button type="submit" class="btn btn-success">
+                <i class="bi bi-arrow-right-circle-fill text-white"></i>
+              </button>
+            </div>
+          </form>
+          
+        </div>
+      </div>
+    </div>
+
+
+
+
+
+    
     <div
       class="row row-cols-1 row-cols-md-2 justify-content-center"
     >
@@ -33,20 +64,46 @@ Campings disponibles
           <div class="card-body p-4">
             <div class="text-center">
               <!-- Campsite name-->
-              <h4 class="fw-bolder p-2">{{campsite.name}}</h4>
+              <p class="display-5 border rounded border-success p-1">{{campsite.name}}</p>
               <!-- Campsite Detalis-->
-              <h6 class="fw-bolder p-1">Categoría</h6>
+              <p class="fw-lighter display-6 p-1 mt-5">Categoría</p>
               {% for category in campsite.categories.all %}
-                <p>{{ category.name }}</p>
+                <h5>{{ category.name }}</h5>
               {% endfor %}
-              <h6 class="fw-bolder p-1">Breve Reseña</h6>
-              <p>{{campsite.description}}</p>
-              <h6 class="fw-bolder p-1">Disponibilidad</h6>
+              <p class="fw-lighter display-6 p-1 mt-4">Breve Reseña</p>
+              <p>{{campsite.description}}<p>
+              <p class="fw-lighter display-6 p-1 mt-4">Disponibilidad</p>
+<table class="table text-center table-warning">
+  <thead>
+    <tr>
+      <th>Mes</th>
+      <th>Inicio</th>
+      <th>Fin</th>
+      <th>Capacidad Máxima</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for availability in campsite.availabilities.all %}
+      <tr>
+        <td>{{ availability.start_date|date:"F" }}</td>
+        <td>{{ availability.start_date|date:"d/m/Y" }}</td>
+        <td>{{ availability.end_date|date:"d/m/Y" }}</td>
+        <td>{{ availability.max_capacity }}</td>
+      </tr>
+    {% empty %}
+      <tr>
+        <td colspan="4">Por el momento este camping no tiene disponibilidad.</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+             {% comment %}  <h6 class="fw-bolder p-1">Disponibilidad</h6>
               {% for availability in campsite.availabilities.all %}
                 <p> Desde: {{ availability.start_date }} - Hasta: {{ availability.end_date }}, Capacidad Máxima: {{ availability.max_capacity }}</p>
                 {% empty %}
                 <p>Por el momento este camping no tiene disponibilidad.</p>
-                {% endfor %}
+                {% endfor %} {% endcomment %}
             </div>
           </div>
           <!-- Actions-->
@@ -59,7 +116,7 @@ Campings disponibles
         </div>
       </div>
       {% empty %}
-      <p>Por el momento no hay campings disponibles para este parque natural.</p>
+      <p>Por el momento no hay campings disponibles para este parque natural, podes elegir otras fechas.</p>
       {% endfor %}
     </div>
   </div>

@@ -32,7 +32,6 @@ def index_admin(request):
     reservations_today = Reservation.objects.filter(reservation_date__range=(start_of_day, end_of_day))
     total_cost_today = reservations_today.aggregate(total_cost_today=Sum('total_cost'))['total_cost_today']
 
-    #reservations_today = Reservation.objects.filter(reservation_date__range=(start_of_day, end_of_day))
     mes = request.GET.get('mes')
 
     if mes:

@@ -15,7 +15,7 @@ class NaturalParkFilterForm(forms.Form):
         name = self.cleaned_data.get('name')
         if name:
             if not NaturalPark.objects.filter(name=name).exists():
-                raise forms.ValidationError("Nombre Inexistente")
+                raise forms.ValidationError("No se encontraron parques naturales con ese nombre")
         return name
 class NaturalParkForm(forms.ModelForm):
     province = forms.ChoiceField(choices=Province.choices, widget=forms.Select(attrs={'class': 'form-control'}))
