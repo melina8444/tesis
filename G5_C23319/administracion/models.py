@@ -92,7 +92,7 @@ class Reservation(models.Model):
         db_table='Reservas'
     
     code = models.CharField(max_length=8, unique=True)
-    campsite = models.ForeignKey(Campsite, on_delete=models.CASCADE)
+    campsite = models.ForeignKey(Campsite, on_delete=models.CASCADE, related_name='reservations')
     availability = models.ForeignKey(Availability, on_delete=models.CASCADE)
     user = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     check_in = models.DateField()

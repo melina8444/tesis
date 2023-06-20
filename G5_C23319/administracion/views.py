@@ -1,14 +1,18 @@
+
+import calendar
 from django.shortcuts import render, redirect
+from datetime import date, datetime
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from .models import NaturalPark, Category, Campsite, Availability, Profile, Reservation, Guest
 from .forms import CampsiteFilterForm, NaturalParkForm, NaturalParkFilterForm, NaturalParkFilterForm, CategoryForm, CampsiteForm, AvailabilityForm, AvailabilityCampsiteFilterForm, ProfileFilterForm, ProfileForm, ReservationForm, GuestForm, GuestFilterForm
-from django.db.models import Min, Sum
+from django.db.models import Min, Sum, Q, OuterRef, Subquery
 import uuid
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
+
 
 @staff_member_required(login_url='access_denied')  # Requiere que el usuario sea miembro del staff
 @login_required(login_url='loginrn')  # Requiere que el usuario esté autenticado
@@ -16,9 +20,108 @@ def index_admin(request):
     if not request.user.is_staff:
         # Si el usuario no es miembro del staff, redirigir a una página de acceso denegado o mostrar un mensaje de error.
         return redirect('access_denied')
+   
+    today = date.today()
+    start_of_day = datetime.combine(today, datetime.min.time())
+    end_of_day = datetime.combine(today, datetime.max.time())
+    num_naturalparks = NaturalPark.objects.count()
+    num_clients = Profile.objects.filter(is_client=True).count()
+    num_reservations = Reservation.objects.count()
+    reservations_today = Reservation.objects.filter(reservation_date__range=(start_of_day, end_of_day))
+    total_cost_today = reservations_today.aggregate(total_cost_today=Sum('total_cost'))['total_cost_today']
 
-    # Lógica de la vista del administrador aquí
-    return render(request, 'administracion/index_master.html')
+    #reservations_today = Reservation.objects.filter(reservation_date__range=(start_of_day, end_of_day))
+    mes = request.GET.get('mes')
+
+    if mes:
+        mes = int(mes)
+        year = datetime.now().year
+        start_date = date(year, mes, 1)
+        end_date = date(year, mes, calendar.monthrange(year, mes)[1])
+
+        # Obtener el total de huéspedes de las reservas para el mes seleccionado
+        total_guests_month = Reservation.objects.filter(
+            Q(check_in__month=mes, check_in__year=year) | Q(check_out__month=mes, check_out__year=year)
+        ).aggregate(total_guests_month=Sum('number_guests'))['total_guests_month']
+
+        # Obtener la suma de number_guests por campsite y mes
+        reservations_capacity = Reservation.objects.filter(
+            Q(check_in__month=mes, check_in__year=year) | Q(check_out__month=mes, check_out__year=year)
+        ).values('campsite').annotate(total_guests=Sum('number_guests')).values('campsite', 'total_guests')
+
+        # Obtener la capacidad máxima por campsite y mes
+        availabilities_capacity = Availability.objects.filter(
+            start_date__gte=start_date, end_date__lte=end_date
+        ).values('campsite').annotate(total_capacity=Sum('max_capacity')).values('campsite', 'total_capacity')
+
+        campsites_occupancy = Campsite.objects.annotate(
+            total_guests=Subquery(
+                reservations_capacity.filter(campsite=OuterRef('pk')).values('total_guests')[:1]
+            ),
+            total_capacity=Subquery(
+                availabilities_capacity.filter(campsite=OuterRef('pk')).values('total_capacity')[:1]
+            ),
+        ).values('name', 'total_guests', 'total_capacity')
+
+        # Calcular la capacidad total para ese mes
+        total_capacity = sum(campsite['total_capacity'] or 0 for campsite in campsites_occupancy)
+
+        # Calcular el porcentaje de ocupación
+        for campsite in campsites_occupancy:
+            total_guests = campsite['total_guests']
+            total_capacity = campsite['total_capacity']
+
+            if total_capacity:
+                occupancy_percentage = (total_guests / total_capacity) * 100
+            else:
+                occupancy_percentage = 0
+
+            campsite['occupancy_percentage'] = occupancy_percentage
+
+        context = {
+            'num_naturalparks': num_naturalparks,
+            'num_clients': num_clients,
+            'num_reservations': num_reservations,
+            'reservations_today': reservations_today,
+            'total_capacity': total_capacity,
+            'mes': mes,
+            'campsites_occupancy': campsites_occupancy,
+            'total_guests_month': total_guests_month,
+            'total_cost_today': total_cost_today,
+        }
+    else:
+        context = {
+            'num_naturalparks': num_naturalparks,
+            'num_clients': num_clients,
+            'num_reservations': num_reservations,
+            'reservations_today': reservations_today,
+            'total_cost_today': total_cost_today,
+        }
+
+    return render(request, 'administracion/index_master.html', context)
+"""     # Obtener la fecha actual
+    today = date.today()
+
+    # Definir el rango de fechas desde el inicio hasta el final del día
+    start_of_day = datetime.combine(today, datetime.min.time())
+    end_of_day = datetime.combine(today, datetime.max.time())
+
+
+    num_naturalparks = NaturalPark.objects.count()
+    num_clients = Profile.objects.filter(is_client=True).count()
+    num_reservations = Reservation.objects.count()
+
+    # Obtener las reservas del día
+    reservations_today = Reservation.objects.filter(reservation_date__range=(start_of_day, end_of_day))
+
+    context = {
+        'num_naturalparks': num_naturalparks,
+        'num_clients': num_clients,
+        'num_reservations': num_reservations,
+        'reservations_today': reservations_today,
+    }
+
+    return render(request, 'administracion/index_master.html', context) """
 
 def access_denied(request):
 
