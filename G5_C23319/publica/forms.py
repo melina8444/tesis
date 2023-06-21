@@ -73,7 +73,7 @@ class UsuarioCreationForm(UserCreationForm):
             'last_name': 'Apellido',
             'email': 'Email',
             'password1': 'Contraseña',
-            'password2': 'Confirmacion de contraseña',
+            'password2': 'Confirmación de contraseña',
         }
 
     def clean_dni(self):
