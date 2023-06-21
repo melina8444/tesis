@@ -197,6 +197,7 @@ class ReservationCampsiteFilterForm(forms.Form):
                 raise forms.ValidationError("No se encontraron reservas para ese camping o el nombre del camping es incorrecto.")
         return campsite_name
 class GuestForm(forms.ModelForm):
+    
     class Meta:
         model = Guest
         fields = ['first_name', 'last_name', 'dni', 'age']
@@ -212,6 +213,7 @@ class GuestForm(forms.ModelForm):
             'dni': 'DNI',
             'age': 'Edad',
         }
+
 
 class ProfileForm(forms.ModelForm):
     class Meta:

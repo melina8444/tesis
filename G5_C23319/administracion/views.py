@@ -372,11 +372,11 @@ class GuestListView(ListView):
             queryset = queryset.filter(reservation__code=reservation_code)
         return queryset
 
-class GuestCreateView(CreateView):
+""" class GuestCreateView(CreateView):
     model = Guest
     form_class = GuestForm
     template_name = 'administracion/huespedes/guest_create.html'
-    success_url = reverse_lazy('guest_list')
+    success_url = reverse_lazy('guest_list') """
 
 class GuestUpdateView(UpdateView):
     model = Guest

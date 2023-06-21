@@ -1,41 +1,35 @@
-{%extends '../publica/index.html'%}
-{% load static %}
-
-{% block title %}
-Categorías - {{ block.super }}
-{% endblock title%}
-
-
-{% block page_title %}
-Opciones para tu aventura
-{% endblock %}
-{% block video %}
-{% endblock %}
-{% block content %}
+{%extends '../publica/index.html'%} {% load static %} {% block title %}
+Categorías - {{ block.super }} {% endblock title%} {% block page_title %}
+Opciones para tu aventura {% endblock %} {% block video %} {% endblock %} {%
+block content %}
 <div class="container">
-    <div class="row bg-light bg-gradient m-3 p-4" >
-      <div class="col-12 m-3">
-        <p class="text-end lead h-6 fw-lighter font-monospace fst-italic">Hay varias opciones para que elijas como disfrutar de tu estadía</p>
-            <p class="fs-5 text-end h-6 fw-lighter font-monospace">Cada camping ofrece distintas alternativas</p>
+  <div class="row bg-light bg-gradient m-3 p-4">
+    <div class="col-12 m-3">
+      <p class="text-end lead h-6 fw-lighter font-monospace fst-italic">
+        Hay varias opciones para que elijas como disfrutar de tu estadía
+      </p>
+      <p class="fs-5 text-end h-6 fw-lighter font-monospace">
+        Cada camping ofrece distintas alternativas
+      </p>
+    </div>
+  </div>
+
+  <div class="row justify-content-center m-5">
+    {% for category in categories %}
+    <div class="col-sm-6 ml-auto mb-4">
+      <div class="card border-3 rounded">
+        <div class="card-body text-center">
+          <h4 class="card-title m-4">{{ category.name }}</h4>
+          <h6 class="card-title m-2">Descripción</h6>
+          <p class="card-text">{{ category.description }}</p>
+          <h6 class="card-title m-2">Precio por día</h6>
+          <p class="card-text">$ {{ category.price }}</p>
+          <h6 class="card-title m-2">Huéspedes</h6>
+          <p class="card-text">{{ category.capacity }}</p>
+        </div>
       </div>
     </div>
- 
-    <div class="row justify-content-center m-5">
-      {% for category in categories %}
-        <div class="col-sm-6 ml-auto mb-4">
-          <div class="card border-3 rounded">
-            <div class="card-body text-center">
-              <h4 class="card-title m-4">{{ category.name }}</h4>
-              <h6 class="card-title m-2">Descripción</h6>
-              <p class="card-text">{{ category.description }}</p>
-              <h6 class="card-title m-2">Precio por día</h6>
-              <p class="card-text">$ {{ category.price }}</p>
-              <h6 class="card-title m-2">Huéspedes</h6>
-              <p class="card-text">{{ category.capacity }}</p>
-            </div>
-          </div>
-        </div>
-      {% endfor %}
-    </div>
+    {% endfor %}
+  </div>
 </div>
-  {% endblock %}
+{% endblock %}

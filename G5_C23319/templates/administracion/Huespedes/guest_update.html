@@ -10,22 +10,30 @@
     <div class="col-lg-6">
       <div class="border rounded p-4">
         <form method="post" enctype="multipart/form-data">
-          {% csrf_token %} {{ form.as_p }}
+
+          {% csrf_token %} {% for field in form %}
+          <div class="form-group m-3">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+          </div>
+          {% endfor %}
 
           <div class="row justify-content-center">
-            {% if form.non_field_errors %}
-            <div class="col-lg-12">
-                <div class="border rounded p-4 bg-success text-white">
-                    {% for error in form.non_field_errors %}
-                        <div class="h6">{{ error }}</div>
-                    {% endfor %}
-                </div>
-            </div>
-        {% endif %}
+            {% if form.errors %}
+          <div class="col-lg-12">
+              <div class="border rounded p-4 bg-success text-white">
+              {% for field, errors in form.errors.items %}
+               {% for error in errors %}
+                  <div class="h6">{{ error }}</div>
+              {% endfor %}
+              {% endfor %}
+          </div>
+        </div>
+      {% endif %}
         </div>
       </div>
           <button type="submit" class="btn btn-info">Actualizar</button>
-          <a href="{% url 'reservation_list' %}" class="btn btn-secondary">Cancelar</a>
+          <a href="{% url 'guest_list' %}" class="btn btn-secondary">Cancelar</a>
         </form>
       </div>
     </div>

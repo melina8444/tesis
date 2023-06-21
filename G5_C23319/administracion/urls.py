@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import NaturalParkListView, NaturalParkCreateView,NaturalParkUpdateView, NaturalParkDeleteView, CategoryListView, CategoryCreateView, CategoryUpdateView, CategoryDeleteView, CampsiteListView, CampsiteCreateView, CampsiteUpdateView, CampsiteDeleteView, AvailabilityListView, AvailabilityCreateView, AvailabilityUpdateView, AvailabilityDeleteView, ProfileListView, ProfileCreateView, ProfileUpdateView, ProfileDeleteView, ReservationListView, ReservationCreateView, ReservationDeleteView, ReservationUpdateView, GuestListView, GuestCreateView, GuestDeleteView, GuestUpdateView
+from .views import NaturalParkListView, NaturalParkCreateView,NaturalParkUpdateView, NaturalParkDeleteView, CategoryListView, CategoryCreateView, CategoryUpdateView, CategoryDeleteView, CampsiteListView, CampsiteCreateView, CampsiteUpdateView, CampsiteDeleteView, AvailabilityListView, AvailabilityCreateView, AvailabilityUpdateView, AvailabilityDeleteView, ProfileListView, ProfileCreateView, ProfileUpdateView, ProfileDeleteView, ReservationListView, ReservationCreateView, ReservationDeleteView, ReservationUpdateView, GuestListView, GuestDeleteView, GuestUpdateView
 
 urlpatterns = [
     path('', views.index_admin, name='inicio_admin'),
@@ -30,7 +30,7 @@ urlpatterns = [
     path('reservations/update/<int:pk>/', ReservationUpdateView.as_view(), name='reservation_update'),
     path('reservations/delete/<int:pk>/', ReservationDeleteView.as_view(), name='reservation_delete'),
     path('guests/', GuestListView.as_view(), name='guest_list'),
-    path('guests/create/', GuestCreateView.as_view(), name='guest_create'),
+    #path('guests/create/', GuestCreateView.as_view(), name='guest_create'),
     path('guests/update/<int:pk>/', GuestUpdateView.as_view(), name='guest_update'),
     path('guests/delete/<int:pk>/', GuestDeleteView.as_view(), name='guest_delete'),
     path('access_denied/', views.access_denied, name='access_denied'),

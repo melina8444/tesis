@@ -1,24 +1,24 @@
-{% extends '../index_master.html' %}
-
-{% block content %}
-<div class="center_col m-2 text-center bg-success rounded text-white" role="main">
+{% extends '../index_master.html' %} {% block content %}
+<div
+  class="center_col m-2 text-center bg-success rounded text-white"
+  role="main"
+>
   <h3>{% block title%} Actualizar una disponibilidad {% endblock%}</h3>
 </div>
 <div class="container">
   <div class="row justify-content-center">
     <div class="col-lg-6">
       <div class="border rounded p-4">
-     
-      <form method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-info">Actualizar</button>
-        <a href="{% url 'availability_list' %}" class="btn btn-secondary">Cancelar</a>
-      </form>
+        <form method="POST">
+          {% csrf_token %} {{ form.as_p }}
+          <button type="submit" class="btn btn-info">Actualizar</button>
+          <a href="{% url 'availability_list' %}" class="btn btn-secondary"
+            >Cancelar</a
+          >
+        </form>
+      </div>
     </div>
   </div>
 </div>
-</div>
 
-  
 {% endblock %}
