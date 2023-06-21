@@ -179,8 +179,12 @@ class ReservationForm(forms.ModelForm):
             except Availability.DoesNotExist:
                 self.add_error(None, forms.ValidationError(f"No se encontró disponibilidad para el camping seleccionado."))
 
-        if check_out <= check_in:
-            self.add_error(None, forms.ValidationError(f"La fecha de check-out debe ser posterior a la fecha de check-in."))
+        """ if check_out <= check_in:
+            self.add_error(None, forms.ValidationError(f"La fecha de check-out debe ser posterior a la fecha de check-in.")) """
+        
+        if check_out is not None and check_in is not None:
+            if check_out <= check_in:
+                self.add_error(None, forms.ValidationError(f"La fecha de check-out debe ser posterior a la fecha de check-in."))
         
         if number_guests <= 0:
             self.add_error(None, forms.ValidationError(f"Se debe ingresar un número de huéspedes"))
