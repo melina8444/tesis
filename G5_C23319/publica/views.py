@@ -45,7 +45,7 @@ def contact(request):
             subject = 'Nuevo mensaje de contacto'
             message = f'Nombre: {nombre}\nEmail: {email}\nMensaje: {comentario}'
             from_email = settings.EMAIL_HOST_USER
-            recipient_email = 'chikhakituti@gmail.com'
+            recipient_email = 'melinayanguez@gmail.com'
 
             send_mail(subject, message, from_email, [recipient_email])
            
