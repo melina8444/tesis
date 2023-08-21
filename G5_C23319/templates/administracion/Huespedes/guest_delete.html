@@ -3,7 +3,7 @@
   class="center_col m-2 text-center bg-success rounded text-white"
   role="main"
 >
-  <h3>{% block title%} Eliminar un Cliente/Usuario {% endblock%}</h3>
+  <h3>{% block title%} Eliminar un Huésped {% endblock%}</h3>
 </div>
 <div class="container">
   <div class="row justify-content-center">
@@ -18,16 +18,15 @@
               class="border rounded p-3 bg-success text-white"
               style="opacity: 0.75"
             >
-              <h2 class="mb-5">{{ profile.user.username }}</h2>
+              <h2 class="mb-5">DNI: {{ guest.dni }}</h2>
               <h6 class="fw-bold mb-5">
-                ¿Estás seguro de que querés borrar de la base de datos este
-                perfil de cliente/usuario?
+                ¿Estás seguro de que querés este huésped de la base de datos?
               </h6>
 
               <form method="POST">
                 {% csrf_token %}
                 <button type="submit" class="btn btn-danger">Eliminar</button>
-                <a href="{% url 'profile_list' %}" class="btn btn-secondary"
+                <a href="{% url 'guest_list' %}" class="btn btn-secondary"
                   >Cancelar</a
                 >
               </form>

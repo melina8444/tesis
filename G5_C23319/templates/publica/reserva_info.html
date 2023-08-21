@@ -12,6 +12,7 @@
         <h2 class="text-success text-center justify-content-center p-2">Datos de tu Reserva</h2>
         
         <p class="text-center">Código de Reserva: {{ reservation.code }}</p>
+        <p class="text-center">Fecha de Reserva: {{ reservation.reservation_date }}</p>
         <p class="text-center">Nombre y Apellido: {{ reservation.user.get_full_name }}</p>
         <p class="text-center">Camping Reservado: {{ reservation.campsite.name }}</p>
         <p class="text-center">Fecha de Check-in: {{ reservation.check_in }}</p>

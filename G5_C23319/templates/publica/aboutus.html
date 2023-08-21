@@ -1,44 +1,54 @@
-{%extends '../publica/index.html'%}
-{% load static %}
-
-{% block title %}
-Sobre nosotros - {{ block.super }}
-{% endblock title%}
-
-
-{% block page_title %}
-El equipo de reservas naturales
-{% endblock %}
-{% block video %}
-{% endblock %}
-{% block content %}
+{%extends '../publica/index.html'%} {% load static %} {% block title %} Sobre
+nosotros - {{ block.super }} {% endblock title%} {% block page_title %} El
+equipo de reservas naturales {% endblock %} {% block video %} {% endblock %} 
+{%block content %}
 <div class="container">
-    <div class="row bg-light bg-gradient m-3 p-4" >
-      <div class="col-12 m-3">
-        <p class="text-end lead h-6 fw-lighter font-monospace fst-italic">"Nos dedicamos a la promoción de actividades en contacto con la naturaleza, para que 
-            a través de las experiencias vividas, mejoremos nuestro conocimiento y respeto por todas las clases de vida"</p>
-            <p class="fs-5 text-end h-6 fw-lighter font-monospace">Tenemos la capacidad de generar herramientas tecnológicas para incrementar la colaboración 
-                y participación de todos los que buscamos proteger la naturaleza y a las especies con las que co-habitamos</p>
+  <div class="row bg-light bg-gradient m-3 p-4">
+    <div class="col-12 m-3">
+      <p class="text-end lead h-6 fw-lighter font-monospace fst-italic">
+        "Nos dedicamos a la promoción de actividades en contacto con la
+        naturaleza, para que a través de las experiencias vividas, mejoremos
+        nuestro conocimiento y respeto por todas las clases de vida"
+      </p>
+      <p class="fs-5 text-end h-6 fw-lighter font-monospace">
+        Tenemos la capacidad de generar herramientas tecnológicas para
+        incrementar la colaboración y participación de todos los que buscamos
+        proteger la naturaleza y a las especies con las que co-habitamos
+      </p>
+    </div>
+  </div>
+
+  <div class="row justify-content-center m-5">
+    {% for developer in developers %}
+    <div class="col-sm-3 mb-4">
+      <div class="card border-0 rounded-0">
+        <img
+          class="card-img-top rounded-circle mx-auto"
+          src="{% static 'publica/assets/' %}{{developer.image}}"
+          alt="{{developer.name}}"
+          style="width: 150px; height: 150px"
+        />
+        <div class="card-body text-center">
+          <h5 class="card-title mb-0">{{ developer.name }}</h5>
+          <p class="card-text">{{ developer.role }}</p>
+        </div>
+        <div class="card-footer text-center">
+          <a
+            href="{{developer.socialnetinst}}"
+            class="btn btn-light"
+            target="_blank"
+            ><i class="bi bi-instagram"></i
+          ></a>
+          <a
+            href="{{developer.socialnetwa}}"
+            class="btn btn-light"
+            target="_blank"
+            ><i class="bi bi-whatsapp"></i
+          ></a>
+        </div>
       </div>
     </div>
- 
-    <div class="row justify-content-center m-5">
-      {% for developer in developers %}
-        <div class="col-sm-3 mb-4">
-          <div class="card border-0 rounded-0">
-            <img class="card-img-top rounded-circle mx-auto" src="{% static 'publica/assets/' %}{{developer.image}}" alt="{{developer.name}}" style="width: 150px; height: 150px;">
-            <div class="card-body text-center">
-              <h5 class="card-title mb-0">{{ developer.name }}</h5>
-              <p class="card-text">{{ developer.role }}</p>
-            </div>
-            <div class="card-footer text-center">
-                <a href="{{developer.socialnetinst}}" class="btn btn-light" target="_blank"><i class="bi bi-instagram"></i></a>
-                <a href="{{developer.socialnetwa}}" class="btn btn-light" target="_blank"><i class="bi bi-whatsapp"></i></a>
-              </div>
-          </div>
-        </div>
-      {% endfor %}
-    </div>
+    {% endfor %}
+  </div>
 </div>
-  {% endblock %}
-
+{% endblock %}

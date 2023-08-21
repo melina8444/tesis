@@ -43,7 +43,7 @@ class GuestAdminInline(admin.TabularInline):
 
 class ReservationAdmin(admin.ModelAdmin):
     list_display = ('code', 'campsite', 'availability', 'user', 'check_in', 'check_out', 'number_guests')
-    search_fields = ('code', 'user', 'user.last_name')
+    search_fields = ('=code', 'user__username')
 
     inlines = [
         GuestAdminInline,

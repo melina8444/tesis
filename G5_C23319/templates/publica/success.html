@@ -1,63 +1,64 @@
-{%extends '../publica/index.html'%}
-
-{% load static %}
-
-{% block title %}Reserva Exitosa{% endblock %}
-{% block video %}
-{% endblock %}
-
-{% block content %}
-  <div class="container mt-5">
-    <div class="row justify-content-center">
-      <div class="col-md-6 bg-light p-4 rounded border border-success m-4">
-        <h2 class="text-success text-center justify-content-center p-2">¡Reserva Exitosa!</h2>
-        <p class="text-center">Código de Reserva: {{ reservation.code }}</p>
-      </div>
-      <div class="col-md-6 bg-light p-4 rounded border border-success m-4">
-        <h3 class="text-success text-center justify-content-center p-2">Completá los datos de los Huéspedes</h3>
-        {% for message in messages %}
-        <p class="p-2 border border-success m-4 text-danger">{{ message }}</p>
-      {% endfor %}
-        
-        <form method="post" enctype="multipart/form-data" id="form-guests">
-          {% csrf_token %}
-          {{ formset.management_form }}
-          {% for form in formset %}
-          <div class="container p-3 rounded border border-success mb-3">
-            {{ form.as_table }}
-          </div>
-          {% endfor %}
-          <button type="submit" class="btn btn-success m-3" onclick="confirmSave(event)">Guardar Huéspedes</button>
-        </form>
-      </div>
-      <p class="p-2 text-center">
-        <a href="{% url 'Inicio' %}" class="btn btn-secondary">Inicio</a>
-      </p>
+{%extends '../publica/index.html'%} {% load static %} {% block title %}Reserva
+Exitosa{% endblock %} {% block video %} {% endblock %} {% block content %}
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 bg-light p-4 rounded border border-success m-4">
+      <h2 class="text-success text-center justify-content-center p-2">
+        ¡Reserva Exitosa!
+      </h2>
+      <p class="text-center">Código de Reserva: {{ reservation.code }}</p>
     </div>
+    <div class="col-md-6 bg-light p-4 rounded border border-success m-4">
+      <h3 class="text-success text-center justify-content-center p-2">
+        Completá los datos de los Huéspedes
+      </h3>
+      {% for message in messages %}
+      <p class="p-2 border border-success m-4 text-danger">{{ message }}</p>
+      {% endfor %}
+
+      <form method="post" enctype="multipart/form-data" id="form-guests">
+        {% csrf_token %} {{ formset.management_form }} {% for form in formset %}
+        <div class="container p-3 rounded border border-success mb-3">
+          {{ form.as_table }}
+        </div>
+        {% endfor %}
+        <button
+          type="submit"
+          class="btn btn-success m-3"
+          onclick="confirmSave(event)"
+        >
+          Guardar Huéspedes
+        </button>
+      </form>
+    </div>
+    <p class="p-2 text-center">
+      <a href="{% url 'Inicio' %}" class="btn btn-secondary">Inicio</a>
+    </p>
   </div>
-  <script>
-    function confirmSave(event) {
-      event.preventDefault();
-  
-      Swal.fire({
-        title: '¿Confirmás estos datos de los huéspedes?',
-        text: 'Esta acción no se puede deshacer, ante cualquier consulta o cambios en tus huéspedes, contactanos',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3d8c40',
-        cancelButtonColor: '#e9382e',
-        confirmButtonText: '<span style="color:white;">Guardar</span>',
-        cancelButtonText: '<span style="color:white;">Cancelar</span>',
-        customClass: {
-          confirmButton: 'btn btn-success',
-          cancelButton: 'btn btn-danger',
-          popup: 'custom-popup-class' // Clase personalizada para el mensaje de SweetAlert
-        }
-      }).then((result) => {
-        if (result.isConfirmed) {
-          document.getElementById('form-guests').submit();
-        }
-      });
-    }
-  </script>
+</div>
+<script>
+  function confirmSave(event) {
+    event.preventDefault();
+
+    Swal.fire({
+      title: "¿Confirmás estos datos de los huéspedes?",
+      text: "Esta acción no se puede deshacer, ante cualquier consulta o cambios en tus huéspedes, contactanos",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3d8c40",
+      cancelButtonColor: "#e9382e",
+      confirmButtonText: '<span style="color:white;">Guardar</span>',
+      cancelButtonText: '<span style="color:white;">Cancelar</span>',
+      customClass: {
+        confirmButton: "btn btn-success",
+        cancelButton: "btn btn-danger",
+        popup: "custom-popup-class", // Clase personalizada para el mensaje de SweetAlert
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        document.getElementById("form-guests").submit();
+      }
+    });
+  }
+</script>
 {% endblock %}

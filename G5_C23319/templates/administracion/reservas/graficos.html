@@ -1,0 +1,42 @@
+{% extends '../index_master.html' %}
+    {% block content %}
+
+        <h2>Graficos estadisticos</h2>
+            <div class="row mt-2">
+                
+
+                <div class="col-md-12">
+                           <div>
+                                <canvas id="myChart"></canvas>
+                            </div>
+                            
+                            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                            
+                            <script>
+                                const ctx = document.getElementById('myChart');
+                            
+                                new Chart(ctx, {
+                                type: 'bar',
+                                data: {
+                                    labels: [{% for reserva in reservas %}' {{ reserva.availability }}', {% endfor %}],
+                                    datasets: [{
+                                    label: '# of campings',
+                                    data: [{% for reserva in reservas %}' {{ reservation.number_guests }}', {% endfor %}],
+                                    borderWidth: 1
+                                    }]
+                                },
+                                options: {
+                                    scales: {
+                                    y: {
+                                        beginAtZero: true
+                                    }
+                                    }
+                                }
+                                });
+                            </script>
+                            
+                        </div>
+
+                       
+            </div>
+    {% endblock %}

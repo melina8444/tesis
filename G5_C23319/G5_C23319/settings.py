@@ -182,6 +182,8 @@ EMAIL_HOST_USER = env("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
 RECIPIENT_ADDRESS = env("RECIPIENT_ADDRESS")
 
+TIME_ZONE = 'America/Argentina/Buenos_Aires'
+
 
 #Configuracion para el envio de email por medio de GMAIL
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

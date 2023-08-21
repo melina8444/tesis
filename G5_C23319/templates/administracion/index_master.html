@@ -10,7 +10,7 @@
         <title>Admin</title>
         <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
         <link href="/static/administracion/css/styles.css" rel="stylesheet"/>
-
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.3.3/chart.min.js" rel="stylesheet" />
         <link
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css"
       rel="stylesheet"
@@ -140,14 +140,34 @@
                        <!-- Acordeón: Reservas -->
                        <a class="nav-link collapsed text-dark" href="#" data-bs-toggle="collapse" data-bs-target="#reservasCollapse" aria-expanded="false">
                         <div class="sb-nav-link-icon d-flex"><i class="bi bi-calendar-check me-2"></i>
-                          <h6>Reservas</h6></div>
-                        
+                          <h6>Reservas</h6> </div>
+                          
                         <div class="sb-sidenav-collapse-arrow text-dark"><i class="fas fa-angle-down"></i></div>
                       </a>
+                      
                       <div class="collapse" id="reservasCollapse">
                         <div class="nav text-dark">
                           <!-- CRUD Reservas -->
                           <a href="{% url 'reservation_list' %}" class="nav-link text-dark sjustify-content-end">
+                            <div class="sb-nav-link-icon ms-4 p-2 rounded bg-success"><i class="bi bi-eye-fill me-3"></i><i class="bi bi-file-earmark-plus me-3"></i><i class="bi bi-pencil-fill me-3"></i><i class="bi bi-trash-fill"></i></div>
+                          </a>
+                        </div>
+                        <h6>Graficos</h6>
+                        <a href="{% url 'grafico' %}" class="nav-link text-dark sjustify-content-end">
+                          <div class="sb-nav-link-icon ms-4 p-2 rounded bg-success"><i class="bi bi-eye-fill me-3"></i></div>
+                        </a>
+                        
+                         <!-- Acordeón: Huéspedes -->
+                       <a class="nav-link collapsed text-dark" href="#" data-bs-toggle="collapse" data-bs-target="#huespedesCollapse" aria-expanded="false">
+                        <div class="sb-nav-link-icon d-flex"><i class="bi bi-people me-2"></i>
+                          <h6>Huéspedes</h6></div>
+                        
+                        <div class="sb-sidenav-collapse-arrow text-dark"><i class="fas fa-angle-down"></i></div>
+                      </a>
+                      <div class="collapse" id="huespedesCollapse">
+                        <div class="nav text-dark">
+                          <!-- CRUD Huéspedes -->
+                          <a href="{% url 'guest_list' %}" class="nav-link text-dark sjustify-content-end">
                             <div class="sb-nav-link-icon ms-4 p-2 rounded bg-success"><i class="bi bi-eye-fill me-3"></i><i class="bi bi-file-earmark-plus me-3"></i><i class="bi bi-pencil-fill me-3"></i><i class="bi bi-trash-fill"></i></div>
                           </a>
                         </div>
@@ -165,7 +185,6 @@
                             
                             <div class="sb-sidenav-menu-heading">Clientes</div>
                             <a href="{% url 'listar_clientes' %}" class="nav-link">
-                                
                                 <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
                                 Clientes
                                 <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i>
@@ -181,66 +200,160 @@
 
 <div class="container">
   <div class="center_col m-2 text-center bg-success rounded text-white">
-  <h2>Bienvenido, Nombre del usuario: {{ username }}</h2>
+  <h2>Bienvenido Usuario Administrador: {{ user.first_name }}</h2>
   </div>
   <div class="container">
     <div class="row justify-content-center">
-      <div class="col-lg-12">
-        <div class="border rounded p-4">
+        <div class="col-lg-12">
+            <div class="border rounded p-4">
 
-         <h2>Resumen de Datos</h2>
+                <h2 class="display-4 text-center mb-5">Resumen de Datos</h2>
 
-  <ul>
-    <li>Cantidad de parques naturales: {{ num_naturalparks }}</li>
-    <li>Cantidad de clientes: {{ num_clients }}</li>
-    <li>Cantidad de reservas: {{ num_reservations }}</li>
-  </ul>
-  
-  <h2>Reservas del Día</h2>
-  <div class="table-responsive rounded mt-4" style="overflow-x: auto;">
-  <table class="table">
-    <thead>
-      <tr>
-        <th>Cliente</th>
-        <th>Parque Natural</th>
-        <th>Fecha</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for reservation in reservations_today %}
-      <tr>
-        <td>{{ reservation.client }}</td>
-        <td>{{ reservation.naturalpark }}</td>
-        <td>{{ reservation.date }}</td>
-      </tr>
-      {% empty %}
-      <tr>
-        <td colspan="3">No hay reservas para el día de hoy.</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h3 class="card-title display-3">{{ num_naturalparks }}</h3>
+                                <p class="card-text">Parques Naturales</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h3 class="card-title display-3">{{ num_clients }}</h3>
+                                <p class="card-text">Clientes</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h3 class="card-title text-success display-3">{{ num_reservations }}</h3>
+                                <p class="card-text">Reservas</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+              <div class="container mt-4">
+                  <div class="row justify-content-center">
+                      <div class="col-lg-12">
+                          <div class="border rounded p-4 text-center">
+                              <h4 class="p-2 m-2 display-6">Ocupación de los campings</h4>
+                              <div class="row justify-content-center">
+                                <div class="col-lg-4">
+                              <form method="GET" action="{% url 'inicio_admin' %}" class="justify-content-center text-center">
+                                  <div class="form-group justify-content-center">
+                                      <label for="mes">Seleccionar Mes:</label>
+                                      <select name="mes" id="mes" class="form-control text-center">
+                                          <option value="1" {% if mes and mes|add:0 == 1 %}selected{% endif %}>Enero</option>
+                                          <option value="2" {% if mes and mes|add:0 == 2 %}selected{% endif %}>Febrero</option>
+                                          <option value="3" {% if mes and mes|add:0 == 3 %}selected{% endif %}>Marzo</option>
+                                          <option value="4" {% if mes and mes|add:0 == 4 %}selected{% endif %}>Abril</option>
+                                          <option value="5" {% if mes and mes|add:0 == 5 %}selected{% endif %}>Mayo</option>
+                                          <option value="6" {% if mes and mes|add:0 == 6 %}selected{% endif %}>Junio</option>
+                                          <option value="7" {% if mes and mes|add:0 == 7 %}selected{% endif %}>Julio</option>
+                                          <option value="8" {% if mes and mes|add:0 == 8 %}selected{% endif %}>Agosto</option>
+                                          <option value="9" {% if mes and mes|add:0 == 9 %}selected{% endif %}>Septiembre</option>
+                                          <option value="10"{% if mes and mes|add:0 == 10 %}selected{% endif %}>Octubre</option>
+                                          <option value="11" {% if mes and mes|add:0 == 11 %}selected{% endif %}>Noviembre</option>
+                                          <option value="12" {% if mes and mes|add:0 == 12 %}selected{% endif %}>Diciembre</option>
+                                      </select>
+                                      <button type="submit" class="btn btn-sm btn-success m-1">Obtener Datos</button>
+                                  </div>
+                              </form>
+                            </div>
+                          </div>
+                          <div class="row justify-content-center m-4">
+                            <div class="col-lg-4 d-flex">
+                              {% if mes and total_guests_month %}
+                                  <h5 class="opacity-75 p-4 bg-warning rounded" style="width: 80rem;">Huéspedes Totales del mes: {{ total_guests_month }} </h5>
+                              {% endif %}
+                            </div>
+                          </div>
+                             {% if mes and campsites_occupancy %}
+                              {% if campsites_occupancy %}
+                              <table class="table table-bordered table-success rounded text-center">
+                                  <thead>
+                                      <tr>
+                                          <th>Camping</th>
+                                          <th>Total de huéspedes</th>
+                                          <th>Capacidad Máxima</th>
+                                          <th>Porcentaje de Ocupación</th>
+                                      </tr>
+                                  </thead>
+                                  <tbody>
+                                      {% for campsite in campsites_occupancy %}
+                                      <tr>
+                                          <td>{{ campsite.name }}</td>
+                                          <td>{{ campsite.total_guests }}</td>
+                                          <td>{{ campsite.total_capacity }}</td>
+                                          <td>{{ campsite.occupancy_percentage |floatformat:0 }}%</td>
+                                      </tr>
+                                      {% empty %}
+                                      <tr>
+                                          <td colspan="4">Seleccione un mes para mostrar los datos mensuales registrados.</td>
+                                      </tr>
+                                      {% endfor %}
+                                  </tbody>
+                              </table>
+
+                              {% else %}
+                                  <p>No hay datos registrados este mes.</p>
+                              {% endif %}
+                          {% else %}
+                              <p>Seleccione un mes para mostrar los datos mensuales registrados.</p>
+                          {% endif %}
+                      
+                          </div>
+                      </div>
+                  </div>
+              </div>               
+
+                <h2 class="display-6 mt-5 text-center">Reservas del Día</h2>
+                <div class="table-responsive rounded mt-4" style="overflow-x: auto;">
+                    <table class="table table-bordered table-warning rounded text-center">
+                        <thead>
+                            <tr>
+                                <th>Código de reserva</th>
+                                <th>Cliente</th>
+                                <th>Camping</th>
+                                <th>Precio de la reserva</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for reservation in reservations_today %}
+                            <tr>
+                                <td><a href="{% url 'reserva_info' reservation.id %}">{{ reservation.code }}</a></td>
+                                <td>{{ reservation.user.first_name }} {{ reservation.user.last_name }}</td>
+                                <td>{{ reservation.campsite }}</td>
+                                <td>${{ reservation.total_cost }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4">No hay reservas para el día de hoy.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% if total_cost_today %}
+                    <div class="text-center bg-warning rounded p-1 justify-content-center" style="opacity: 0.75;">
+                    <h4>Total Reservas del día = ${{ total_cost_today }}</h4>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-</div>
-</div>
+
 </div>
 </div>
 </div>
 
                   {% endblock %}
                 </main>
-                {% comment %} <footer class="py-4 bg-light mt-auto">
-                    <div class="container-fluid px-4">
-                        <div class="d-flex align-items-center justify-content-between small">
-                            <div class="text-muted">Copyright &copy; Your Website 2023</div>
-                            <div>
-                                <a href="#">Privacy Policy</a>
-                                &middot;
-                                <a href="#">Terms &amp; Conditions</a>
-                            </div>
-                        </div>
-                    </div>
-                </footer> {% endcomment %}
             </div>
         </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>

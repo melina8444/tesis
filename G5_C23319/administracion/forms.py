@@ -15,7 +15,7 @@ class NaturalParkFilterForm(forms.Form):
         name = self.cleaned_data.get('name')
         if name:
             if not NaturalPark.objects.filter(name=name).exists():
-                raise forms.ValidationError("Nombre Inexistente")
+                raise forms.ValidationError("No se encontraron parques naturales con ese nombre")
         return name
 class NaturalParkForm(forms.ModelForm):
     province = forms.ChoiceField(choices=Province.choices, widget=forms.Select(attrs={'class': 'form-control'}))
@@ -67,7 +67,7 @@ class CampsiteFilterForm(forms.Form):
         name = self.cleaned_data.get('name')
         if name:
             if not Campsite.objects.filter(name=name).exists():
-                raise forms.ValidationError("No se encontraron campamentos con ese nombre.")
+                raise forms.ValidationError("No se encontraron campings con ese nombre.")
         return name
 class CampsiteForm(forms.ModelForm):
 
@@ -123,7 +123,7 @@ class AvailabilityCampsiteFilterForm(forms.Form):
         campsite_name = self.cleaned_data.get('campsite_name')
         if campsite_name:
             if not Availability.objects.filter(campsite__name=campsite_name).exists():
-                raise forms.ValidationError("No se encontraron campamentos con ese nombre.")
+                raise forms.ValidationError("No se encontraron disponibilidades para ese camping o el nombre es incorrecto.")
         return campsite_name
 
 
@@ -179,15 +179,29 @@ class ReservationForm(forms.ModelForm):
             except Availability.DoesNotExist:
                 self.add_error(None, forms.ValidationError(f"No se encontró disponibilidad para el camping seleccionado."))
 
-        if check_out <= check_in:
-            self.add_error(None, forms.ValidationError(f"La fecha de check-out debe ser posterior a la fecha de check-in."))
+        """ if check_out <= check_in:
+            self.add_error(None, forms.ValidationError(f"La fecha de check-out debe ser posterior a la fecha de check-in.")) """
+        
+        if check_out is not None and check_in is not None:
+            if check_out <= check_in:
+                self.add_error(None, forms.ValidationError(f"La fecha de check-out debe ser posterior a la fecha de check-in."))
         
         if number_guests <= 0:
             self.add_error(None, forms.ValidationError(f"Se debe ingresar un número de huéspedes"))
 
         return cleaned_data
-    
+
+class ReservationCampsiteFilterForm(forms.Form):
+    campsite_name = forms.CharField(label='', required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese el nombre'}))
+
+    def clean_campsite_name(self):
+        campsite_name = self.cleaned_data.get('campsite_name')
+        if campsite_name:
+            if not Reservation.objects.filter(campsite__name=campsite_name).exists():
+                raise forms.ValidationError("No se encontraron reservas para ese camping o el nombre del camping es incorrecto.")
+        return campsite_name
 class GuestForm(forms.ModelForm):
+    
     class Meta:
         model = Guest
         fields = ['first_name', 'last_name', 'dni', 'age']
@@ -203,6 +217,7 @@ class GuestForm(forms.ModelForm):
             'dni': 'DNI',
             'age': 'Edad',
         }
+
 
 class ProfileForm(forms.ModelForm):
     class Meta:
@@ -247,3 +262,12 @@ class ProfileFilterForm(forms.Form):
                 raise forms.ValidationError("No se encontraron perfiles con ese nombre.")
         return user
 
+class GuestFilterForm(forms.Form):
+    reservation_code = forms.CharField(label='', required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese la reserva'}))
+
+    def clean_reservation_code(self):
+        reservation_code = self.cleaned_data.get('reservation_code')
+        if reservation_code:
+            if not Guest.objects.filter(reservation__code=reservation_code).exists():
+                raise forms.ValidationError("No se encontraron huéspedes para esa reserva.")
+        return reservation_code

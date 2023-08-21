@@ -1,0 +1,96 @@
+{% extends '../index_master.html' %}
+
+{% block content %}
+<div class="center_col m-2 text-center bg-success rounded text-white" role="main">
+  <h1>{% block title%} Huéspedes {% endblock%}</h1>
+</div>
+
+<div class="d-flex justify-content-start align-items-center m-2" style="height: 20vh">
+    <div class="col-md-6 d-flex">
+      <div class="border p-2 rounded bg-success d-flex align-items-center" style="opacity: 0.75">
+        <h5 class="text-white rounded me-1">Reservas<i class="bi bi-flower2 ms-2"></i></h5> 
+        <form method="GET" class="d-flex">
+          {% csrf_token %}
+          <div class="d-flex">
+              {{ filter_form.reservation_code.label_tag }}
+              {{ filter_form.reservation_code }}
+          </div>
+          <div><button type="submit" class="btn btn-primary ms-1"><i class="bi bi-search"></i></button></div>
+      </form>
+      </div>
+    </div>
+    <div class="col-md-4 p-2 justify-content-center align-items-center">
+      {% if filter_form.reservation_code.errors %}
+          <p class="text-danger fw-bold">{{ filter_form.reservation_code.errors|join:" " }}</p>
+      {% endif %}
+    </div>
+  </div>
+
+
+<div class="container">
+  {% if messages %}
+<div class="col-md-4 mb-4 p-2 justify-content-center align-items-center bg-success border rounded border-danger">
+  {% for message in messages %}
+      <div class="text-white fw-bold-{{ message.tags }}">
+          {{ message|safe }}
+      </div>
+  {% endfor %}
+
+</div>
+{% endif %}
+</div>
+
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-lg-12">
+      <div class="border rounded p-4">
+       {% comment %}  <a href="{% url 'guest_create' %}" class="btn btn-sm btn-success text-white"
+          ><i class="bi bi-file-earmark-plus me-2"></i>NUEVO - Huésped</a
+        > {% endcomment %}
+        <div class="table-responsive rounded mt-4" style="overflow-x: auto;">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Código de Reserva</th>
+              <th>Nombre</th>
+              <th>Apellido</th>
+              <th>DNI</th>
+              <th>Edad</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for guest in guests %}
+            <tr>
+              <td>{{ guest.reservation }}</td>
+              <td>{{ guest.first_name }}</td>
+              <td>{{ guest.last_name}}</td>
+              <td>{{ guest.dni }}</td>
+              <td>{{ guest.age }}</td>
+              <td>
+                <div class="d-flex">
+                <a
+                  href="{% url 'guest_update' guest.pk %}"
+                  class="btn btn-info me-2" title="Editar"
+                  ><i class="bi bi-pencil-fill"></i></a
+                >
+                <a href="{% url 'guest_delete' guest.pk %}" class="btn btn-danger" title="Eliminar">
+                  <i class="bi bi-trash-fill"></i>
+                </a>
+              </td>
+            </div>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="8">No se encontraron huéspedes.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

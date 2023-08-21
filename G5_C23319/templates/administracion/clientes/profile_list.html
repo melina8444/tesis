@@ -8,7 +8,7 @@
 <div class="d-flex justify-content-start align-items-center m-2" style="height: 20vh">
     <div class="col-md-8 d-flex">
       <div class="border p-2 rounded bg-success d-flex align-items-center" style="opacity: 0.75">
-        <h5 class="text-white rounded me-1">Buscar Clientes<i class="bi bi-person-fill ms-2"></i></h5> 
+        <h5 class="text-white rounded me-1">Cliente<i class="bi bi-person-fill ms-2"></i></h5> 
         <form method="GET" class="d-flex">
           {% csrf_token %}
           <div class="d-flex">
@@ -22,7 +22,7 @@
       </form>
       </div>
     </div>
-    <div class="col-md-2 p-2 justify-content-center align-items-center">
+    <div class="col-md-4 p-2 justify-content-center align-items-center">
       {% if filter_form.user.errors %}
           <p class="text-danger fw-bold">{{ filter_form.user.errors|join:" " }}</p>
       {% endif %}
@@ -33,7 +33,7 @@
     <div class="row justify-content-center">
       <div class="col-lg-12">
         <div class="border rounded p-4">
-          <a href="{% url 'profile_create' %}" class="btn btn-success text-white"
+          <a href="{% url 'profile_create' %}" class="btn btn-sm btn-success text-white"
             ><i class="bi bi-file-earmark-plus me-2"></i>NUEVO - Perfil Cliente/Usuario</a
           >
           <div class="table-responsive rounded mt-4" style="overflow-x: auto;">

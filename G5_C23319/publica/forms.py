@@ -49,27 +49,6 @@ class ContactForm(forms.Form):
                                attrs={'rows':3, 'cols':100, 'class':'form-control', 'placeholder':'Ingrese un comentario o consulta'}
                             )
                            )
-""" class ReservaForm(forms.Form):
-
-    name = forms.CharField(label='Nombre', max_length=100, widget=forms.TextInput(attrs={'class': 'form-control m-1','placeholder':'Tu nombre' }))
-    
-    email = forms.EmailField(label='Email', widget=forms.EmailInput(attrs={'class': 'form-control m-1','placeholder': 'Tu email',}))
-    
-    check_in_date = forms.DateField(label='Check-in Fecha',widget=forms.DateInput(attrs={'class': 'form-control m-1', 'placeholder':'Ingresá la fecha de llegada',}))
-    
-    check_out_date = forms.DateField(label='Check-out Fecha',widget=forms.DateInput(attrs={'class': 'form-control m-1', 'placeholder':'Ingresá la fecha de partida',}))
-    
-    num_guest = forms.IntegerField(label='Número de Huéspedes',widget=forms.NumberInput(attrs={'class': 'form-control m-1','placeholder': 'Ingresá cuántas personas realizan la reserva',}))
-    
-    campsite_id = forms.IntegerField(label='Camping',required=False, widget=forms.HiddenInput())
-
-    campsite = forms.ChoiceField(choices=())
-
-    def __init__(self, *args, **kwargs):
-        campsites_list = kwargs.pop('campsites_list', None)
-        super(ReservaForm, self).__init__(*args, **kwargs)
-        if campsites_list:
-            self.fields['campsite'].choices = [(campsite['id'], campsite['name']) for campsite in campsites_list] """
 
 class UsuarioCreationForm(UserCreationForm):
     phone = forms.CharField(max_length=255,label='Teléfono', widget=forms.TextInput(attrs={'class': 'form-control'}) )
@@ -94,7 +73,7 @@ class UsuarioCreationForm(UserCreationForm):
             'last_name': 'Apellido',
             'email': 'Email',
             'password1': 'Contraseña',
-            'password2': 'Confirmacion de contraseña',
+            'password2': 'Confirmación de contraseña',
         }
 
     def clean_dni(self):
