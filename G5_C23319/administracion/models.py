@@ -73,7 +73,7 @@ class Campsite(models.Model):
     categories = models.ManyToManyField(Category, related_name='campsites')
 
     def __str__(self):
-        return f'Nombre: {self.name}'
+        return f'{self.name}'
 
 class Availability(models.Model):
     class Meta:
@@ -86,7 +86,26 @@ class Availability(models.Model):
 
     def __str__(self):
         return f'Fecha inicio: {self.start_date}  Fecha fin: {self.end_date} Capacidad Máxima: {self.max_capacity}'
-    
+""" 
+class Season(models.Model):
+    name = models.CharField(max_length=100)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    percentage = models.DecimalField(max_digits=5, decimal_places=2, null=True)  # Campo para el porcentaje
+
+    def _str_(self):
+        return self.name """
+
+
+class Season(models.Model):
+    name = models.CharField(max_length=100)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    percentage = models.IntegerField(null=True, blank=True)  # Campo para el porcentaje
+
+    def str(self):
+        return self.name 
+
 class Reservation(models.Model):
     class Meta:
         db_table='Reservas'
@@ -100,6 +119,8 @@ class Reservation(models.Model):
     number_guests = models.IntegerField()
     total_cost = models.FloatField(max_length=10)
     reservation_date = models.DateTimeField(default=timezone.now, editable=False)
+    baja = models.BooleanField(default=False)
+    temporada = models.ManyToManyField(Season, related_name='campsites')
 
     def save(self, *args, **kwargs):
         if not self.code:
@@ -108,6 +129,10 @@ class Reservation(models.Model):
 
     def __str__(self):
         return f'Código Reserva: {self.code} / Usuario: {self.user.first_name} {self.user.last_name}'
+
+    def soft_delete(self):
+        self.baja=True
+        self.save()
 
 class Guest(models.Model):
     class Meta:
@@ -132,5 +157,6 @@ class Profile(models.Model):
     address = models.CharField(max_length=255)
     dni = models.CharField(max_length=255)
     is_client = models.BooleanField(default=True)
+
 
 

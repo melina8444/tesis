@@ -5,14 +5,15 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse, reverse_lazy
 from publica.forms import ContactForm, UsuarioCreationForm, LoginForm
 from django.contrib import messages
-from administracion.models import Availability, Campsite, NaturalPark, Reservation, Category, Guest
+from administracion.models import Availability, Campsite, NaturalPark, Reservation, Category, Guest, Season
 from administracion.forms import ReservationForm, GuestForm
-from django.views.generic import CreateView, TemplateView, DetailView
+from django.views.generic import CreateView, TemplateView, DetailView, ListView
 from django.db.models import Min, Sum
 from django.conf import settings
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from decimal import Decimal
 
 
 def index(request):
@@ -76,7 +77,7 @@ def aboutus(request):
                 'developers': developers_list
             }
     return render(request,'publica/aboutus.html', context)
-
+""" 
 class ReservationCreateView(LoginRequiredMixin, CreateView):
     model = Reservation
     template_name = 'publica/reserva.html'
@@ -113,7 +114,7 @@ class ReservationCreateView(LoginRequiredMixin, CreateView):
         form.instance.availability = availability
 
         return super().form_valid(form)   
-    
+    """
 def success_view(request):
     try:
         reservation = Reservation.objects.latest('id')
@@ -156,6 +157,188 @@ def success_view(request):
         'reservation': reservation,
         'formset': formset
     })
+ 
+
+ 
+# RESERVAS NUEVO
+class ReservationListView(ListView):
+    model = Reservation
+    template_name = 'administracion/reservas/reservation_list.html'
+    context_object_name = 'reservations'
+
+    
+
+""" 
+class ReservationCreateView(LoginRequiredMixin, CreateView):
+    model = Reservation
+    template_name = 'publica/reserva.html'
+    form_class = ReservationForm
+    success_url = reverse_lazy('success')
+
+    def get_initial(self):
+        initial = super().get_initial()
+        campsite_id = self.kwargs.get('campsite_id')
+        campsite = get_object_or_404(Campsite, id=campsite_id)
+        initial['campsite'] = campsite
+        return initial
+    
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        if self.request.user.is_authenticated:
+            form.fields['user'].initial = self.request.user
+        return form
+    
+    def calculate_season_multiplier(self, check_in, check_out):
+        season_now = Season.objects.filter(start_date__lte=check_in, end_date__gte=check_out).first()
+        
+        if season_now:
+            return Decimal(season_now.percentage)  # Utiliza el campo 'porcentaje' de la temporada
+        
+        return Decimal('1.0')
+
+    def form_valid(self, form):
+        campsite = form.cleaned_data.get('campsite')
+        number_guests = form.cleaned_data.get('number_guests')
+        check_in = form.cleaned_data.get('check_in')
+        check_out = form.cleaned_data.get('check_out')
+
+        if campsite and number_guests:
+            capacity = campsite.categories.aggregate(min_capacity=Min('capacity'))['min_capacity']
+            if capacity:
+                multiplier = self.calculate_season_multiplier(check_in, check_out)  # Obtiene el multiplicador de temporada
+                total_cost = (number_guests / capacity) * float(campsite.categories.aggregate(sum_price=Sum('price'))['sum_price']) * (check_out - check_in).days * multiplier
+                form.instance.total_cost = total_cost
+
+        availability = Availability.objects.get(campsite=form.cleaned_data['campsite'])
+        form.instance.availability = availability
+
+        return super().form_valid(form)
+ """
+""" class ReservationCreateView(LoginRequiredMixin, CreateView):
+    model = Reservation
+    template_name = 'publica/reserva.html'
+    form_class = ReservationForm
+    success_url = reverse_lazy('success')
+
+    def calculate_season_multiplier(self, check_in, check_out):
+            temporada_actual = Season.objects.filter(start_date__lte=check_in, end_date__gte=check_out).first()
+
+            if temporada_actual:
+                return temporada_actual.percentage  # Utiliza el campo 'percentage' de la temporada
+
+            return Decimal('1.0')  # Por defecto, si no hay temporada aplicable, utiliza 1.0 como multiplicador
+    
+    def form_valid(self, form):
+        campsite = form.cleaned_data.get('campsite')
+        number_guests = form.cleaned_data.get('number_guests')
+        check_in = form.cleaned_data.get('check_in')
+        check_out = form.cleaned_data.get('check_out')
+
+        if campsite and number_guests:
+            capacity = campsite.categories.aggregate(min_capacity=Min('capacity'))['min_capacity']
+            if capacity:
+                total_cost = (number_guests / capacity) * campsite.categories.aggregate(sum_price=Sum('price'))['sum_price'] * (check_out - check_in).days
+
+                # Calcular el multiplicador de temporada
+                season_multiplier = self.calculate_season_multiplier(check_in, check_out)
+
+                # Aplicar el multiplicador de temporada al costo total
+                total_cost *= season_multiplier
+
+                form.instance.total_cost = total_cost
+
+        availability = Availability.objects.get(campsite=form.cleaned_data['campsite'])
+        form.instance.availability = availability
+
+        return super().form_valid(form)
+ """
+
+
+
+class ReservationCreateView(LoginRequiredMixin, CreateView):
+    model = Reservation
+    template_name = 'publica/reserva.html'
+    form_class = ReservationForm
+    success_url = reverse_lazy('success')
+
+    def get_initial(self):
+        initial = super().get_initial()
+        campsite_id = self.kwargs.get('campsite_id')
+        campsite = get_object_or_404(Campsite, id=campsite_id)
+        initial['campsite'] = campsite
+        return initial
+    
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        if self.request.user.is_authenticated:
+            form.fields['user'].initial = self.request.user
+        return form
+    
+    def form_valid(self, form):
+        campsite = form.cleaned_data.get('campsite')
+        number_guests = form.cleaned_data.get('number_guests')
+        check_in = form.cleaned_data.get('check_in')
+        check_out = form.cleaned_data.get('check_out')
+
+        if campsite and number_guests:
+            capacity = campsite.categories.aggregate(min_capacity=Min('capacity'))['min_capacity']
+            
+            if capacity:
+                base_cost = campsite.categories.aggregate(sum_price=Sum('price'))['sum_price'] * (check_out - check_in).days
+                total_cost = (number_guests / capacity) * base_cost
+                
+                # 1. Obtén la temporada basada en las fechas de check-in y check-out.
+                season = Season.objects.filter(start_date__lte=check_in, end_date__gte=check_out).first()
+
+                if season:
+                    # 2. Calcula el costo total usando el porcentaje de la temporada.
+                    total_cost *= season.percentage / 100
+                
+                form.instance.total_cost = total_cost
+
+        availability = Availability.objects.get(campsite=form.cleaned_data['campsite'])
+        form.instance.availability = availability
+
+        return super().form_valid(form)
+
+""" class ReservationCreateView(LoginRequiredMixin, CreateView):
+    model = Reservation
+    template_name = 'publica/reserva.html'
+    form_class = ReservationForm
+    success_url = reverse_lazy('success')
+
+    def calculate_season_multiplier(self, check_in, check_out):
+        temporada_actual = Season.objects.filter(start_date__lte=check_in, end__date_gte=check_out).first()
+
+        if temporada_actual:
+            return temporada_actual.percentage  # Utiliza el campo 'percentage' de la temporada
+
+        return 1.0  # Por defecto, si no hay temporada aplicable, utiliza 1.0 como multiplicador
+
+    def form_valid(self, form):
+        campsite = form.cleaned_data.get('campsite')
+        number_guests = form.cleaned_data.get('number_guests')
+        check_in = form.cleaned_data.get('check_in')
+        check_out = form.cleaned_data.get('check_out')
+
+        if campsite and number_guests:
+            capacity = campsite.categories.aggregate(min_capacity=Min('capacity'))['min_capacity']
+            if capacity:
+                total_cost = (number_guests / capacity) * campsite.categories.aggregate(sum_price=Sum('price'))['sum_price'] * (check_out - check_in).days
+
+                # Calcular el multiplicador de temporada
+                season_multiplier = self.calculate_season_multiplier(check_in, check_out)
+
+                # Aplicar el multiplicador de temporada al costo total
+                total_cost *= season_multiplier
+
+                form.instance.total_cost = total_cost
+
+        availability = Availability.objects.get(campsite=form.cleaned_data['campsite'])
+        form.instance.availability = availability
+
+        return super().form_valid(form)
+ """
 
 class ReservaDetailView(DetailView):
     model = Reservation

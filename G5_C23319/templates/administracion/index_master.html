@@ -18,8 +18,8 @@
 
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
     </head>
-    <body class="sb-nav-fixed">
-        <nav class="sb-topnav navbar navbar-expand navbar-success bg-success">
+<body class="sb-nav-fixed">
+  <nav class="sb-topnav navbar navbar-expand navbar-success bg-success">
             <!-- Navbar Brand-->
              <!-- Sidebar Toggle-->
             <button class="btn btn-dark btn-sm order-1 order-lg-0 ms-2 me-2 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
@@ -27,12 +27,12 @@
             <a class="navbar-brand ps-3" href="{% url 'inicio_admin' %}">Administración</a>
         
             <!-- Navbar Search-->
-            <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
+    <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
                 {% comment %} <div class="input-group">
                     <input class="form-control" type="text" placeholder="Search for..." aria-label="Search for..." aria-describedby="btnNavbarSearch" />
                     <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>
                 </div> {% endcomment %}
-            </form>
+    </form>
             <!-- Navbar-->
             <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4 text-dark">
                 <li class="nav-item dropdown">
@@ -43,12 +43,12 @@
                     </ul>
                 </li>
             </ul>
-        </nav>
-        <div id="layoutSidenav">
-            <div id="layoutSidenav_nav">
-                <nav class="sb-sidenav accordion bg-success bg-opacity-50 text-dark" id="sidenavAccordion">
-                    <div class="sb-sidenav-menu">
-                        <div class="nav">
+  </nav>
+<div id="layoutSidenav">
+  <div id="layoutSidenav_nav">
+    <nav class="sb-sidenav accordion bg-success bg-opacity-50 text-dark" id="sidenavAccordion">
+      <div class="sb-sidenav-menu">
+        <div class="nav">
                       
                           <!-- Elemento del menú: Inicio -->
                           <a class="nav-link text-dark" href="{% url 'inicio_admin' %}">
@@ -57,44 +57,53 @@
                           </a>
                       
                           <!-- Acordeón: Clientes -->
-                          <a class="nav-link collapsed text-dark" href="#" data-bs-toggle="collapse" data-bs-target="#clientesCollapse" aria-expanded="false">
+                    <a class="nav-link collapsed text-dark" href="#" data-bs-toggle="collapse" data-bs-target="#clientesCollapse" aria-expanded="false">
                             <div class="sb-nav-link-icon d-flex"><i class="fas fa-users me-2"></i>
                               <h6>Clientes</h6></div>
                             
                             <div class="sb-sidenav-collapse-arrow text-dark"><i class="fas fa-angle-down"></i></div>
-                          </a>
-                          <div class="collapse" id="clientesCollapse">
-                            <div class="nav text-dark">
+                    </a>
+                <div class="collapse" id="clientesCollapse">
+                    <div class="nav text-dark">
                               <!-- CRUD Clientes -->
 
                               <a href="{% url 'profile_list' %}" class="nav-link text-dark sjustify-content-end">
-
-                              <a href="{% url 'profile_list' %}" class="nav-link text-dark sjustify-content-end">
-
-                                <div class="sb-nav-link-icon ms-4 p-2 rounded bg-success"><i class="bi bi-eye-fill me-3"></i><i class="bi bi-file-earmark-plus me-3"></i><i class="bi bi-pencil-fill me-3"></i><i class="bi bi-trash-fill"></i></div>
+                                 <div class="sb-nav-link-icon ms-4 p-2 rounded bg-success"><i class="bi bi-eye-fill me-3"></i><i class="bi bi-file-earmark-plus me-3"></i><i class="bi bi-pencil-fill me-3"></i><i class="bi bi-trash-fill"></i></div>
                               </a>
-                            </div>
-                          </div>
+                    </div>
+                </div>
                       
                           <!-- Acordeón: Parques Naturales -->
-                          <a class="nav-link collapsed text-dark" href="#" data-bs-toggle="collapse" data-bs-target="#parquesCollapse" aria-expanded="false">
-                            <div class="sb-nav-link-icon d-flex"><i class="bi bi-flower2 me-2"></i><h6>Parques Naturales</h6></div>
-                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                          </a>
-                          <div class="collapse" id="parquesCollapse">
-                            <div class="nav">
+                            <a class="nav-link collapsed text-dark" href="#" data-bs-toggle="collapse" data-bs-target="#parquesCollapse" aria-expanded="false">
+                                  <div class="sb-nav-link-icon d-flex"><i class="bi bi-flower2 me-2"></i><h6>Parques Naturales</h6></div>
+                                  <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                  <div class="collapse" id="parquesCollapse">
+                      <div class="nav">
                               <!-- CRUD Parques Naturales -->
-                              <a href="{% url 'naturalpark_list' %}" class="nav-link text-dark sjustify-content-end">
-                                <div class="sb-nav-link-icon ms-4 p-2 rounded bg-success"><i class="bi bi-eye-fill me-3"></i><i class="bi bi-file-earmark-plus me-3"></i><i class="bi bi-pencil-fill me-3"></i><i class="bi bi-trash-fill"></i></div>
-                              </a>
-                            </div>
-                          </div>
+                            <a href="{% url 'naturalpark_list' %}" class="nav-link text-dark sjustify-content-end">
+                                  <div class="sb-nav-link-icon ms-4 p-2 rounded bg-success"><i class="bi bi-eye-fill me-3"></i><i class="bi bi-file-earmark-plus me-3"></i><i class="bi bi-pencil-fill me-3"></i><i class="bi bi-trash-fill"></i></div>
+                            </a>   
+                      </div>
+                  </div>
+                              <!-- Acordeón: Temporada -->
+                      <a class="nav-link collapsed text-dark" href="#" data-bs-toggle="collapse" data-bs-target="#campingsCollapse" aria-expanded="false">
+                        <div class="sb-nav-link-icon d-flex"><i class="bi bi-triangle me-2"></i><h6>Temporada</h6></div>
+                        <div class="sb-sidenav-collapse-arrow text-dark"><i class="fas fa-angle-down"></i></div>
+                      </a>
+                      <div class="collapse" id="campingsCollapse">
+                        <div class="nav text-dark">
+                          <!-- CRUD Temporada -->
+                          <a href="{% url 'season_list' %}" class="nav-link text-dark sjustify-content-end">
+                            <div class="sb-nav-link-icon ms-4 p-2 rounded bg-success"><i class="bi bi-eye-fill me-3"></i><i class="bi bi-file-earmark-plus me-3"></i><i class="bi bi-pencil-fill me-3"></i><i class="bi bi-trash-fill"></i></div>
+                          </a>
+                        </div>
+                      </div>
+
 
                            <!-- Acordeón: Categorias -->
                       <a class="nav-link collapsed text-dark" href="#" data-bs-toggle="collapse" data-bs-target="#categoriesCollapse" aria-expanded="false">
-                        <div class="sb-nav-link-icon d-flex"><i class="bi bi-folder me-2"></i>
-                          <h6>Categorías</h6></div>
-                        
+                        <div class="sb-nav-link-icon d-flex"><i class="bi bi-folder me-2"></i><h6>Categorías</h6></div>
                         <div class="sb-sidenav-collapse-arrow text-dark"><i class="fas fa-angle-down"></i></div>
                       </a>
                       <div class="collapse" id="categoriesCollapse">
@@ -105,11 +114,10 @@
                           </a>
                         </div>
                       </div>
+                      
                       <!-- Acordeón: Campings -->
                       <a class="nav-link collapsed text-dark" href="#" data-bs-toggle="collapse" data-bs-target="#campingsCollapse" aria-expanded="false">
-                        <div class="sb-nav-link-icon d-flex"><i class="bi bi-triangle me-2"></i>
-                          <h6>Campings</h6></div>
-                        
+                        <div class="sb-nav-link-icon d-flex"><i class="bi bi-triangle me-2"></i><h6>Campings</h6></div>
                         <div class="sb-sidenav-collapse-arrow text-dark"><i class="fas fa-angle-down"></i></div>
                       </a>
                       <div class="collapse" id="campingsCollapse">
@@ -156,6 +164,7 @@
                         <a href="{% url 'grafico' %}" class="nav-link text-dark sjustify-content-end">
                           <div class="sb-nav-link-icon ms-4 p-2 rounded bg-success"><i class="bi bi-eye-fill me-3"></i></div>
                         </a>
+                        
                         
                          <!-- Acordeón: Huéspedes -->
                        <a class="nav-link collapsed text-dark" href="#" data-bs-toggle="collapse" data-bs-target="#huespedesCollapse" aria-expanded="false">
@@ -323,18 +332,18 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for reservation in reservations_today %}
-                            <tr>
-                                <td><a href="{% url 'reserva_info' reservation.id %}">{{ reservation.code }}</a></td>
-                                <td>{{ reservation.user.first_name }} {{ reservation.user.last_name }}</td>
-                                <td>{{ reservation.campsite }}</td>
-                                <td>${{ reservation.total_cost }}</td>
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="4">No hay reservas para el día de hoy.</td>
-                            </tr>
-                            {% endfor %}
+                          {% for reservation in reservations_today %}
+                          <tr>
+                              <td><a href="{% url 'reserva_info' reservation.id %}">{{ reservation.code }}</a></td>
+                              <td>{{ reservation.user.first_name }} {{ reservation.user.last_name }}</td>
+                              <td>{{ reservation.campsite }}</td>
+                              <td>${{ reservation.total_cost }}</td>
+                          </tr>
+                          {% empty %}
+                          <tr>
+                              <td colspan="4">No hay reservas para el día de hoy.</td>
+                          </tr>
+                          {% endfor %}
                         </tbody>
                     </table>
                     {% if total_cost_today %}

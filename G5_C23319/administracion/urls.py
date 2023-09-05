@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import NaturalParkListView, NaturalParkCreateView,NaturalParkUpdateView, NaturalParkDeleteView, CategoryListView, CategoryCreateView, CategoryUpdateView, CategoryDeleteView, CampsiteListView, CampsiteCreateView, CampsiteUpdateView, CampsiteDeleteView, AvailabilityListView, AvailabilityCreateView, AvailabilityUpdateView, AvailabilityDeleteView, ProfileListView, ProfileCreateView, ProfileUpdateView, ProfileDeleteView, ReservationListView, ReservationCreateView, ReservationDeleteView, ReservationUpdateView, GuestListView, GuestDeleteView, GuestUpdateView
+from .views import NaturalParkListView, NaturalParkCreateView,NaturalParkUpdateView, NaturalParkDeleteView, CategoryListView, CategoryCreateView, CategoryUpdateView, CategoryDeleteView, CampsiteListView, CampsiteCreateView, CampsiteUpdateView, CampsiteDeleteView, AvailabilityListView, AvailabilityCreateView, AvailabilityUpdateView, AvailabilityDeleteView, ProfileListView, ProfileCreateView, ProfileUpdateView, ProfileDeleteView, ReservationListView, ReservationCreateView, ReservationDeleteView, ReservationUpdateView, GuestListView, GuestDeleteView, GuestUpdateView, SeasonListView, SeasonCreateView, SeasonUpdateView, SeasonDeleteView
 
 urlpatterns = [
     path('', views.index_admin, name='inicio_admin'),
@@ -36,4 +36,13 @@ urlpatterns = [
     path('access_denied/', views.access_denied, name='access_denied'),
     path('reservations/download_excel/', views.download_excel, name='download_excel'),
     path('reservations/grafico/', views.grafico, name='grafico'),
+    
+
+    #TEMPORADA
+    path('season/', SeasonListView.as_view(), name='season_list'),
+    path('season/create/', SeasonCreateView.as_view(), name='season_create'),
+    path('season/update/<int:pk>/', SeasonUpdateView.as_view(), name='season_update'),
+    path('season/delete/<int:pk>/', SeasonDeleteView.as_view(), name='season_delete'),
+    
+
 ]

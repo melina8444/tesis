@@ -2,7 +2,7 @@ import random
 import string
 import uuid
 from django import forms
-from .models import NaturalPark, Category, Campsite, Availability, Reservation, Profile, Usuario, Guest
+from .models import NaturalPark, Category, Campsite, Availability, Reservation, Profile, Usuario, Guest, Season
 from django.db.models import Sum
 from django.core.exceptions import ValidationError
 
@@ -193,7 +193,7 @@ class ReservationForm(forms.ModelForm):
 
 class ReservationCampsiteFilterForm(forms.Form):
     campsite_name = forms.CharField(label='', required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese el nombre'}))
-
+    
     def clean_campsite_name(self):
         campsite_name = self.cleaned_data.get('campsite_name')
         if campsite_name:
@@ -217,6 +217,45 @@ class GuestForm(forms.ModelForm):
             'dni': 'DNI',
             'age': 'Edad',
         }
+
+
+#----------------------------
+class SeasonForm(forms.ModelForm):
+    class Meta:
+        model = Season
+        fields = ['name', 'start_date', 'end_date', 'percentage']
+        widgets = {
+            
+            'name': forms.DateInput(attrs={'class': 'form-control'}),
+            'start_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'end_date': forms.NumberInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'percentage': forms.NumberInput(attrs={'class': 'form-control'}),
+        }
+        labels = {
+            
+            'name': 'Nombre de Temporada',
+            'start_date': 'Fecha de inicio',
+            'end_date': 'Fecha de fin',
+            'percentage': 'Porcentaje'
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['season'].queryset = Season.objects.all()
+
+class TemporadaCampsiteFilterForm(forms.Form):
+    campsite_name = forms.CharField(label='', required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese el nombre'}))
+
+    def clean_campsite_name(self):
+        campsite_name = self.cleaned_data.get('campsite_name')
+        if campsite_name:
+            if not Season.objects.filter(campsite__name=campsite_name).exists():
+                raise forms.ValidationError("No se encontraron Temporadas para ese camping o el nombre es incorrecto.")
+        return campsite_name 
+
+
+
+
 
 
 class ProfileForm(forms.ModelForm):

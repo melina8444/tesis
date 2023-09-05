@@ -1,12 +1,14 @@
 
 import calendar
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, HttpResponseRedirect, get_object_or_404
 from datetime import date, datetime, timezone
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
-from .models import NaturalPark, Category, Campsite, Availability, Profile, Reservation, Guest
-from .forms import CampsiteFilterForm, NaturalParkForm, NaturalParkFilterForm, NaturalParkFilterForm, CategoryForm, CampsiteForm, AvailabilityForm, AvailabilityCampsiteFilterForm, ProfileFilterForm, ProfileForm, ReservationCampsiteFilterForm, ReservationForm, GuestForm, GuestFilterForm
+from .models import NaturalPark, Category, Campsite, Availability, Profile, Reservation, Guest, Season
+from .forms import CampsiteFilterForm, NaturalParkForm, NaturalParkFilterForm, NaturalParkFilterForm, CategoryForm, CampsiteForm, AvailabilityForm, AvailabilityCampsiteFilterForm, ProfileFilterForm, ProfileForm, ReservationCampsiteFilterForm, ReservationForm, GuestForm, GuestFilterForm, SeasonForm
 from django.db.models import Min, Sum, Q, OuterRef, Subquery
+from django.contrib.auth.mixins import LoginRequiredMixin
+from decimal import Decimal
 import uuid
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
@@ -14,7 +16,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from openpyxl import Workbook
 from django.http import HttpResponse
-
+from django.db.models import Count
 
 @staff_member_required(login_url='access_denied')  # Requiere que el usuario sea miembro del staff
 @login_required(login_url='loginrn')  # Requiere que el usuario esté autenticado
@@ -179,6 +181,7 @@ class CampsiteListView(ListView):
     def get_queryset(self):
         queryset = super().get_queryset()
         name = self.request.GET.get('name')
+        
         if name:
             queryset = queryset.filter(name__icontains=name)
         return queryset
@@ -273,6 +276,30 @@ class ProfileDeleteView(DeleteView):
     template_name = 'administracion/clientes/profile_delete.html'
     success_url = reverse_lazy('profile_list')
 
+class SeasonListView(ListView):
+    model = Season
+    template_name = 'administracion/temporadas/season_list.html'
+    context_object_name = 'seasons'
+
+class SeasonCreateView(CreateView):
+    model = Season
+    form_class = SeasonForm
+    template_name = 'administracion/temporadas/season_create.html'
+    
+    success_url = reverse_lazy('season_list')
+
+class SeasonUpdateView(UpdateView):
+    model = Season
+    form_class = SeasonForm
+    template_name = 'administracion/temporadas/season_update.html'
+    
+    success_url = reverse_lazy('season_list')
+
+class SeasonDeleteView(DeleteView):
+    model = Season
+    template_name = 'administracion/temporadas/season_delete.html'
+    success_url = reverse_lazy('season_list')
+
 class ReservationListView(ListView):
     model = Reservation
     template_name = 'administracion/reservas/reservation_list.html'
@@ -288,10 +315,9 @@ class ReservationListView(ListView):
         campsite_name = self.request.GET.get('campsite_name')
         if campsite_name:
             queryset = queryset.filter(campsite__name__icontains=campsite_name)
-        return queryset
-
-        
-class ReservationCreateView(SuccessMessageMixin, CreateView):
+        return Reservation.objects.filter(baja=False)
+ 
+""" class ReservationCreateView(SuccessMessageMixin, CreateView):
     model = Reservation
     form_class = ReservationForm
     template_name = 'administracion/reservas/reservation_create.html'
@@ -347,6 +373,150 @@ class ReservationDeleteView(DeleteView):
     template_name = 'administracion/reservas/reservation_delete.html'
     success_url = reverse_lazy('reservation_list')
     
+    def get_object(self, queryset=None):
+        pk = self.kwargs.get(self.pk_url_kwarg)
+        obj = get_object_or_404(Reservation, pk=pk)
+        return obj
+    
+    #se puede sobreescribir el metodo delete por defecto de la VBC, para que no se realice una baja fisica
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.object.soft_delete()  # Llamada al método soft_delete() del modelo
+        return HttpResponseRedirect(self.get_success_url())
+
+ """
+
+# RESERVAS NUEVO
+class ReservationCreateView(LoginRequiredMixin, CreateView):
+    model = Reservation
+    template_name = 'publica/reserva.html'
+    form_class = ReservationForm
+    success_url = reverse_lazy('success')
+
+    def get_initial(self):
+        initial = super().get_initial()
+        campsite_id = self.kwargs.get('campsite_id')
+        campsite = get_object_or_404(Campsite, id=campsite_id)
+        initial['campsite'] = campsite
+        return initial
+    
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        if self.request.user.is_authenticated:
+            form.fields['user'].initial = self.request.user
+        return form
+    
+    def calculate_season_multiplier(self, check_in, check_out):
+        season_now = Season.objects.filter(fecha_inicio_lte=check_in, fecha_fin_gte=check_out).first()
+        
+        if season_now:
+            return Decimal(season_now.porcentaje)  # Utiliza el campo 'porcentaje' de la temporada
+        
+        return Decimal('1.0')
+
+    def form_valid(self, form):
+        campsite = form.cleaned_data.get('campsite')
+        number_guests = form.cleaned_data.get('number_guests')
+        check_in = form.cleaned_data.get('check_in')
+        check_out = form.cleaned_data.get('check_out')
+
+        if campsite and number_guests:
+            capacity = campsite.categories.aggregate(min_capacity=Min('capacity'))['min_capacity']
+            if capacity:
+                multiplier = self.calculate_season_multiplier(check_in, check_out)  # Obtiene el multiplicador de temporada
+                total_cost = (number_guests / capacity) * campsite.categories.aggregate(sum_price=Sum('price'))['sum_price'] * (check_out - check_in).days * multiplier
+                form.instance.total_cost = total_cost
+
+        availability = Availability.objects.get(campsite=form.cleaned_data['campsite'])
+        form.instance.availability = availability
+
+        return super().form_valid(form)
+class ReservationCreateView(LoginRequiredMixin, CreateView):
+    model = Reservation
+    template_name = 'publica/reserva.html'
+    form_class = ReservationForm
+    success_url = reverse_lazy('success')
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        if self.request.user.is_authenticated:
+            form.fields['user'].initial = self.request.user
+        return form
+    
+    def calculate_season_multiplier(self, check_in, check_out):
+        season_now = Season.objects.filter(fecha_inicio_lte=check_in, fecha_fin_gte=check_out).first()
+        
+        if season_now:
+            return Decimal(season_now.porcentaje)  # Utiliza el campo 'porcentaje' de la temporada
+        
+        return Decimal('1.0')
+
+    def form_valid(self, form):
+        campsite = form.cleaned_data.get('campsite')
+        number_guests = form.cleaned_data.get('number_guests')
+        check_in = form.cleaned_data.get('check_in')
+        check_out = form.cleaned_data.get('check_out')
+
+        if campsite and number_guests:
+            capacity = campsite.categories.aggregate(min_capacity=Min('capacity'))['min_capacity']
+            if capacity:
+                multiplier = self.calculate_season_multiplier(check_in, check_out)  # Obtiene el multiplicador de temporada
+                total_cost = (number_guests / capacity) * campsite.categories.aggregate(sum_price=Sum('price'))['sum_price'] * (check_out - check_in).days * multiplier
+                form.instance.total_cost = total_cost
+
+        availability = Availability.objects.get(campsite=form.cleaned_data['campsite'])
+        form.instance.availability = availability
+
+        return super().form_valid(form)
+
+class ReservationUpdateView(UpdateView):
+    model = Reservation
+    form_class = ReservationForm
+    template_name = 'administracion/reservas/reservation_update.html'
+    success_url = reverse_lazy('reservation_list')
+
+    def form_valid(self, form):
+        reservation = form.save(commit=False)
+        
+        campsite = reservation.campsite
+        number_guests = reservation.number_guests
+        check_in = reservation.check_in
+        check_out = reservation.check_out
+        
+        if campsite and number_guests:
+            capacity = campsite.categories.aggregate(min_capacity=Min('capacity'))['min_capacity']
+            if capacity:
+                total_cost = (number_guests / capacity) * campsite.categories.aggregate(sum_price=Sum('price'))['sum_price'] * (check_out - check_in).days
+                reservation.total_cost = total_cost
+        
+        if reservation.code == 0:
+            reservation.code = uuid.uuid4().hex[:8].upper()  # Generar un código aleatorio
+      
+        return super().form_valid(form)
+
+class ReservationDeleteView(DeleteView):
+    model = Reservation
+    template_name = 'administracion/reservas/reservation_delete.html'
+    success_url = reverse_lazy('reservation_list')
+    
+    def get_object(self, queryset=None):
+        pk = self.kwargs.get(self.pk_url_kwarg)
+        obj = get_object_or_404(Reservation, pk=pk)
+        return obj
+    
+    #se puede sobreescribir el metodo delete por defecto de la VBC, para que no se realice una baja fisica
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.object.soft_delete()  # Llamada al método soft_delete() del modelo
+        return HttpResponseRedirect(self.get_success_url())
+
+
+
+
+
+
+
+
 
 class GuestListView(ListView):
     model = Guest
@@ -440,29 +610,29 @@ def download_excel(request):
 
 
 def grafico(request):
-    reservas = Reservation.objects.all()
+    camping  = Campsite.objects.all()
+        
+   
 
-    context = {
-        "reservas" : reservas,
+    context = { 
+        "camping" : camping,
+        
+        
     }
 
     return render(request, 'administracion/reservas/graficos.html', context) 
-""" 
-def grafico(request):
-    reservas = Reservation.objects.all()  # Consulta todas las reservas
-    labels = [reserva.campsite for reserva in reservas]  # Suponiendo que tienes un campo 'mes' en tu modelo
-    datos = [reserva.availability for reserva in reservas]  # Suponiendo un campo 'cantidad'
 
-    data = {
-        "labels": labels,
-        "datasets": [
-            {
-                "label": "Reservas",
-                "data": datos,
-                "backgroundColor": "rgba(75, 192, 192, 0.2)",
-                "borderColor": "rgba(75, 192, 192, 1)",
-                "borderWidth": 1
-            }
-        ]
+
+    # Obtener el recuento de reservas por año
+    reservations_by_year = Reservation.objects.annotate(year=models.functions.ExtractYear('reservation_date')).values('year').annotate(count=Count('id')).order_by('year')
+
+    # Crear listas separadas para los años y los recuentos
+    years = [entry['year'] for entry in reservations_by_year]
+    counts = [entry['count'] for entry in reservations_by_year]
+
+    context = {
+        'years': years,
+        'counts': counts,
     }
-    return render(data) """ 
+
+    return render(request, 'administracion/reservas/reserva_por_ano.html', context)

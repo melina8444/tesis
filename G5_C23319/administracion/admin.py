@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import NaturalPark, Category, Campsite, Availability, Reservation, Profile, Usuario, Guest
+from .models import NaturalPark, Category, Campsite, Availability, Reservation, Profile, Usuario, Guest, Season
 from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin, GroupAdmin
 
@@ -11,7 +11,8 @@ admin.site.register(Campsite)
 admin.site.register(Availability)
 admin.site.register(Reservation)
 admin.site.register(Profile)
-admin.site.register(Usuario) """
+admin.site.register(Usuario)
+admin.site.register(Temporada) """
 
 #Admin Personalizado
 
@@ -37,6 +38,11 @@ class CampsiteAdmin(admin.ModelAdmin):
 class AvailabilityAdmin(admin.ModelAdmin):
     list_display = ('campsite', 'start_date', 'end_date', 'max_capacity')
     search_fields = ('start_date', 'end_date')
+
+class SeasonAdmin(admin.ModelAdmin):
+    list_display = ('name', 'start_date', 'end_date', 'percentage')
+    search_fields = ('start_date', 'end_date')
+
 
 class GuestAdminInline(admin.TabularInline):
     model = Guest
@@ -75,7 +81,9 @@ rn_admin.register(Availability, AvailabilityAdmin)
 rn_admin.register(Reservation, ReservationAdmin)
 rn_admin.register(Guest, GuestAdmin)
 rn_admin.register(Usuario, UsuarioAdmin)
+rn_admin.register(Season, SeasonAdmin)
 rn_admin.register(Group, GroupAdmin)
+
 
 
 
