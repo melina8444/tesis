@@ -1,119 +1,37 @@
 {% extends '../index_master.html' %}
-    {% block content %}
 
-        
-
-<div class="row">
+{% block content %}
+  <div class="container" style="width: 900px; height: 370px;">  
+    <canvas id="reservasPorMes" width="900" height="370"></canvas>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    var ctx = document.getElementById('reservasPorMes').getContext('2d');
     
-    <div class="col-sm-6 mb-3 mb-sm-0">
-        <h5 class="card-title">Campings</h5>
-                <canvas id="myChart"></canvas>
-                
-        <div class="card">
-            <div class="card-body">
-                  
-                  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-                    <script>
-                        const ctx = document.getElementById('myChart');
-                                                
-                        new Chart(ctx, {
-                                            type: 'bar',
-                                            data: {
-                                            labels: [{% for reserva in camping %}' {{ reserva.name}}', {% endfor %}],
-                                            datasets: [{
-                                            label: 'Total Campings',
-                                            data: [{% for reserva in camping %} '{{ reserva.id }}', {% endfor %}],
-                                                
-                                            backgroundColor: [
-                                                'rgba(255, 99, 132, 0.8)',
-                                                'rgba(255, 159, 64, 0.8)',
-                                                'rgba(255, 205, 86, 0.8)',
-                                                'rgba(75, 192, 192, 0.8)',
-                                                'rgba(54, 162, 235, 0.8)',
-                                                'rgba(153, 102, 255, 0.8)',
-                                                'rgba(201, 203, 207, 0.8)'
-                                                ],
-                                            borderColor: [
-                                                'rgb(255, 99, 132)',
-                                                'rgb(255, 159, 64)',
-                                                'rgb(255, 205, 86)',
-                                                'rgb(75, 192, 192)',
-                                                'rgb(54, 162, 235)',
-                                                'rgb(153, 102, 255)',
-                                                'rgb(201, 203, 207)'
-                                                ],
-                                            borderWidth: 1
-                                                }]
-                                            },
-                                            options: {
-                                                scales: {
-                                                y: {
-                                                    beginAtZero: true,
-                                                    
-                                                }
-                                                }
-                                            }
-                                            });
-            </script>
-   
-                </div>
-
-         </div>
-    </div>
-</div>
-            {% endblock %}
-           {% comment %}  {% block content %}
-<div class="container">
-    <div class="row mt-2">
-                
-            <div class="col-md-6">
-                                            
-                    <canvas id="myChart"></canvas>
-            </div>
-                                                
-                    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-                    <script>
-                            const ctx = document.getElementById('myChart');
-                                                
-                                new Chart(ctx, {
-                                                    type: 'bar',
-                                                    data: {
-                                                    labels: [{% for reserva in camping %}' {{ reserva.name}}', {% endfor %}],
-                                                    datasets: [{
-                                                    label: 'Reservas',
-                                                    data: [{% for reserva in camping %} '{{ reserva.id }}', {% endfor %}],
-                                                        
-                                                    backgroundColor: [
-                                                        'rgba(255, 99, 132, 0.8)',
-                                                        'rgba(255, 159, 64, 0.8)',
-                                                        'rgba(255, 205, 86, 0.8)',
-                                                        'rgba(75, 192, 192, 0.8)',
-                                                        'rgba(54, 162, 235, 0.8)',
-                                                        'rgba(153, 102, 255, 0.8)',
-                                                        'rgba(201, 203, 207, 0.8)'
-                                                        ],
-                                                    borderColor: [
-                                                        'rgb(255, 99, 132)',
-                                                        'rgb(255, 159, 64)',
-                                                        'rgb(255, 205, 86)',
-                                                        'rgb(75, 192, 192)',
-                                                        'rgb(54, 162, 235)',
-                                                        'rgb(153, 102, 255)',
-                                                        'rgb(201, 203, 207)'
-                                                        ],
-                                                    borderWidth: 1
-                                                        }]
-                                                    },
-                                                    options: {
-                                                        scales: {
-                                                        y: {
-                                                            beginAtZero: true,
-                                                            
-                                                        }
-                                                        }
-                                                    }
-                                                    });
-                    </script>
-    </div>
-</div>
-    {% endblock %} {% endcomment %}
+    var labels = {{ labels|safe }};
+    var data = {{ data|safe }};
+    
+    var chart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Reservas por Mes y Año',
+          data: data,
+          backgroundColor: 'rgba(75, 192, 192, 0.5)',
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true,
+            stepSize: 1
+          }
+        }
+      }
+    });
+  </script>
+{% endblock %}

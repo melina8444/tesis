@@ -3,13 +3,18 @@ from django.utils import timezone
 import uuid
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.db.models import Sum
+from django.db.models.functions import TruncMonth
+from django.db.models.functions import ExtractMonth
 
 class Usuario(AbstractUser):
     pass
+
+
 class NaturalPark(models.Model):
 
     class Meta:
-        db_table='Parques_Naturales'
+        db_table = 'Parques_Naturales'
 
     class Province(models.IntegerChoices):
         BUENOS_AIRES = 1, "Buenos Aires"
@@ -37,7 +42,6 @@ class NaturalPark(models.Model):
         SANTIAGO_DEL_ESTERO = 23, "Santiago del Estero"
         TIERRA_DEL_FUEGO = 24, "Tierra del Fuego"
 
-
     name = models.CharField(max_length=255)
     description = models.TextField()
     location = models.CharField(max_length=255)
@@ -47,26 +51,29 @@ class NaturalPark(models.Model):
 
     def __str__(self):
         return f'Nombre: {self.name}'
-    
+
+
 class Category(models.Model):
 
     class Meta:
-        db_table='Categorías'
+        db_table = 'Categorías'
 
     name = models.CharField(max_length=50, unique=True)
     description = models.TextField()
     capacity = models.IntegerField()
     price = models.FloatField(max_length=10)
-    
+
     def __str__(self):
         return f'Nombre: {self.name}'
-    
+
+
 class Campsite(models.Model):
 
     class Meta:
-        db_table='Campings'
+        db_table = 'Campings'
 
-    natural_park = models.ForeignKey(NaturalPark, on_delete=models.CASCADE, related_name='campsites')
+    natural_park = models.ForeignKey(
+        NaturalPark, on_delete=models.CASCADE, related_name='campsites')
     name = models.CharField(max_length=100)
     description = models.TextField()
     images = models.ImageField(upload_to='imagenes/', null=True)
@@ -75,17 +82,21 @@ class Campsite(models.Model):
     def __str__(self):
         return f'{self.name}'
 
+
 class Availability(models.Model):
     class Meta:
-        db_table='Disponibilidades'
+        db_table = 'Disponibilidades'
 
-    campsite = models.ForeignKey(Campsite, on_delete=models.CASCADE, related_name='availabilities')
+    campsite = models.ForeignKey(
+        Campsite, on_delete=models.CASCADE, related_name='availabilities')
     start_date = models.DateField(blank=True, null=True)
     end_date = models.DateField(blank=True, null=True)
-    max_capacity=models.IntegerField(blank=True, null=True)
+    max_capacity = models.IntegerField(blank=True, null=True)
 
     def __str__(self):
         return f'Fecha inicio: {self.start_date}  Fecha fin: {self.end_date} Capacidad Máxima: {self.max_capacity}'
+
+
 """ 
 class Season(models.Model):
     name = models.CharField(max_length=100)
@@ -101,26 +112,44 @@ class Season(models.Model):
     name = models.CharField(max_length=100)
     start_date = models.DateField()
     end_date = models.DateField()
-    percentage = models.IntegerField(null=True, blank=True)  # Campo para el porcentaje
+    percentage = models.IntegerField(
+        null=True, blank=True)  # Campo para el porcentaje
 
     def str(self):
-        return self.name 
+        return self.name
+
 
 class Reservation(models.Model):
-    class Meta:
-        db_table='Reservas'
     
+    class Meta:
+        db_table = 'Reservas'
+
+    STATUS_CHOICES = (
+        ('Abonada', 'Abonada'),
+        ('Pendiente', 'Pendiente de Pago'),)
+
     code = models.CharField(max_length=8, unique=True)
-    campsite = models.ForeignKey(Campsite, on_delete=models.CASCADE, related_name='reservations')
+    campsite = models.ForeignKey(
+        Campsite, on_delete=models.CASCADE, related_name='reservations')
     availability = models.ForeignKey(Availability, on_delete=models.CASCADE)
     user = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     check_in = models.DateField()
     check_out = models.DateField()
     number_guests = models.IntegerField()
     total_cost = models.FloatField(max_length=10)
-    reservation_date = models.DateTimeField(default=timezone.now, editable=False)
+    reservation_date = models.DateTimeField(
+        default=timezone.now, editable=False)
     baja = models.BooleanField(default=False)
     temporada = models.ManyToManyField(Season, related_name='campsites')
+    
+    def clean_total_cost(self):
+        print(f"{self.cleaned_data['total_cost']:.2f}")
+        return f"{self.cleaned_data['total_cost']:.2f}"
+    
+
+    def save(self, *args, **kwargs):
+        self.total_cost = round(self.total_cost, 2)
+        super(Reservation, self).save(*args, **kwargs)
 
     def save(self, *args, **kwargs):
         if not self.code:
@@ -131,8 +160,25 @@ class Reservation(models.Model):
         return f'Código Reserva: {self.code} / Usuario: {self.user.first_name} {self.user.last_name}'
 
     def soft_delete(self):
-        self.baja=True
+        self.baja = True
         self.save()
+
+
+    
+
+
+""" 
+    def monthly_occupancy(self):
+        availabilities = Availability.objects.filter(reservation=self)
+        occupancy_data = (
+            availabilities
+            .annotate(month=TruncMonth('start_date'))
+            .values('month')
+            .annotate(total_occupancy=Sum('max_capacity'))
+            .order_by('month')
+        )
+        return occupancy_data """
+
 
 class Guest(models.Model):
     class Meta:
@@ -148,15 +194,13 @@ class Guest(models.Model):
     def __str__(self):
         return f'{self.reservation}'
 
+
 class Profile(models.Model):
     class Meta:
-        db_table="Perfiles"
+        db_table = "Perfiles"
 
     user = models.OneToOneField(Usuario, on_delete=models.CASCADE)
     phone = models.CharField(max_length=255)
     address = models.CharField(max_length=255)
     dni = models.CharField(max_length=255)
     is_client = models.BooleanField(default=True)
-
-
-

@@ -1,11 +1,39 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Temporada</title>
-</head>
-<body>
-    <h1>Update de temporadas</h1>
-</body>
-</html>
+{% extends '../index_master.html' %}
+
+{% block content %}
+<div class="center_col m-2 text-center bg-success rounded text-white" role="main">
+  <h3>{% block title%} Actualizar una Temporada {% endblock%}</h3>
+</div>
+<div class="container">
+  <div class="row justify-content-center">
+
+    <div class="col-lg-6">
+      <div class="border rounded p-4">
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          {% for field in form %}
+          <div class="form-group m-3">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+          </div>
+          {% endfor %}
+
+          <div class="row justify-content-center">
+            {% if form.non_field_errors %}
+            <div class="col-lg-12">
+                <div class="border rounded p-4 bg-success text-white">
+                    {% for error in form.non_field_errors %}
+                        <div class="h6">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+          {% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-info">Actualizar</button>
+        <a href="{% url 'season_list' %}" class="btn btn-secondary">Cancelar</a>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
