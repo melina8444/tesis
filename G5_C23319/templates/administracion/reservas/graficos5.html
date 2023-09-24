@@ -1,0 +1,39 @@
+{% extends '../index_master.html' %}
+    {% block content %}
+
+    <div>
+    <h4>Gráfico de Camping por Parque Natural</h4>
+    <div class="container" style="width: 900px; height: 470px;">
+    <canvas id="campsiteChart" width="700" height="470"></canvas>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Obtén los datos de Django
+    var parkNames = {{ park_names|safe }};
+    var campsiteCounts = {{ campsite_counts|safe }};
+
+
+        // Configura los datos del gráfico
+        var ctx = document.getElementById('campsiteChart').getContext('2d');
+        var campsiteChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: parkNames,
+                datasets: [{
+                    label: 'Cantidad de Camping',
+                    data: campsiteCounts,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)', // Color de fondo
+                    borderColor: 'rgba(75, 192, 192, 1)', // Color del borde
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+    {% endblock %}

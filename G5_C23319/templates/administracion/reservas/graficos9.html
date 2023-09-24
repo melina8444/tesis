@@ -1,0 +1,64 @@
+{% extends '../index_master.html' %}
+
+{% block content %}
+  <div class="container" style="width: 900px; height: 370px;">
+    <canvas id="importesPorMes" width="900" height="370"></canvas>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    var ctx = document.getElementById('importesPorMes').getContext('2d');
+    
+    var yearsMonths = {{ years_months|safe }};
+    var importes = {{ importes|safe }};
+    
+    // Definir un arreglo de nombres de meses
+    var monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+    
+    // Mapear los números de los meses a los nombres de los meses
+    var labels = yearsMonths.map(function(monthNumber) {
+      return monthNames[monthNumber - 1]; // Restamos 1 porque los meses comienzan desde 1
+    });
+    
+    var chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels, // Usar las etiquetas personalizadas
+          datasets: [{
+            label: 'Importe Total de Reservas por Mes y Año',
+            data: importes,
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1,
+            lineTension: 0.3,
+            pointRadius: 4,
+            pointHoverRadius: 6
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true,
+              stepSize: 1
+            }
+          },
+          plugins: {
+            tooltip: {
+              callbacks: {
+                title: function(tooltipItem) {
+                    var monthIndex = tooltipItem[0].dataIndex;
+                    var year = yearsMonths[monthIndex][0];
+                    var month = yearsMonths[monthIndex][1];
+                    return monthNames[month - 1] + ' ' + year; // Mostrar el nombre del mes y el año
+                  },
+                  
+                label: function(tooltipItem) {
+                  return 'Importe: ' + tooltipItem.formattedValue;
+                }
+              }
+            }
+          }
+        }
+      });
+  </script>
+{% endblock %}

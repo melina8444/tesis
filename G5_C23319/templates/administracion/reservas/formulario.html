@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Seleccionar Rango de Fechas</title>
+</head>
+<body>
+    <h1>Seleccione un rango de fechas:</h1>
+    <form method="POST" action="{% url 'grafico_reservas' %}">
+        {% csrf_token %}
+        <label for="start_date">Fecha de inicio:</label>
+        <input type="date" id="start_date" name="start_date" required>
+        <br>
+        <label for="end_date">Fecha de fin:</label>
+        <input type="date" id="end_date" name="end_date" required>
+        <br>
+        <input type="submit" value="Generar Gráfico">
+    </form>
+</body>
+</html>

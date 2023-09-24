@@ -133,6 +133,8 @@ class ReservationForm(forms.ModelForm):
     check_in = forms.DateField(label='Check_in - Fecha de Llegada', widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}))
     check_out = forms.DateField(label='Check_out - Fecha de Salida',widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}))
     user = forms.ModelChoiceField(label='Usuario',queryset=Usuario.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
+    
+
 
     class Meta:
         model = Reservation
@@ -226,8 +228,8 @@ class SeasonForm(forms.ModelForm):
         fields = ['name', 'start_date', 'end_date', 'percentage']
         widgets = {
             
-            'name': forms.DateInput(attrs={'class': 'form-control'}),
-            'start_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'name': forms.TextInput(attrs={'class': 'form-control'}),
+            'start_date': forms.NumberInput(attrs={'class': 'form-control', 'type': 'date'}),
             'end_date': forms.NumberInput(attrs={'class': 'form-control', 'type': 'date'}),
             'percentage': forms.NumberInput(attrs={'class': 'form-control'}),
         }
@@ -241,7 +243,7 @@ class SeasonForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['season'].queryset = Season.objects.all()
+        self.fields['name'].queryset = Season.objects.all()
 
 class TemporadaCampsiteFilterForm(forms.Form):
     campsite_name = forms.CharField(label='', required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese el nombre'}))

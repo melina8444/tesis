@@ -28,6 +28,9 @@ urlpatterns = [
     path('reservations/', ReservationListView.as_view(), name='reservation_list'),
     path('reservations/create/', ReservationCreateView.as_view(), name='reservation_create'),
     path('reservations/update/<int:pk>/', ReservationUpdateView.as_view(), name='reservation_update'),
+     path('season/<int:pk>/update/', SeasonUpdateView.as_view(), name='season_update'),
+
+
     path('reservations/delete/<int:pk>/', ReservationDeleteView.as_view(), name='reservation_delete'),
     path('guests/', GuestListView.as_view(), name='guest_list'),
     #path('guests/create/', GuestCreateView.as_view(), name='guest_create'),
@@ -35,9 +38,19 @@ urlpatterns = [
     path('guests/delete/<int:pk>/', GuestDeleteView.as_view(), name='guest_delete'),
     path('access_denied/', views.access_denied, name='access_denied'),
     path('reservations/download_excel/', views.download_excel, name='download_excel'),
-    path('reservations/grafico/', views.grafico, name='grafico'),
+    #path('reservations/grafico/', views.grafico, name='grafico'),
+    
+    path('reservations/grafico/', views.principal, name='grafico'),
+    
     
 
+    path('reservations/grafico3/', views.principal3, name='grafico3'),
+    path('reservations/grafico9/', views.principal9, name='grafico9'),
+    path('reservations/grafico4/', views.occupancy_by_year, name='grafico4'),
+    path('reservations/grafico5/', views.natural_parks_chart, name='grafico5'),
+    path('reservation/pdf/<int:reservation_id>/', views.generate_reservation_pdf, name='generate_reservation_pdf'),
+   
+    
     #TEMPORADA
     path('season/', SeasonListView.as_view(), name='season_list'),
     path('season/create/', SeasonCreateView.as_view(), name='season_create'),

@@ -51,10 +51,10 @@
         <div class="nav">
                       
                           <!-- Elemento del menú: Inicio -->
-                          <a class="nav-link text-dark" href="{% url 'inicio_admin' %}">
+                    <a class="nav-link text-dark" href="{% url 'inicio_admin' %}">
                             <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                             Inicio
-                          </a>
+                    </a>
                       
                           <!-- Acordeón: Clientes -->
                     <a class="nav-link collapsed text-dark" href="#" data-bs-toggle="collapse" data-bs-target="#clientesCollapse" aria-expanded="false">
@@ -86,6 +86,7 @@
                             </a>   
                       </div>
                   </div>
+                  <div>
                               <!-- Acordeón: Temporada -->
                       <a class="nav-link collapsed text-dark" href="#" data-bs-toggle="collapse" data-bs-target="#campingsCollapse" aria-expanded="false">
                         <div class="sb-nav-link-icon d-flex"><i class="bi bi-triangle me-2"></i><h6>Temporada</h6></div>
@@ -99,7 +100,7 @@
                           </a>
                         </div>
                       </div>
-
+                    </div>
 
                            <!-- Acordeón: Categorias -->
                       <a class="nav-link collapsed text-dark" href="#" data-bs-toggle="collapse" data-bs-target="#categoriesCollapse" aria-expanded="false">
@@ -160,12 +161,76 @@
                             <div class="sb-nav-link-icon ms-4 p-2 rounded bg-success"><i class="bi bi-eye-fill me-3"></i><i class="bi bi-file-earmark-plus me-3"></i><i class="bi bi-pencil-fill me-3"></i><i class="bi bi-trash-fill"></i></div>
                           </a>
                         </div>
-                        <h6>Graficos</h6>
-                        <a href="{% url 'grafico' %}" class="nav-link text-dark sjustify-content-end">
-                          <div class="sb-nav-link-icon ms-4 p-2 rounded bg-success"><i class="bi bi-eye-fill me-3"></i></div>
-                        </a>
-                        
-                        
+                      </div>
+                       
+<!-- Acordeón: Gráficos -->
+<a class="nav-link collapsed text-dark" href="#" data-bs-toggle="collapse" data-bs-target="#graficosCollapse" aria-expanded="false">
+  <div class="sb-nav-link-icon d-flex"><i class="bi bi-bar-chart me-2"></i><h6>Gráficos</h6></div>
+  <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+</a>
+<div class="collapse" id="graficosCollapse">
+  <div class="nav">
+    <!-- Agrega aquí tus enlaces a los gráficos -->
+    <a href="{% url 'grafico' %}" class="nav-link text-dark sjustify-content-end">
+      <div class="sb-nav-link-icon ms-4 p-2 rounded bg-success"><i class="bi bi-eye-fill me-3"></i></div>
+      Reservas por mes
+    </a>
+    <!-- Agrega aquí más enlaces a otros gráficos si los tienes -->
+     <a href="{% url 'grafico3' %}" class="nav-link text-dark sjustify-content-end"  title="Reserva por año">
+      <div class="sb-nav-link-icon ms-4 p-2 rounded bg-success"><i class="bi bi-eye-fill me-3"></i></div>
+      Importe total de reservas por mes(confirmadas)
+    </a>
+
+    <a href="{% url 'grafico9' %}" class="nav-link text-dark sjustify-content-end"  title="Reserva por año">
+      <div class="sb-nav-link-icon ms-4 p-2 rounded bg-success"><i class="bi bi-eye-fill me-3"></i></div>
+      Importe total de reservas por mes(confirmadas probando)
+    </a>
+
+
+    <a href="{% url 'grafico4' %}" class="nav-link text-dark sjustify-content-end"  title="Reservas activas e inactivas por año">
+      <div class="sb-nav-link-icon ms-4 p-2 rounded bg-success"><i class="bi bi-eye-fill me-3"></i></div>
+      Reserva por año
+    </a>
+    <a href="{% url 'grafico5' %}" class="nav-link text-dark sjustify-content-end"  title="camping por parques naturales">
+      <div class="sb-nav-link-icon ms-4 p-2 rounded bg-success"><i class="bi bi-eye-fill me-3"></i></div>
+      Camping por Parque Natural
+    </a>
+    
+  
+
+  </div>
+</div>
+
+
+
+
+
+
+
+                        <!-- Acordeón: Gráficos -->
+{% comment %} <a class="nav-link collapsed text-dark" href="#" data-bs-toggle="collapse" data-bs-target="#graficosCollapse" aria-expanded="false">
+  <div class="sb-nav-link-icon d-flex"><i class="bi bi-bar-chart me-2"></i><h6>Gráficos</h6></div>
+  <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+</a>
+<div class="collapse" id="graficosCollapse">
+  <div class="nav">
+    <!-- Agrega aquí tus enlaces a los gráficos -->
+    <a href="{% url 'grafico' %}" class="nav-link text-dark sjustify-content-end" title="Ocupacion Campings">
+      <div class="sb-nav-link-icon ms-4 p-2 rounded bg-success"><i class="bi bi-eye-fill me-3"></i></div>
+    </a>
+   
+    <a href="{% url 'grafico3' %}" class="nav-link text-dark sjustify-content-end"  title="Reserva por año">
+      <div class="sb-nav-link-icon ms-4 p-2 rounded bg-success"><i class="bi bi-eye-fill me-3"></i></div>
+    </a>
+    <a href="{% url 'grafico4' %}" class="nav-link text-dark sjustify-content-end"  title="Reservas activas e inactivas por año">
+      <div class="sb-nav-link-icon ms-4 p-2 rounded bg-success"><i class="bi bi-eye-fill me-3"></i></div>
+    </a>
+    <a href="{% url 'grafico5' %}" class="nav-link text-dark sjustify-content-end"  title="camping por parques naturales">
+      <div class="sb-nav-link-icon ms-4 p-2 rounded bg-success"><i class="bi bi-eye-fill me-3"></i></div>
+    </a>
+    <!-- Agrega aquí más enlaces a otros gráficos si los tienes -->
+  </div>
+</div> {% endcomment %}
                          <!-- Acordeón: Huéspedes -->
                        <a class="nav-link collapsed text-dark" href="#" data-bs-toggle="collapse" data-bs-target="#huespedesCollapse" aria-expanded="false">
                         <div class="sb-nav-link-icon d-flex"><i class="bi bi-people me-2"></i>

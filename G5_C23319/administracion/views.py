@@ -16,7 +16,23 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from openpyxl import Workbook
 from django.http import HttpResponse
-from django.db.models import Count
+from collections import defaultdict
+from django.db.models import Count, Case, When, IntegerField
+from django.db.models import Min, Max
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter, landscape
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Spacer
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.platypus import Paragraph
+from reportlab.lib.enums import TA_CENTER, TA_LEFT
+from django.db.models.functions import ExtractMonth, ExtractYear
+import json
+from django.db.models.functions import TruncMonth
+from django.db.models import Sum,F, FloatField, DecimalField, ExpressionWrapper
+from django.http import JsonResponse
+
 
 @staff_member_required(login_url='access_denied')  # Requiere que el usuario sea miembro del staff
 @login_required(login_url='loginrn')  # Requiere que el usuario esté autenticado
@@ -292,9 +308,8 @@ class SeasonUpdateView(UpdateView):
     model = Season
     form_class = SeasonForm
     template_name = 'administracion/temporadas/season_update.html'
-    
     success_url = reverse_lazy('season_list')
-
+    
 class SeasonDeleteView(DeleteView):
     model = Season
     template_name = 'administracion/temporadas/season_delete.html'
@@ -431,6 +446,124 @@ class ReservationCreateView(LoginRequiredMixin, CreateView):
         form.instance.availability = availability
 
         return super().form_valid(form)
+    
+    # pdf reservas
+    def create_pdf(self, reservation):
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="reservation_{reservation.code}.pdf"'
+
+        # Crear el objeto PDF
+        p = canvas.Canvas(response, pagesize=letter)
+
+        # Agregar contenido al PDF
+        p.drawString(100, 750, 'Reserva de Camping')
+        p.drawString(100, 730, '----------------------------------')
+
+        # Aquí puedes agregar más detalles de la reserva como la fecha, campsite, etc.
+        p.drawString(100, 710, f'Código de Reserva: {reservation.code}')
+        p.drawString(100, 690, f'Fecha de Check-In: {reservation.check_in}')
+        p.drawString(100, 670, f'Fecha de Check-Out: {reservation.check_out}')
+        p.drawString(100, 650, f'Número de Invitados: {reservation.number_guests}')
+
+        # Agregar información del usuario
+        p.drawString(100, 630, 'Información del Usuario:')
+        p.drawString(100, 610, f'Nombre de Usuario: {reservation.user.username}')
+        p.drawString(100, 590, f'Nombre: {reservation.user.first_name} {reservation.user.last_name}')
+        p.drawString(100, 570, f'DNI: {reservation.user.profile.dni}')
+        p.drawString(100, 550, f'Teléfono: {reservation.user.profile.phone}')
+        p.drawString(100, 530, f'Dirección: {reservation.user.profile.address}')
+
+        # Cerrar el objeto PDF y devolver la respuesta
+        p.showPage()
+        p.save()
+        return response
+
+    def form_valid(self, form):
+        # ... (código existente)
+
+        # Llamar a la función para crear el PDF y adjuntarlo a la respuesta
+        pdf_response = self.create_pdf(form.instance)
+
+        # Renderizar la plantilla HTML con los datos de la reserva y la URL del PDF
+        context = {
+            'reservation': form.instance,
+            'pdf_url': pdf_response.url,
+        }
+        return render(self.request, 'administracion/reservas/reservation_details.html', context)
+
+""" 
+def reservation_chart(request):
+    reservations_by_month = Reservation.objects.filter(status='Abonada').annotate(
+        month=ExtractMonth('reservation_date')
+    ).values('month').annotate(
+        total_cost=Sum('total_cost')
+    ).order_by('month')
+    
+    return render(request, 'administracion/reservas/graficos3.html', {'reservations_by_month': reservations_by_month})
+     """
+"""     
+def tu_vista(request):
+    # Calcular la suma total de los importes de las reservas por mes
+    monthly_data = Reservation.objects.annotate(
+        month=TruncMonth('reservation_date')
+    ).values('month').annotate(
+        total_cost=Sum('total_cost')
+    ).order_by('month')
+
+    labels = [str(entry['month'].strftime('%B %Y')) for entry in monthly_data]
+    data = [entry['total_cost'] for entry in monthly_data]
+
+    context = {
+        'labels': labels,
+        'data': data,
+    }
+
+    return render(request, 'administracion/reservas/graficos3.html', context)
+ """
+""" def reservations_by_month(request):
+    # Calcular el importe total de las reservas por mes
+    data = (
+        Reservation.objects
+        .annotate(month=ExtractMonth('check_in'))
+        .values('month')
+        .annotate(total_cost=Sum('total_cost'))
+        .order_by('month')
+    )
+
+    # Separar los datos en etiquetas (nombres de los meses) y valores (importe total)
+    labels = [calendar.month_name[month['month']] for month in data]
+    values = [month['total_cost'] for month in data]
+
+    context = {
+        'labels': labels,
+        'data': values,
+    }
+
+    return render(request, 'administracion/reservas/graficos3.html', context)
+ """
+def reservations_by_month(request):
+    # Calcular el importe total de las reservas por mes y año
+    data = (
+        Reservation.objects
+        .filter(baja=False)  # Filtrar solo las reservas con baja=False
+        .annotate(month=ExtractMonth('check_in'))
+        .annotate(year=ExtractYear('check_in'))
+        .values('year', 'month')
+        .annotate(total_cost=Sum(F('total_cost'), output_field=FloatField()))
+        .order_by('year', 'month')
+    )
+
+    # Crear etiquetas en el formato "Mes Año"
+    labels = [f"{calendar.month_name[month['month']]} {month['year']}" for month in data]
+    values = [month['total_cost'] for month in data]
+
+    context = {
+        'labels': labels,
+        'data': values,
+    }
+
+    return render(request, 'administracion/reservas/graficos3.html', context)
+
 class ReservationCreateView(LoginRequiredMixin, CreateView):
     model = Reservation
     template_name = 'publica/reserva.html'
@@ -608,31 +741,387 @@ def download_excel(request):
 
     return response
 
+""" # PARA EL GRAFICO DE OCUPACION DE CAMPING
+def principal(request):
+    reservas = Reservation.objects.all()
+    campings = Campsite.objects.all()
+    
+    # Crear un diccionario para almacenar la ocupación de cada camping
+    ocupacion_campings = {camping.name: 0 for camping in campings}
+    
+    # Calcular la ocupación de cada camping
+    for reserva in reservas:
+        if not reserva.baja:
+            ocupacion_campings[reserva.campsite.name] += reserva.number_guests
+    
+    # Convertir los datos a listas para el gráfico
+    campings_labels = list(ocupacion_campings.keys())
+    ocupacion_data = list(ocupacion_campings.values())
+    
+    return render(request, 'administracion/reservas/graficos.html', {
+        'campings_labels': campings_labels,
+        'ocupacion_data': ocupacion_data,
+    })
 
-def grafico(request):
-    camping  = Campsite.objects.all()
-        
-   
+ """
 
-    context = { 
-        "camping" : camping,
-        
-        
-    }
+#RESERVAS POR MES Y AÑO(grafico)
+def principal(request):
+    reservas = Reservation.objects.filter(baja=False)
+    
+    # Agrupar las reservas por mes y año
+    reservas_por_mes_y_anio = reservas.annotate(
+        year=ExtractYear('check_in'),
+        month=ExtractMonth('check_in')
+    ).values('year', 'month').annotate(count=Count('id')).order_by('year', 'month')
+    
+    # Crear listas para las etiquetas del gráfico y los datos
+    labels = []
+    data = []
+    
+    for reserva in reservas_por_mes_y_anio:
+        mes = reserva['month']
+        año = reserva['year']
+        cantidad_reservas = reserva['count']
+        labels.append(f'{mes}/{año}')
+        data.append(cantidad_reservas)
+    
+    return render(request, 'administracion/reservas/graficos.html', {
+        'labels': labels,
+        'data': data,
+    })
 
-    return render(request, 'administracion/reservas/graficos.html', context) 
+ 
+""" 
+def principal(request):
+    reservas = Reservation.objects.filter(baja=False)
+    
+    # Agrupar las reservas por mes
+    reservas_por_mes = reservas.annotate(
+        month=ExtractMonth('check_in')
+    ).values('month').annotate(count=Count('id')).order_by('month')
+    
+    # Crear listas para las etiquetas del gráfico y los datos
+    labels = []
+    data = []
+    
+    for reserva in reservas_por_mes:
+        mes = reserva['month']
+        cantidad_reservas = reserva['count']
+        labels.append(f'Mes {mes}')
+        data.append(cantidad_reservas)
+    
+    return render(request, 'administracion/reservas/graficos.html', {
+        'labels': json.dumps(labels),
+        'data': json.dumps(data),
+    })
+ """
+""" 
+#PARA EL GRAFICO DE OCUPACION DE CAMPINGS POR MES
+def principal2(request):
+    reservas = Reservation.objects.all()
+    campings = Campsite.objects.all()
+    
+    # Crear un diccionario para almacenar la ocupación de cada camping por mes
+    ocupacion_campings_mes = defaultdict(lambda: defaultdict(int))
+    
+    # Calcular la ocupación de cada camping por mes
+    for reserva in reservas:
+        if not reserva.baja:
+            check_in_month = reserva.check_in.month
+            check_out_month = reserva.check_out.month
+            campsite_name = reserva.campsite.name
+            for month in range(check_in_month, check_out_month + 1):
+                ocupacion_campings_mes[campsite_name][month] += reserva.number_guests
+    
+    # Crear listas para las etiquetas de camping y datos de ocupación por mes
+    campings_labels = list(campings.values_list('name', flat=True))
+    months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+    ocupacion_data = [[] for _ in range(12)]
+    
+    for camping_name in campings_labels:
+        for month in range(1, 13):
+            ocupacion_data[month - 1].append(ocupacion_campings_mes[camping_name][month])
+    
+    return render(request, 'administracion/reservas/graficos2.html', {
+        'campings_labels': campings_labels,
+        'ocupacion_data': ocupacion_data,
+        'months': months,
+    })
+ """
+
+# PARA EL GRAFICO DE RESERVAS POR AÑO(grafico 3)
+
+def principal3(request):
+    reservas = Reservation.objects.all()
+    importes_por_mes_anio = defaultdict(float)
+
+    for reserva in reservas:
+        if not reserva.baja:
+            year = reserva.check_in.year
+            month = reserva.check_in.month
+            importes_por_mes_anio[(year, month)] += reserva.total_cost
+
+    # Convertir el diccionario en listas para usar en JavaScript
+    years_months = list(importes_por_mes_anio.keys())
+    importes = list(importes_por_mes_anio.values())
+
+    return render(request, 'administracion/reservas/graficos3.html', {'years_months': years_months, 'importes': importes})
 
 
-    # Obtener el recuento de reservas por año
-    reservations_by_year = Reservation.objects.annotate(year=models.functions.ExtractYear('reservation_date')).values('year').annotate(count=Count('id')).order_by('year')
+""" def principal3(request):
+    reservas = Reservation.objects.all()
+    ocupacion_por_anio = defaultdict(int)
 
-    # Crear listas separadas para los años y los recuentos
-    years = [entry['year'] for entry in reservations_by_year]
-    counts = [entry['count'] for entry in reservations_by_year]
+    for reserva in reservas:
+        if not reserva.baja:
+            year = reserva.check_in.year
+            ocupacion_por_anio[year] += 1
 
-    context = {
+    # Convertir el diccionario en listas para usar en JavaScript
+    years = list(ocupacion_por_anio.keys())
+    ocupacion = list(ocupacion_por_anio.values())
+
+    return render(request, 'administracion/reservas/graficos3.html', {'years': years, 'ocupacion': ocupacion})
+
+ """
+
+""" def natural_parks_chart(request):
+    natural_parks = NaturalPark.objects.all()
+    park_names = [park.name for park in natural_parks]
+    campsite_counts = [park.campsites.count() for park in natural_parks]
+
+    return render(request, 'administracion/reservas/graficos5.html', {'park_names': park_names, 'campsite_counts': campsite_counts})
+ """
+
+#GRAFICO DE CAMPING POR PARQUE NATURAL(grafico 5)
+def natural_parks_chart(request):
+    natural_parks = NaturalPark.objects.all()
+    park_names = [park.name for park in natural_parks]
+    campsite_counts = [park.campsites.count() for park in natural_parks]
+
+    # Agrega impresiones para verificar los datos
+    print("Park Names:", park_names)
+    print("Campsite Counts:", campsite_counts)
+
+    return render(request, 'administracion/reservas/graficos5.html', {'park_names': park_names, 'campsite_counts': campsite_counts})
+
+
+
+
+
+# PARA EL GRAFICO DE RESERVAS POR AÑO(grafico 3 duplicado para probar)
+
+def principal9(request):
+    reservas = Reservation.objects.all()
+    importes_por_mes_anio = defaultdict(float)
+
+    for reserva in reservas:
+        if not reserva.baja:
+            year = reserva.check_in.year
+            month = reserva.check_in.month
+            importes_por_mes_anio[(year, month)] += reserva.total_cost
+
+    # Convertir el diccionario en listas para usar en JavaScript
+    years_months = list(importes_por_mes_anio.keys())
+    importes = list(importes_por_mes_anio.values())
+
+    # Definir una lista de nombres de meses en la vista
+    monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
+
+    # Crear una lista de etiquetas personalizadas que incluyan el año
+    labels = [f"{monthNames[month-1]} {year}" for year, month in years_months]
+
+    return render(request, 'administracion/reservas/graficos9.html', {'years_months': years_months, 'importes': importes, 'labels': labels})
+
+
+""" def occupancy_by_year(request):
+    # Obtén la ocupación por año
+    occupancy_data = list(
+        Reservation.objects.values_list('check_in__year')
+        .annotate(count=Count('id'))
+        .order_by('check_in__year')
+    )
+    
+    return render(request, 'administracion/reservas/graficos4.html', {'occupancy_data': occupancy_data})
+ """
+""" 
+def occupancy_by_year(request):
+    # Obtén la ocupación por año para reservas con estado True
+    occupancy_data_true = list(
+        Reservation.objects.filter(baja=False)  # Filtra las reservas con estado True
+        .values_list('check_in__year')
+        .annotate(count=Count('id'))
+        .order_by('check_in__year')
+    )
+
+    # Obtén la ocupación por año para reservas con estado False
+    occupancy_data_false = list(
+        Reservation.objects.filter(baja=True)  # Filtra las reservas con estado False
+        .values_list('check_in__year')
+        .annotate(count=Count('id'))
+        .order_by('check_in__year')
+    )
+
+    return render(request, 'administracion/reservas/graficos4.html', {
+        'occupancy_data_true': occupancy_data_true,
+        'occupancy_data_false': occupancy_data_false,
+    })
+ """
+#GRAFICO DE RESERVAS POR AÑO CON FILTRO(grafico 4)
+def occupancy_by_year(request):
+    # Obtén el año mínimo y máximo de las reservas
+    min_year = Reservation.objects.filter(baja=False).aggregate(Min('check_in__year'))['check_in__year__min']
+    max_year = Reservation.objects.filter(baja=False).aggregate(Max('check_in__year'))['check_in__year__max']
+
+    # Crea una lista de años desde el mínimo hasta el máximo
+    years = list(range(min_year, max_year + 1))
+
+    # Obtén los valores de los checkboxes seleccionados
+    selected_occupancy_true = request.GET.get('occupancy_true')
+    selected_occupancy_false = request.GET.get('occupancy_false')
+    
+    # Obtiene el año seleccionado del formulario
+    selected_year = request.GET.get('year')
+
+    # Filtra las reservas según el año seleccionado
+    if selected_year:
+        occupancy_data_true = list(
+            Reservation.objects.filter(baja=False, check_in__year=selected_year)
+            .values_list('check_in__year')
+            .annotate(count=Count('id'))
+            .order_by('check_in__year')
+        )
+        occupancy_data_false = list(
+            Reservation.objects.filter(baja=True, check_in__year=selected_year)
+            .values_list('check_in__year')
+            .annotate(count=Count('id'))
+            .order_by('check_in__year')
+        )
+    else:
+        # Si no se selecciona ningún año, muestra todos los datos
+        occupancy_data_true = list(
+            Reservation.objects.filter(baja=False)
+            .values_list('check_in__year')
+            .annotate(count=Count('id'))
+            .order_by('check_in__year')
+        )
+        occupancy_data_false = list(
+            Reservation.objects.filter(baja=True)
+            .values_list('check_in__year')
+            .annotate(count=Count('id'))
+            .order_by('check_in__year')
+        )
+
+    return render(request, 'administracion/reservas/graficos4.html', {
+        'occupancy_data_true': occupancy_data_true,
+        'occupancy_data_false': occupancy_data_false,
         'years': years,
-        'counts': counts,
-    }
+        'selected_year': selected_year,
+    })
 
-    return render(request, 'administracion/reservas/reserva_por_ano.html', context)
+
+
+    
+""" 
+def generate_reservation_pdf(request, reservation_id):
+
+    
+    # Obtén la reserva y sus datos relacionados
+    reservation = Reservation.objects.get(id=reservation_id)
+    user = reservation.user
+    guests = Guest.objects.filter(reservation=reservation)
+
+    # Configura el response PDF
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="reservation_{reservation_id}.pdf"'
+
+    # Crea el objeto PDF
+    doc = SimpleDocTemplate(response, pagesize=letter, rightMargin=30, leftMargin=30, topMargin=30, bottomMargin=30)
+    elements = []
+
+    # Define los estilos y verifica si ya existen
+    styles = getSampleStyleSheet()
+    if 'Title' not in styles:
+        styles.add(ParagraphStyle(name='Title', fontSize=16, alignment=TA_CENTER))
+    if 'Normal' not in styles:
+        styles.add(ParagraphStyle(name='Normal', fontSize=12, alignment=TA_LEFT))
+
+    # Agrega información de la reserva al PDF
+    elements.append(Paragraph(f'Reservación Nº {reservation.code}', styles['Title']))
+    elements.append(Paragraph(f'Usuario realizo reserva: {user.first_name} {user.last_name}', styles['Normal']))
+    elements.append(Paragraph(f'Fecha de Check-In: {reservation.check_in}', styles['Normal']))
+    elements.append(Paragraph(f'Fecha de Check-Out: {reservation.check_out}', styles['Normal']))
+    elements.append(Paragraph(f'Total a Pagar: ${reservation.total_cost}', styles['Normal']))
+    elements.append(Paragraph(f'Huéspedes:', styles['Title']))
+
+    # Agregar información de los huéspedes
+    for guest in guests:
+        guest_info = f'Nombre: {guest.first_name}, Apellido: {guest.last_name}, DNI: {guest.dni}'
+        elements.append(Paragraph(guest_info, styles['Normal']))
+
+    # Resto de la lógica para agregar información adicional
+
+    # Construye el PDF
+    doc.build(elements)
+
+    return response
+
+
+ """
+ 
+def generate_reservation_pdf(request, reservation_id):
+    # Obtén la reserva y sus datos relacionados
+    reservation = Reservation.objects.get(id=reservation_id)
+    user = reservation.user
+    guests = Guest.objects.filter(reservation=reservation)
+
+    # Configura el response PDF
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="reservation_{reservation_id}.pdf"'
+
+    # Crea el objeto PDF
+    doc = SimpleDocTemplate(response, pagesize=letter)
+    elements = []
+
+    # Define los estilos y verifica si ya existen
+    styles = getSampleStyleSheet()
+    if 'Title' not in styles:
+        styles.add(ParagraphStyle(name='Title', fontSize=16, alignment=TA_CENTER))
+    if 'Normal' not in styles:
+        styles.add(ParagraphStyle(name='Normal', fontSize=12, alignment=TA_LEFT))
+
+    # Agrega información de la reserva al PDF
+    elements.append(Paragraph(f'Reservación Nº {reservation.code}', styles['Title']))
+    elements.append(Paragraph(f'Usuario realizó la reserva: {user.first_name} {user.last_name}', styles['Normal']))
+    elements.append(Paragraph(f'Fecha de Check-In: {reservation.check_in}', styles['Normal']))
+    elements.append(Paragraph(f'Fecha de Check-Out: {reservation.check_out}', styles['Normal']))
+    elements.append(Paragraph(f'Total a Pagar: ${reservation.total_cost}', styles['Normal']))
+    elements.append(Paragraph(f'Huéspedes:', styles['Title']))
+
+    # Crear una lista de datos de huéspedes para la tabla
+    guest_data = [["Nombre", "Apellido", "DNI"]]
+    for guest in guests:
+        guest_data.append([guest.first_name, guest.last_name, guest.dni])
+
+    # Crear una tabla y establecer su estilo
+    guest_table = Table(guest_data, colWidths=[100, 100, 100])
+    guest_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),  # Fila de encabezado
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),  # Filas de datos
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+    ]))
+
+    elements.append(guest_table)
+
+    # Resto de la lógica para agregar información adicional al PDF
+
+    # Construye el PDF
+    doc.build(elements)
+
+    return response
+

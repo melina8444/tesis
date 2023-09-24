@@ -1,0 +1,64 @@
+{% extends '../index_master.html' %}
+{% block content %}
+<div>
+    <h4>Gráfico de Ocupación de Reservas por Año</h4>
+    <canvas id="occupancyChart" width="700" height="200"></canvas>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<form method="GET" action="">
+    <label for="year">Seleccionar Año:</label>
+    <select name="year" id="year">
+      
+      {% for year in years %}
+        <option value="{{ year }}">{{ year }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit">Buscar</button>
+  </form>
+  <script>
+    var years = [];
+    var countsTrue = [];
+    var countsFalse = [];
+    
+    // Itera sobre los datos de reservas activas
+    {% for item in occupancy_data_true %}
+        years.push({{ item.0 }});
+        countsTrue.push({{ item.1 }});
+    {% endfor %}
+    
+    // Itera sobre los datos de reservas inactivas
+    {% for item in occupancy_data_false %}
+        countsFalse.push({{ item.1 }});
+    {% endfor %}
+
+    var ctx = document.getElementById('occupancyChart').getContext('2d');
+    var chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: years,
+            datasets: [{
+                label: 'Reservas Activas',
+                data: countsTrue,  // Utiliza los datos de reservas activas
+                backgroundColor: 'rgba(75, 192, 192, 1)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            },
+            {
+                label: 'Reservas Inactivas',
+                data: countsFalse,  // Utiliza los datos de reservas inactivas
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+
+{% endblock %}
