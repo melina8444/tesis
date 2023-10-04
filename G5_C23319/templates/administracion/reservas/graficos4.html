@@ -1,20 +1,23 @@
 {% extends '../index_master.html' %}
 {% block content %}
 <div>
-    <h4>Gráfico de Ocupación de Reservas por Año</h4>
+    <h4>Gráfico  Reservas por Año</h4>
     <canvas id="occupancyChart" width="700" height="200"></canvas>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <form method="GET" action="">
     <label for="year">Seleccionar Año:</label>
     <select name="year" id="year">
-      
-      {% for year in years %}
-        <option value="{{ year }}">{{ year }}</option>
-      {% endfor %}
+        {% for year in years %}
+            <option value="{{ year }}" {% if year == selected_year %}selected{% endif %}>{{ year }}</option>
+        {% endfor %}
     </select>
+
+    <!-- Tu otro código de formulario aquí -->
+
     <button type="submit">Buscar</button>
-  </form>
+</form>
+
   <script>
     var years = [];
     var countsTrue = [];

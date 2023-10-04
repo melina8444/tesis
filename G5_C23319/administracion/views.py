@@ -912,27 +912,46 @@ def natural_parks_chart(request):
 
 # PARA EL GRAFICO DE RESERVAS POR AÑO(grafico 3 duplicado para probar)
 
+
+
 def principal9(request):
-    reservas = Reservation.objects.all()
-    importes_por_mes_anio = defaultdict(float)
+    # Obtén el año mínimo y máximo de las reservas
+    min_year = Reservation.objects.filter(baja=False).aggregate(Min('check_in__year'))['check_in__year__min']
+    max_year = Reservation.objects.filter(baja=False).aggregate(Max('check_in__year'))['check_in__year__max']
 
-    for reserva in reservas:
-        if not reserva.baja:
-            year = reserva.check_in.year
-            month = reserva.check_in.month
-            importes_por_mes_anio[(year, month)] += reserva.total_cost
+    # Crea una lista de años desde el mínimo hasta el máximo
+    years = list(range(min_year, max_year + 1))
 
-    # Convertir el diccionario en listas para usar en JavaScript
-    years_months = list(importes_por_mes_anio.keys())
-    importes = list(importes_por_mes_anio.values())
+    # Obtiene los valores seleccionados del formulario
+    selected_year = request.GET.get('year')
+    selected_month = request.GET.get('month')
 
-    # Definir una lista de nombres de meses en la vista
-    monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
+    # Filtra las reservas según el año y el mes seleccionados
+    reservations = Reservation.objects.filter(baja=False)
 
-    # Crear una lista de etiquetas personalizadas que incluyan el año
-    labels = [f"{monthNames[month-1]} {year}" for year, month in years_months]
+    if selected_year:
+        reservations = reservations.filter(check_in__year=selected_year)
 
-    return render(request, 'administracion/reservas/graficos9.html', {'years_months': years_months, 'importes': importes, 'labels': labels})
+    if selected_month:
+        reservations = reservations.filter(check_in__month=selected_month)
+
+    # Calcula el importe total de las reservas
+    revenue_data = list(
+        reservations.values('check_in__year')
+        .annotate(total_revenue=Sum('total_cost'))
+        .order_by('check_in__year')
+    )
+
+    # Inicializa selected_year con el valor seleccionado o None si no se selecciona
+    selected_year = selected_year if selected_year else min_year
+
+    return render(request, 'administracion/reservas/graficos9.html', {
+        'revenue_data': revenue_data,
+        'years': years,
+        'selected_year': int(selected_year),  # Asegura que sea un entero
+        'selected_month': selected_month,
+    })
+
 
 
 """ def occupancy_by_year(request):
@@ -984,6 +1003,8 @@ def occupancy_by_year(request):
     # Obtiene el año seleccionado del formulario
     selected_year = request.GET.get('year')
 
+    
+
     # Filtra las reservas según el año seleccionado
     if selected_year:
         occupancy_data_true = list(
@@ -1013,14 +1034,16 @@ def occupancy_by_year(request):
             .order_by('check_in__year')
         )
 
+        # Inicializa selected_year con el valor seleccionado o el año mínimo si no se selecciona
+    selected_year = selected_year if selected_year else min_year
+
+
     return render(request, 'administracion/reservas/graficos4.html', {
         'occupancy_data_true': occupancy_data_true,
         'occupancy_data_false': occupancy_data_false,
         'years': years,
-        'selected_year': selected_year,
+        'selected_year': int(selected_year),
     })
-
-
 
     
 """ 
