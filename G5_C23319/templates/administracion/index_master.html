@@ -176,16 +176,16 @@
       Reservas por mes
     </a>
     <!-- Agrega aquí más enlaces a otros gráficos si los tienes -->
-     <a href="{% url 'grafico3' %}" class="nav-link text-dark sjustify-content-end"  title="Reserva por año">
+   {% comment %}   <a href="{% url 'grafico3' %}" class="nav-link text-dark sjustify-content-end"  title="Reserva por año">
       <div class="sb-nav-link-icon ms-4 p-2 rounded bg-success"><i class="bi bi-eye-fill me-3"></i></div>
       Importe total de reservas por mes(confirmadas)
-    </a>
+    </a> {% endcomment %}
 
-    <a href="{% url 'grafico9' %}" class="nav-link text-dark sjustify-content-end"  title="Reserva por año">
+   <a href="{% url 'grafico9' %}" class="nav-link text-dark sjustify-content-end"  title="Reserva por año">
       <div class="sb-nav-link-icon ms-4 p-2 rounded bg-success"><i class="bi bi-eye-fill me-3"></i></div>
-      Importe total de reservas por mes(confirmadas probando)
+      Importe total de reservas Año y Mes(confirmadas)
     </a>
-
+ 
 
     <a href="{% url 'grafico4' %}" class="nav-link text-dark sjustify-content-end"  title="Reservas activas e inactivas por año">
       <div class="sb-nav-link-icon ms-4 p-2 rounded bg-success"><i class="bi bi-eye-fill me-3"></i></div>

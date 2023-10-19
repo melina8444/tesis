@@ -421,13 +421,47 @@ class ReservationCreateView(LoginRequiredMixin, CreateView):
             form.fields['user'].initial = self.request.user
         return form
     
-    def calculate_season_multiplier(self, check_in, check_out):
+    """ def calculate_season_multiplier(self, check_in, check_out):
         season_now = Season.objects.filter(fecha_inicio_lte=check_in, fecha_fin_gte=check_out).first()
         
         if season_now:
             return Decimal(season_now.porcentaje)  # Utiliza el campo 'porcentaje' de la temporada
         
-        return Decimal('1.0')
+        return Decimal('1.0') """
+    
+    
+    """ def calculate_season_multiplier(self, check_in):
+        summer_start = date(check_in.year, 12, 1)  # Comienza el 1 de diciembre
+        summer_end = date(check_in.year + 1, 4, 30)  # Termina el 30 de abril del año siguiente
+        winter_start = date(check_in.year, 6, 1)
+        winter_end = date(check_in.year + 1, 10, 30)
+
+        if summer_start <= check_in <= summer_end:
+            return Decimal('1.20')  # Verano, 20% de multiplicador
+        elif winter_start <= check_in <= winter_end:
+            return Decimal('1.0')  # Invierno, multiplicador 1
+        else:
+            return Decimal('1.0')  # Fuera de verano e invierno, multiplicador 1 """
+    
+   
+    def calculate_season_multiplier(self, check_in):
+         # Definir los feriados nacionales de Argentina
+        argentina_holidays = [date(check_in.year, 1, 1), date(check_in.year, 5, 1), date(check_in.year, 7, 9), date(check_in.year, 12, 8)]  # Agrega más feriados según sea necesario
+
+        summer_start = date(check_in.year, 12, 1)  # Comienza el 1 de diciembre
+        summer_end = date(check_in.year + 1, 4, 30)  # Termina el 30 de abril del año siguiente
+        winter_start = date(check_in.year, 6, 1)
+        winter_end = date(check_in.year + 1, 10, 30)
+
+        if check_in in argentina_holidays:
+            return Decimal('1.50')  # Aplicar un multiplicador específico para feriados nacionales de Argentina
+        elif summer_start <= check_in <= summer_end:
+            return Decimal('1.20')  # Verano, 20% de multiplicador
+        elif winter_start <= check_in <= winter_end:
+            return Decimal('1.0')  # Invierno, multiplicador 1
+        else:
+            return Decimal('1.0')  # Fuera de verano e invierno, multiplicador 1
+
 
     def form_valid(self, form):
         campsite = form.cleaned_data.get('campsite')
@@ -438,7 +472,8 @@ class ReservationCreateView(LoginRequiredMixin, CreateView):
         if campsite and number_guests:
             capacity = campsite.categories.aggregate(min_capacity=Min('capacity'))['min_capacity']
             if capacity:
-                multiplier = self.calculate_season_multiplier(check_in, check_out)  # Obtiene el multiplicador de temporada
+                multiplier = self.calculate_season_multiplier(check_in)  # Obtiene el multiplicador de temporada
+                print(multiplier)
                 total_cost = (number_guests / capacity) * campsite.categories.aggregate(sum_price=Sum('price'))['sum_price'] * (check_out - check_in).days * multiplier
                 form.instance.total_cost = total_cost
 
@@ -912,27 +947,46 @@ def natural_parks_chart(request):
 
 # PARA EL GRAFICO DE RESERVAS POR AÑO(grafico 3 duplicado para probar)
 
+
+
 def principal9(request):
-    reservas = Reservation.objects.all()
-    importes_por_mes_anio = defaultdict(float)
+    # Obtén el año mínimo y máximo de las reservas
+    min_year = Reservation.objects.filter(baja=False).aggregate(Min('check_in__year'))['check_in__year__min']
+    max_year = Reservation.objects.filter(baja=False).aggregate(Max('check_in__year'))['check_in__year__max']
 
-    for reserva in reservas:
-        if not reserva.baja:
-            year = reserva.check_in.year
-            month = reserva.check_in.month
-            importes_por_mes_anio[(year, month)] += reserva.total_cost
+    # Crea una lista de años desde el mínimo hasta el máximo
+    years = list(range(min_year, max_year + 1))
 
-    # Convertir el diccionario en listas para usar en JavaScript
-    years_months = list(importes_por_mes_anio.keys())
-    importes = list(importes_por_mes_anio.values())
+    # Obtiene los valores seleccionados del formulario
+    selected_year = request.GET.get('year')
+    selected_month = request.GET.get('month')
 
-    # Definir una lista de nombres de meses en la vista
-    monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
+    # Filtra las reservas según el año y el mes seleccionados
+    reservations = Reservation.objects.filter(baja=False)
 
-    # Crear una lista de etiquetas personalizadas que incluyan el año
-    labels = [f"{monthNames[month-1]} {year}" for year, month in years_months]
+    if selected_year:
+        reservations = reservations.filter(check_in__year=selected_year)
 
-    return render(request, 'administracion/reservas/graficos9.html', {'years_months': years_months, 'importes': importes, 'labels': labels})
+    if selected_month:
+        reservations = reservations.filter(check_in__month=selected_month)
+
+    # Calcula el importe total de las reservas
+    revenue_data = list(
+        reservations.values('check_in__year')
+        .annotate(total_revenue=Sum('total_cost'))
+        .order_by('check_in__year')
+    )
+
+    # Inicializa selected_year con el valor seleccionado o None si no se selecciona
+    selected_year = selected_year if selected_year else min_year
+
+    return render(request, 'administracion/reservas/graficos9.html', {
+        'revenue_data': revenue_data,
+        'years': years,
+        'selected_year': int(selected_year),  # Asegura que sea un entero
+        'selected_month': selected_month,
+    })
+
 
 
 """ def occupancy_by_year(request):
@@ -984,6 +1038,8 @@ def occupancy_by_year(request):
     # Obtiene el año seleccionado del formulario
     selected_year = request.GET.get('year')
 
+    
+
     # Filtra las reservas según el año seleccionado
     if selected_year:
         occupancy_data_true = list(
@@ -1013,14 +1069,16 @@ def occupancy_by_year(request):
             .order_by('check_in__year')
         )
 
+        # Inicializa selected_year con el valor seleccionado o el año mínimo si no se selecciona
+    selected_year = selected_year if selected_year else min_year
+
+
     return render(request, 'administracion/reservas/graficos4.html', {
         'occupancy_data_true': occupancy_data_true,
         'occupancy_data_false': occupancy_data_false,
         'years': years,
-        'selected_year': selected_year,
+        'selected_year': int(selected_year),
     })
-
-
 
     
 """ 
