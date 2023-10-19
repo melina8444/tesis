@@ -245,6 +245,8 @@ class SeasonForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['name'].queryset = Season.objects.all()
 
+        
+
 class TemporadaCampsiteFilterForm(forms.Form):
     campsite_name = forms.CharField(label='', required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese el nombre'}))
 

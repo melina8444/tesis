@@ -421,13 +421,47 @@ class ReservationCreateView(LoginRequiredMixin, CreateView):
             form.fields['user'].initial = self.request.user
         return form
     
-    def calculate_season_multiplier(self, check_in, check_out):
+    """ def calculate_season_multiplier(self, check_in, check_out):
         season_now = Season.objects.filter(fecha_inicio_lte=check_in, fecha_fin_gte=check_out).first()
         
         if season_now:
             return Decimal(season_now.porcentaje)  # Utiliza el campo 'porcentaje' de la temporada
         
-        return Decimal('1.0')
+        return Decimal('1.0') """
+    
+    
+    """ def calculate_season_multiplier(self, check_in):
+        summer_start = date(check_in.year, 12, 1)  # Comienza el 1 de diciembre
+        summer_end = date(check_in.year + 1, 4, 30)  # Termina el 30 de abril del año siguiente
+        winter_start = date(check_in.year, 6, 1)
+        winter_end = date(check_in.year + 1, 10, 30)
+
+        if summer_start <= check_in <= summer_end:
+            return Decimal('1.20')  # Verano, 20% de multiplicador
+        elif winter_start <= check_in <= winter_end:
+            return Decimal('1.0')  # Invierno, multiplicador 1
+        else:
+            return Decimal('1.0')  # Fuera de verano e invierno, multiplicador 1 """
+    
+   
+    def calculate_season_multiplier(self, check_in):
+         # Definir los feriados nacionales de Argentina
+        argentina_holidays = [date(check_in.year, 1, 1), date(check_in.year, 5, 1), date(check_in.year, 7, 9), date(check_in.year, 12, 8)]  # Agrega más feriados según sea necesario
+
+        summer_start = date(check_in.year, 12, 1)  # Comienza el 1 de diciembre
+        summer_end = date(check_in.year + 1, 4, 30)  # Termina el 30 de abril del año siguiente
+        winter_start = date(check_in.year, 6, 1)
+        winter_end = date(check_in.year + 1, 10, 30)
+
+        if check_in in argentina_holidays:
+            return Decimal('1.50')  # Aplicar un multiplicador específico para feriados nacionales de Argentina
+        elif summer_start <= check_in <= summer_end:
+            return Decimal('1.20')  # Verano, 20% de multiplicador
+        elif winter_start <= check_in <= winter_end:
+            return Decimal('1.0')  # Invierno, multiplicador 1
+        else:
+            return Decimal('1.0')  # Fuera de verano e invierno, multiplicador 1
+
 
     def form_valid(self, form):
         campsite = form.cleaned_data.get('campsite')
@@ -438,7 +472,8 @@ class ReservationCreateView(LoginRequiredMixin, CreateView):
         if campsite and number_guests:
             capacity = campsite.categories.aggregate(min_capacity=Min('capacity'))['min_capacity']
             if capacity:
-                multiplier = self.calculate_season_multiplier(check_in, check_out)  # Obtiene el multiplicador de temporada
+                multiplier = self.calculate_season_multiplier(check_in)  # Obtiene el multiplicador de temporada
+                print(multiplier)
                 total_cost = (number_guests / capacity) * campsite.categories.aggregate(sum_price=Sum('price'))['sum_price'] * (check_out - check_in).days * multiplier
                 form.instance.total_cost = total_cost
 

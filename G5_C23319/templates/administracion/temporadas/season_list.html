@@ -38,7 +38,7 @@
                 <th>Nombre</th>
                 <th>Fecha_Inicio</th>
                 <th>Fecha_Fin</th>
-                <th>Porcentaje</th>
+                <th>Porcentaje de aumento</th>
                 <th>Acciones</th>
               </tr>
             </thead>
@@ -48,7 +48,8 @@
                 <td>{{ season.name}}</td>
                 <td>{{ season.start_date }}</td>
                 <td>{{ season.end_date }}</td>
-                <td>{{ season.percentage }}</td>
+                <td class="percentage-value">{{ season.percentage }}</td>
+
                 <td>
                   <div class="d-flex">
                   <a
@@ -75,5 +76,104 @@
     </div>
   </div>
 
+{% comment %} <!-- Agrega este script al final de tu plantilla HTML -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Obtiene todos los elementos con la clase "percentage-value"
+    var percentageElements = document.querySelectorAll('.percentage-value');
+
+    // Itera a través de los elementos y aplica la conversión
+    percentageElements.forEach(function(element) {
+      var originalValue = parseFloat(element.textContent);
+      if (!isNaN(originalValue)) {
+        var formattedValue = originalValue === 100 ? '0%' : originalValue === 120 ? '20%' : element.textContent;
+        element.textContent = formattedValue;
+      }
+    });
+  });
+</script> {% endcomment %}
+<!-- Agrega este script al final de tu plantilla HTML -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Obtiene todos los elementos con la clase "percentage-value"
+    var percentageElements = document.querySelectorAll('.percentage-value');
+
+    // Itera a través de los elementos y aplica la conversión
+    percentageElements.forEach(function(element) {
+      var originalValue = parseFloat(element.textContent);
+      if (!isNaN(originalValue)) {
+        var formattedValue = element.textContent;
+        switch (originalValue) {
+          case 100:
+            formattedValue = '0%';
+            break;
+          case 110:
+            formattedValue = '10%';
+            break;
+          case 115:
+            formattedValue = '15%';
+            break;
+          case 120:
+            formattedValue = '20%';
+            break;
+          case 125:
+            formattedValue = '25%';
+            break;
+          case 130:
+            formattedValue = '30%';
+            break;
+          case 135:
+            formattedValue = '35%';
+            break;
+           case 140:
+            formattedValue = '40%';
+            break;
+          case 145:
+            formattedValue = '45%';
+            break;
+          case 150:
+            formattedValue = '50%';
+            break;
+          case 155:
+            formattedValue = '55%';
+            break;
+          case 160:
+            formattedValue = '60%';
+            break;
+          case 165:
+            formattedValue = '65%';
+            break;
+          case 170:
+            formattedValue = '70%';
+            break;
+          case 175:
+            formattedValue = '75%';
+            break;
+          case 180:
+            formattedValue = '80%';
+            break;
+          case 185:
+            formattedValue = '85%';
+            break;
+          case 190:
+            formattedValue = '90%';
+            break;
+          case 195:
+            formattedValue = '95%';
+            break;
+          
+        }
+        element.textContent = formattedValue;
+      }
+    });
+  });
+</script>
+
+
+
+
+
   {% endblock %}
 </div>
+<!-- Agrega este script al final de tu plantilla HTML -->
+
