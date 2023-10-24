@@ -32,7 +32,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -54,7 +53,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    
 ]
 
 ROOT_URLCONF = 'G5_C23319.urls'
@@ -151,6 +150,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 
+
 #El debug true, buscar un directorio static dentro del proyecto
 STATICFILES_DIRS = [
     BASE_DIR / 'static'
@@ -170,6 +170,7 @@ STATIC_ROOT = BASE_DIR / 'static_root'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
 
 
 # Tamaño máximo de archivo para subidas en memoria (en bytes)
