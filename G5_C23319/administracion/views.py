@@ -257,6 +257,7 @@ class ProfileListView(ListView):
     model = Profile
     template_name = 'administracion/clientes/profile_list.html'
     context_object_name = 'profiles'
+    
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -274,6 +275,7 @@ class ProfileListView(ListView):
             queryset = queryset.filter(is_client=True)
 
         return queryset
+    
     
 class ProfileCreateView(CreateView):
     model = Profile
