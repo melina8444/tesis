@@ -54,6 +54,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'G5_C23319.urls'
@@ -88,9 +89,20 @@ WSGI_APPLICATION = 'G5_C23319.wsgi.application'
 #    }
 #}
 
-DATABASES = {
+""" DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': env('DB_NAME'),
+        'USER': env('DB_USER'),
+        'PASSWORD': env('DB_PASSWORD'),
+        'HOST': env('DB_HOST'),
+        'PORT': env('DB_PORT'),
+    }
+} """
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
         'NAME': env('DB_NAME'),
         'USER': env('DB_USER'),
         'PASSWORD': env('DB_PASSWORD'),
@@ -137,6 +149,7 @@ USE_TZ = True
 
 #El debug esta en true, busque el directorio static dentro de las applicacion
 STATIC_URL = '/static/'
+
 
 #El debug true, buscar un directorio static dentro del proyecto
 STATICFILES_DIRS = [
