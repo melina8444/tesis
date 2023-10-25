@@ -346,40 +346,7 @@
                               {% endif %}
                             </div>
                           </div>
-                             {% if mes and campsites_occupancy %}
-                              {% if campsites_occupancy %}
-                              <table class="table table-bordered table-success rounded text-center">
-                                  <thead>
-                                      <tr>
-                                          <th>Camping</th>
-                                          <th>Total de huéspedes</th>
-                                          <th>Capacidad Máxima</th>
-                                          <th>Porcentaje de Ocupación</th>
-                                      </tr>
-                                  </thead>
-                                  <tbody>
-                                      {% for campsite in campsites_occupancy %}
-                                      <tr>
-                                          <td>{{ campsite.name }}</td>
-                                          <td>{{ campsite.total_guests }}</td>
-                                          <td>{{ campsite.total_capacity }}</td>
-                                          <td>{{ campsite.occupancy_percentage |floatformat:0 }}%</td>
-                                      </tr>
-                                      {% empty %}
-                                      <tr>
-                                          <td colspan="4">Seleccione un mes para mostrar los datos mensuales registrados.</td>
-                                      </tr>
-                                      {% endfor %}
-                                  </tbody>
-                              </table>
-
-                              {% else %}
-                                  <p>No hay datos registrados este mes.</p>
-                              {% endif %}
-                          {% else %}
-                              <p>Seleccione un mes para mostrar los datos mensuales registrados.</p>
-                          {% endif %}
-                      
+                            
                           </div>
                       </div>
                   </div>
@@ -402,7 +369,7 @@
                               <td><a href="{% url 'reserva_info' reservation.id %}">{{ reservation.code }}</a></td>
                               <td>{{ reservation.user.first_name }} {{ reservation.user.last_name }}</td>
                               <td>{{ reservation.campsite }}</td>
-                              <td>${{ reservation.total_cost }}</td>
+                              <td>${{ reservation.total_cost|floatformat:2 }}</td>
                           </tr>
                           {% empty %}
                           <tr>
