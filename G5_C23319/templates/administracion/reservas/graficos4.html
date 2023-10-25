@@ -1,34 +1,38 @@
 {% extends '../index_master.html' %}
 {% block content %}
-<div>
-    <h4>Gráfico  Reservas por Año</h4>
-    <canvas id="occupancyChart" width="700" height="200"></canvas>
+
+<div id="content-container" style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+    <div style="width: 70%;">
+        <h4>Gráfico Reservas por Año</h4>
+        <canvas id="occupancyChart"></canvas>
+
+        <form method="GET" action="">
+            <label for="year">Seleccionar Año:</label>
+            <select name="year" id="year">
+                {% for year in years %}
+                    <option value="{{ year }}" {% if year == selected_year %}selected{% endif %}>{{ year }}</option>
+                {% endfor %}
+            </select>
+
+            <!-- Tu otro código de formulario aquí -->
+
+            <button type="submit">Buscar</button>
+        </form>
+    </div>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<form method="GET" action="">
-    <label for="year">Seleccionar Año:</label>
-    <select name="year" id="year">
-        {% for year in years %}
-            <option value="{{ year }}" {% if year == selected_year %}selected{% endif %}>{{ year }}</option>
-        {% endfor %}
-    </select>
-
-    <!-- Tu otro código de formulario aquí -->
-
-    <button type="submit">Buscar</button>
-</form>
-
-  <script>
+<script>
     var years = [];
     var countsTrue = [];
     var countsFalse = [];
-    
+
     // Itera sobre los datos de reservas activas
     {% for item in occupancy_data_true %}
         years.push({{ item.0 }});
         countsTrue.push({{ item.1 }});
     {% endfor %}
-    
+
     // Itera sobre los datos de reservas inactivas
     {% for item in occupancy_data_false %}
         countsFalse.push({{ item.1 }});
@@ -64,4 +68,10 @@
     });
 </script>
 
+<style>
+    #content-container {
+        width: 100%;
+        background: #f0f0f0; /* Puedes cambiar el color de fondo si lo deseas */
+    }
+</style>
 {% endblock %}
