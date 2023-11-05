@@ -6,12 +6,13 @@
 <div class="d-flex justify-content-start align-items-center m-2" style="height: 20vh">
     <div class="col-md-6 d-flex">
       <div class="border p-2 rounded bg-success d-flex align-items-center" style="opacity: 0.75">
-        <h5 class="text-white rounded me-1">Camping<i class="bi bi-flower1"></i></h5> 
+        <h5 class="text-white rounded me-1">Temporada<i class="bi bi-flower1 ms-2"></i></h5> 
         <form method="GET" class="d-flex">
           {% csrf_token %}
           <div class="d-flex">
             {{ filter_form.campsite_name.label_tag }}
             {{ filter_form.campsite_name }}
+            
           </div>
           <div><button type="submit" class="btn btn-primary ms-1"><i class="bi bi-search"></i></button></div>
       </form>
