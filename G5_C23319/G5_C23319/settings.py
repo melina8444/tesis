@@ -97,9 +97,9 @@ WSGI_APPLICATION = 'G5_C23319.wsgi.application'
         'HOST': env('DB_HOST'),
         'PORT': env('DB_PORT'),
     }
-}  """
+}  """ 
   
-DATABASES = {
+""" DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': env('DB_NAME'),
@@ -108,7 +108,7 @@ DATABASES = {
         'HOST': env('DB_HOST'),
         'PORT': env('DB_PORT'),
     }
-} 
+}  """
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 
